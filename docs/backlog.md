@@ -227,3 +227,15 @@ Agreed ideas not yet scheduled. Newest first.
 - Fixed in dev3: panel smaller and further aside; subtitles draw on top of
   panels (black rectangle); bigger medicines text; wrist button and hand dots
   only for real hand tracking (not hands faked from held controllers).
+
+## Support routes (raised 2026-11-18)
+- Research paramedic suggested logging it as a **QI programme with EEAST**
+  for financial and practical support.
+- Testing best via the clinical/education side: local university contacts,
+  and the local clinical manager for more immediate support.
+- **Before formally logging or accepting funding:** agree IP ownership in
+  writing. NHS trusts usually have IP policies that can claim a share of
+  innovations developed with trust time, funding or support. Ask the trust's
+  R&D/innovation lead how their policy applies.
+- Prepare first: a short project brief (problem, what exists, demo, plan,
+  asks) and a demo-ready build with one complete scenario and debrief.
