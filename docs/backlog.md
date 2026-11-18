@@ -183,3 +183,28 @@ Agreed ideas not yet scheduled. Newest first.
   simulator sickness questionnaire; publishable if ethics approval obtained.
 - Endorsement or CPD accreditation (e.g. College of Paramedics).
 - Pricing and licensing model for individuals vs. institutions.
+
+## Decisions on future thinking (2026-11-18)
+- **Agreed:** instructor/facilitator mode, mixed reality, paperwork in the
+  scene.
+- **The whole job, start to finish** (long-term shape of the product):
+  mobilising, arrival, attending and treating, extrication (to a degree),
+  transport, handover. Handover is one stage of this, not a stand-alone.
+- **Annoying problems to sort** (project lead's idea): small real-world
+  obstacles such as a loud TV to turn down, poor lighting, a dog in the way,
+  furniture to move. First candidate: the TV already in the living room is
+  on and loud until the learner turns it down.
+- **CPD:** a simple acknowledgement of the user and what they did in the
+  session is enough for a qualified audience (no formal accreditation
+  needed at first).
+- **College of Paramedics endorsement:** possible route via the project
+  lead's thesis supervisor (Professor Julia Williams, College of
+  Paramedics). Approach once there is something solid to show.
+- **Audience range:** from student paramedics who have never used a VR
+  headset to experienced paramedics comfortable in VR.
+  - A **tutorial**: wearing and using the headset, then the sim's own
+    controls (moving, pointing, menus, assessing), in a calm practice room.
+  - **Difficulty levels** like a game, easy to hard. Easy: clearer cues,
+    fewer distractions, more prompts. Hard: subtler signs, interruptions,
+    annoying problems, a less helpful bystander.
+  - No claim that it is "real": present it as practice and learning.
