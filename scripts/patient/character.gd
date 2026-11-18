@@ -1,0 +1,112 @@
+extends StaticBody3D
+## One person in a scenario (patient or bystander). Uses the MakeHuman model
+## if it has been exported to assets/characters/, otherwise a placeholder.
+## Drives breathing from the scenario's presentation settings, shows spoken
+## lines as subtitles, and opens the interaction panel when pointed at.
+
+signal interacted(character)
+
+const MANNEQUIN := preload("res://scripts/patient/mannequin.gd")
+const BREATHING := preload("res://scripts/patient/breathing.gd")
+const RIG := preload("res://scripts/patient/rig_driver.gd")
+
+var id := ""
+var display_name := ""
+var data := {}
+
+var _breath
+var _depth := 0.5
+var _accessory := 0.0
+var _body: Node3D             # mannequin or imported model
+var _rig = null               # rig_driver when a real model is used
+var _subtitle: Label3D
+var _subtitle_timer := 0.0
+
+
+func setup(character_id: String, character_data: Dictionary) -> void:
+	id = character_id
+	data = character_data
+	display_name = String(data.get("name", id))
+	var p: Dictionary = data.get("presentation", {})
+	var is_patient: bool = data.get("role", "") == "patient"
+	_breath = BREATHING.new(float(p.get("respiratory_rate", 14.0)))
+	_breath.inhale_fraction = 0.45 if float(p.get("work_of_breathing", 0.0)) > 0.6 else 0.4
+	_depth = float(p.get("breath_depth", 0.35))
+	_accessory = 1.0 if p.get("accessory_muscles", false) else 0.0
+
+	var model_path := String(data.get("model", ""))
+	if model_path != "" and ResourceLoader.exists(model_path):
+		_body = (load(model_path) as PackedScene).instantiate()
+		add_child(_body)
+		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
+	else:
+		var m = MANNEQUIN.new()
+		m.seated = is_patient
+		if is_patient:
+			m.skin = Color(0.84, 0.8, 0.78) if p.get("skin", {}).get("colour", "") == "pale_grey" else m.skin
+			m.clothing = Color(0.7, 0.66, 0.78)
+			m.ankle_swelling = 1.0 if String(p.get("peripheral_oedema", "")) != "" else 0.0
+			m.lean_deg = 25.0 if p.get("posture", "") == "tripod" else 5.0
+		else:
+			m.skin = Color(0.88, 0.75, 0.66)
+			m.clothing = Color(0.45, 0.4, 0.33)
+		add_child(m)
+		m.build()
+		_body = m
+
+	_add_collider(is_patient)
+	_make_subtitle(is_patient)
+
+
+func _process(delta: float) -> void:
+	if _breath == null:
+		return
+	_breath.step(delta)
+	if _rig:
+		_rig.apply_breath(_breath.value, _depth, _accessory)
+	elif _body:
+		_body.apply_breath(_breath.value, _depth, _accessory)
+	if _subtitle_timer > 0.0:
+		_subtitle_timer -= delta
+		if _subtitle_timer <= 0.0:
+			_subtitle.visible = false
+
+
+## Show a spoken line above the head for a time based on its length.
+func say(text: String) -> void:
+	_subtitle.text = display_name.get_slice(" ", 0) + ": " + text
+	_subtitle.visible = true
+	_subtitle_timer = clampf(1.5 + text.length() * 0.07, 2.5, 9.0)
+
+
+func interact() -> void:
+	interacted.emit(self)
+
+
+func _add_collider(seated: bool) -> void:
+	var shape := CapsuleShape3D.new()
+	var col := CollisionShape3D.new()
+	if seated:
+		shape.radius = 0.28
+		shape.height = 0.95
+		col.position = Vector3(0, 0.35, 0.05)
+	else:
+		shape.radius = 0.25
+		shape.height = 1.75
+		col.position = Vector3(0, 0.88, 0)
+	col.shape = shape
+	add_child(col)
+
+
+func _make_subtitle(seated: bool) -> void:
+	_subtitle = Label3D.new()
+	_subtitle.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	_subtitle.font_size = 26
+	_subtitle.pixel_size = 0.0012
+	_subtitle.outline_size = 8
+	_subtitle.width = 900.0
+	_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_subtitle.no_depth_test = true
+	_subtitle.position = Vector3(0, 1.0 if seated else 2.0, 0.1)
+	_subtitle.visible = false
+	add_child(_subtitle)

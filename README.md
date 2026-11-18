@@ -2,7 +2,15 @@
 
 Offline VR clinical-presentation simulator for Meta Quest 3, built in Godot 4 (GDScript).
 
-## Current version: V0.02 – comfortable, better-looking living room
+## In progress: V0.03 – patient and bystander
+
+- Scenario file (`scenarios/apo_01.json`) drives the patient (Joan) and her husband (Ken)
+- Placeholder figures until the MakeHuman models are exported to `assets/characters/joan.glb` and `ken.glb`
+- Breathing driven by respiratory rate, depth and accessory muscle use
+- Point at Joan or Ken: Ask (history, answered as subtitles) or Look, listen, feel (first impression)
+- Medicines box on the side table (point and use to read the contents)
+
+## V0.02 – comfortable, better-looking living room
 
 - Furnished UK living room (procedural materials, no bought assets), sunlight through the window
 - Comfort: stick movement with tunnel vignette, snap or smooth turning, teleport (right stick forward), fade on teleport

@@ -49,6 +49,27 @@ func _initialize() -> void:
 	check(absf(cam.global_position.x - 1.0) < 0.05 and absf(cam.global_position.z + 0.5) < 0.05, "teleport moves head to target")
 	check(player.is_inside_room(Vector3(0, 0, 0)) and not player.is_inside_room(Vector3(5, 0, 0)), "room bounds check")
 
+
+	# Scenario: characters, props and the interaction panel.
+	await process_frame
+	var runner = main.get_node("Scenario")
+	check(runner.characters.has("joan") and runner.characters.has("ken"), "Joan and Ken spawned")
+	var joan = runner.characters.get("joan")
+	check(joan != null and joan.global_position.distance_to(Vector3(-0.3, 0.42, -1.42)) < 0.05, "Joan is on the sofa")
+	check(runner.find_child("MedicinesBox", true, false) != null, "medicines box placed")
+	var panel = runner.get_node("InteractionPanel")
+	joan.interact()
+	check(panel.visible and not player.input_enabled, "pointing at Joan opens the panel")
+	panel._on_item(0)
+	await create_timer(0.1).timeout
+	check(panel._asked.has("events"), "first question asked")
+	check(joan._subtitle.visible, "Joan answers with a subtitle")
+	panel._on_tab("assess")
+	panel._on_item(7)
+	check(panel._result.text.length() > 10, "assessment finding shown")
+	panel._on_tab("close")
+	check(not panel.visible and player.input_enabled, "panel closes")
+
 	# Restore defaults so the test leaves no odd settings behind.
 	DirAccess.remove_absolute(ProjectSettings.globalize_path("user://settings.cfg"))
 	print("FAILURES: ", failures)

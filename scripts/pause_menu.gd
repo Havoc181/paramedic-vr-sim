@@ -55,6 +55,8 @@ func _build() -> void:
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	bg_mat.albedo_color = Color(0.07, 0.08, 0.1)
+	bg_mat.no_depth_test = true
+	bg_mat.render_priority = 9
 	var bg := MeshInstance3D.new()
 	bg.mesh = bg_mesh
 	bg.material_override = bg_mat
@@ -67,6 +69,8 @@ func _build() -> void:
 	title.font_size = 36
 	title.pixel_size = 0.0008
 	title.position = Vector3(0, 0.215, 0)
+	title.no_depth_test = true
+	title.render_priority = 11
 	add_child(title)
 
 	var items := ["resume", "movement", "turning", "vignette", "seated", "quit"]

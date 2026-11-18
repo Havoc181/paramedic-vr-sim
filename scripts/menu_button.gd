@@ -20,6 +20,9 @@ func _ready() -> void:
 	_material = StandardMaterial3D.new()
 	_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	_material.albedo_color = IDLE
+	# Menus draw on top of the world so furniture or people never hide them.
+	_material.no_depth_test = true
+	_material.render_priority = 10
 	var mesh := BoxMesh.new()
 	mesh.size = Vector3(size.x, size.y, 0.01)
 	var mi := MeshInstance3D.new()
@@ -41,6 +44,8 @@ func _ready() -> void:
 	_label.position = Vector3(0, 0, 0.007)
 	_label.modulate = Color(0.95, 0.97, 1.0)
 	_label.outline_size = 0
+	_label.no_depth_test = true
+	_label.render_priority = 11
 	add_child(_label)
 
 
