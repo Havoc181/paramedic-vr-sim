@@ -11,6 +11,8 @@ Agreed ideas not yet scheduled. Newest first.
 - Look: exposure (nightdress hem over the ankles), viewing angle and distance
   for neck veins, counting respiratory rate by watching the chest.
 - Listen: wet breathing audible only within ~50 cm of the patient.
+- Debrief shows "what you found" against "what was there to find" (agreed):
+  each assessment zone records whether it was used. Explains, doesn't score.
 - Build order: pulse, listening distance, counting breaths, exposure and pitting.
 
 ## Consent before exposing or touching (stored, not yet)
