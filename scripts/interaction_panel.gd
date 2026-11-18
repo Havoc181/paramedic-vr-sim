@@ -39,10 +39,10 @@ func open() -> void:
 	fwd = fwd.normalized() if fwd.length() > 0.01 else Vector3.FORWARD
 	# Off to the right of where you're looking, so the patient stays in view.
 	var right := fwd.cross(Vector3.UP).normalized()
-	var pos: Vector3 = cam.global_position + fwd * 0.5 + right * 0.32 + Vector3(0, -0.1, 0)
+	var pos: Vector3 = cam.global_position + fwd * 0.6 + right * 0.42 + Vector3(0, -0.12, 0)
 	var face := pos - cam.global_position
 	face.y = 0.0
-	global_transform = Transform3D(Basis.looking_at(face.normalized(), Vector3.UP), pos)
+	global_transform = Transform3D(Basis.looking_at(face.normalized(), Vector3.UP).scaled(Vector3.ONE * 0.8), pos)
 	visible = true
 	player.input_enabled = false
 	_refresh()
@@ -191,9 +191,19 @@ func _speak(answers: Array) -> void:
 		var text := String(a.get("text", ""))
 		if who:
 			who.say(text)
+		_do_action(String(a.get("action", "")))
 		_result.text = String(a.get("by", "")).capitalize() + ": " + text
 		await get_tree().create_timer(clampf(1.2 + text.length() * 0.06, 2.0, 7.0)).timeout
 	_speaking = false
+
+
+## Things that happen as a line is spoken (scenario "action" field).
+func _do_action(action: String) -> void:
+	match action:
+		"offer_medicines_box":
+			var box = runner.find_child("MedicinesBox", true, false)
+			if box:
+				box.hand_to(player.get_node("XRCamera3D"))
 
 
 func _set_enabled(value: bool) -> void:

@@ -22,7 +22,8 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var tracker := XRServer.get_tracker(&"/user/hand_tracker/left") as XRHandTracker
-	if tracker == null or not tracker.has_tracking_data or not player.input_enabled:
+	var optical := tracker != null and tracker.hand_tracking_source == XRHandTracker.HAND_TRACKING_SOURCE_UNOBSTRUCTED
+	if tracker == null or not tracker.has_tracking_data or not optical or not player.input_enabled:
 		_show(false)
 		return
 	var palm_local := tracker.get_hand_joint_transform(XRHandTracker.HAND_JOINT_PALM)

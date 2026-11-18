@@ -27,7 +27,9 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var tracker := XRServer.get_tracker(hand_tracker_name) as XRHandTracker
-	var tracked := tracker != null and tracker.has_tracking_data
+	# Only draw hands seen by the cameras, not hands faked from held controllers.
+	var tracked := tracker != null and tracker.has_tracking_data \
+			and tracker.hand_tracking_source == XRHandTracker.HAND_TRACKING_SOURCE_UNOBSTRUCTED
 	for i in _spheres.size():
 		var s := _spheres[i]
 		if not tracked:

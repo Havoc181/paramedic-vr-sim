@@ -208,3 +208,22 @@ Agreed ideas not yet scheduled. Newest first.
     fewer distractions, more prompts. Hard: subtler signs, interruptions,
     annoying problems, a less helpful bystander.
   - No claim that it is "real": present it as practice and learning.
+
+## Headset test results, 2026-11-18 (v0.03-dev2)
+- Grey screen on Quest: caused by foveated rendering and/or the 90 Hz switch
+  (fixed by removing both). Re-test each separately before re-adding.
+- Breathing sound: good; a bit loud at full volume. Re-balance once other
+  sounds (voices, room) exist. Fade with distance works.
+- Turning: smooth preferred; snap felt clunky. Smooth is now the default.
+- Teleport: works but not intuitive to the project lead. Keep as an option;
+  explain in the tutorial; consider simpler alternatives later.
+- Vignette: not noticed (not tested deliberately) - check next time.
+- Seated mode: right height when seated; standing in seated mode also OK.
+  Crouch/kneel added on right thumbstick click (v0.03-dev3).
+- Right controller: fine. Quit from menu: fine.
+- Medicines box: could be read from across the room. Now only readable
+  within ~0.9 m ("get closer to read"), and Ken hands it over when asked
+  about medications. Box still on the side table too.
+- Fixed in dev3: panel smaller and further aside; subtitles draw on top of
+  panels (black rectangle); bigger medicines text; wrist button and hand dots
+  only for real hand tracking (not hands faked from held controllers).

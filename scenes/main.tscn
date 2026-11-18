@@ -56,6 +56,7 @@ modulate = Color(0.15, 0.15, 0.15, 1)
 text = "Paramedic VR Sim - V0.03 (in progress)
 Left stick: move    Right stick left/right: turn
 Right stick forward: aim teleport, release to jump
+Right stick click: crouch / kneel
 Left menu button (or left-wrist button with hands): menu
 Point at Joan or Ken and pull the trigger (or pinch) to talk and assess"
 font_size = 22

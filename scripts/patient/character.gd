@@ -142,6 +142,8 @@ func _make_subtitle(seated: bool) -> void:
 	_subtitle.width = 900.0
 	_subtitle.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_subtitle.no_depth_test = true
+	_subtitle.render_priority = 20
+	_subtitle.outline_render_priority = 19
 	_subtitle.position = Vector3(0, 1.0 if seated else 2.0, 0.1)
 	_subtitle.visible = false
 	add_child(_subtitle)

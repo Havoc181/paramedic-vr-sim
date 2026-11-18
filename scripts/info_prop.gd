@@ -5,6 +5,8 @@ extends StaticBody3D
 @export var colour := Color(0.8, 0.8, 0.8)
 @export var title := ""
 @export_multiline var details := ""
+## You have to be this close (metres, from your head) to read the details.
+@export var read_distance := 0.9
 
 var _label: Label3D
 var _material: StandardMaterial3D
@@ -26,8 +28,10 @@ func _ready() -> void:
 	add_child(col)
 	_label = Label3D.new()
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_label.font_size = 22
-	_label.pixel_size = 0.001
+	_label.font_size = 32
+	_label.pixel_size = 0.0011
+	_label.render_priority = 20
+	_label.outline_render_priority = 19
 	_label.outline_size = 8
 	_label.no_depth_test = true
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
@@ -37,8 +41,34 @@ func _ready() -> void:
 	add_child(_label)
 
 
+var _open := false
+
+
 func interact() -> void:
-	_label.visible = not _label.visible
+	_open = not _open
+	_label.visible = _open
+
+
+func _process(_delta: float) -> void:
+	if not _open:
+		return
+	var cam := get_viewport().get_camera_3d()
+	if cam == null:
+		return
+	var near := cam.global_position.distance_to(global_position) <= read_distance
+	_label.text = (title + "\n" + details) if near else (title + "\n(get closer to read)")
+
+
+## Someone hands this to you: it moves to just in front of you, open.
+func hand_to(cam: Node3D) -> void:
+	var fwd := -cam.global_transform.basis.z
+	fwd.y = 0.0
+	fwd = fwd.normalized() if fwd.length() > 0.01 else Vector3.FORWARD
+	var right := fwd.cross(Vector3.UP).normalized()
+	global_position = cam.global_position + fwd * 0.4 - right * 0.12 + Vector3(0, -0.3, 0)
+	look_at(cam.global_position, Vector3.UP, true)
+	_open = true
+	_label.visible = true
 
 
 func hover_enter() -> void:

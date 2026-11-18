@@ -34,6 +34,7 @@ func _initialize() -> void:
 	var before_move: bool = player.smooth_move_enabled
 	menu.get_node("Button_movement").interact()
 	check(player.smooth_move_enabled != before_move, "movement toggle works")
+	check(player.turn_mode == 2, "smooth turning is the default")
 	var before_turn: int = player.turn_mode
 	menu.get_node("Button_turning").interact()
 	check(player.turn_mode == (before_turn + 1) % 3, "turning cycles")
@@ -67,6 +68,19 @@ func _initialize() -> void:
 	panel._on_tab("assess")
 	panel._on_item(7)
 	check(panel._result.text.length() > 10, "assessment finding shown")
+	# Asking about medications: Ken hands over the medicines box.
+	panel._on_tab("ask")
+	panel._speaking = false
+	var meds_idx := -1
+	for i in panel._items.size():
+		if panel._items[i].get("id", "") == "meds":
+			meds_idx = i
+	panel._page = meds_idx / panel.PER_PAGE
+	panel._refresh()
+	panel._on_item(meds_idx % panel.PER_PAGE)
+	await create_timer(0.1).timeout
+	var box = runner.find_child("MedicinesBox", true, false)
+	check(box._open and box.global_position.distance_to(cam.global_position) < 0.7, "Ken hands over the medicines box")
 	panel._on_tab("close")
 	check(not panel.visible and player.input_enabled, "panel closes")
 

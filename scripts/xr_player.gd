@@ -23,9 +23,12 @@ const SEATED_EYE_HEIGHT := 1.6
 
 # Comfort settings (changed from the in-app menu).
 var smooth_move_enabled := true
-var turn_mode := Turn.SNAP_30
+var turn_mode := Turn.SMOOTH
 var vignette_enabled := true
 var seated := false
+## Crouch (right thumbstick click): lowers your view to kneeling height.
+var crouched := false
+const CROUCH_DROP := 0.7
 
 ## False while the menu is open, so the sticks don't move you.
 var input_enabled := true
@@ -44,7 +47,9 @@ var _fade := 0.0
 var _fade_tween: Tween
 var _snap_ready := true
 var _menu_was_pressed := false
+var _crouch_was_pressed := false
 var _teleporting := false
+var _seated_offset := 0.0
 
 
 func _ready() -> void:
@@ -58,6 +63,7 @@ func _process(delta: float) -> void:
 		comfort_needed = _move(delta) or comfort_needed
 		comfort_needed = _turn(delta) or comfort_needed
 	_menu_button_input()
+	_crouch_input()
 	_clamp_to_room()
 
 	var target := 1.0 if (comfort_needed and vignette_enabled) else 0.0
@@ -150,13 +156,26 @@ func fade_to(value: float, duration: float) -> void:
 
 func set_seated(value: bool) -> void:
 	seated = value
+	_seated_offset = 0.0
 	if seated:
 		# Raise the world-view so a seated player sees from standing height.
-		var head_height := camera.position.y
-		position.y = clampf(SEATED_EYE_HEIGHT - head_height, 0.0, 1.2)
-	else:
-		position.y = 0.0
+		_seated_offset = clampf(SEATED_EYE_HEIGHT - camera.position.y, 0.0, 1.2)
+	_apply_height()
 	save_settings()
+
+
+func _apply_height() -> void:
+	position.y = _seated_offset - (CROUCH_DROP if crouched else 0.0)
+
+
+func _crouch_input() -> void:
+	if not input_enabled:
+		return
+	var pressed := right.is_button_pressed("primary_click")
+	if pressed and not _crouch_was_pressed:
+		crouched = not crouched
+		_apply_height()
+	_crouch_was_pressed = pressed
 
 
 # --- Menu button -----------------------------------------------------------
