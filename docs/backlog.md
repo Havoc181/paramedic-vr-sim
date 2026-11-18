@@ -107,7 +107,13 @@ Agreed ideas not yet scheduled. Newest first.
   - Crackles by CORSA time-domain features: fine IDW ~0.7 ms / 2CD ~5 ms,
     coarse IDW ~1.5 ms / 2CD ~10 ms (Southampton crackle detection paper;
     Munakata, Thorax 1991;46:651). Heart-failure crackles between the two.
-  - Presets: normal, apo_bedside (close up, no stethoscope), apo_chest
-    (stethoscope at the bases, for later versions).
+  - Two listeners kept separate (agreed 2026-11-18): **external** (through
+    the air near the face: nose/mouth airflow plus only the coarse rattle
+    that carries out of the airways; no vesicular sound) and **chest**
+    (stethoscope: vesicular sound and crackles, per zone: bases, mid-zones,
+    apices). External plays from the patient's mouth in 3D and fades with
+    distance; chest sounds only play when a stethoscope is placed on a zone.
+  - Presets: normal_external, apo_external, normal (chest), apo_chest_mid,
+    apo_chest_bases. Project lead's feedback on v2: chest sounds "bang on".
 - **Other sounds (cough etc.):** Freesound.org filtered to CC0; log each in
   THIRD_PARTY_LICENSES.md.

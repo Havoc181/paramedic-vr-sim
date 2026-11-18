@@ -12,10 +12,17 @@ Acoustic basis (see docs/backlog.md, audio plan, for sources):
   2CD ~10 ms, louder and lower. Heart-failure crackles sit in between and
   are mainly late inspiratory.
 
+Two listeners, kept separate:
+- external: what you hear through the air near the patient's face (airflow at
+  the nose/mouth, plus only the coarse rattle that carries out of the airways)
+- chest: what a stethoscope picks up (vesicular sound and crackles)
+
 Presets:
-    python tools/breath_synth.py --preset normal --out normal.wav
-    python tools/breath_synth.py --preset apo_bedside --out apo_bedside.wav
-    python tools/breath_synth.py --preset apo_chest --out apo_chest.wav
+    python tools/breath_synth.py --preset normal_external --out a.wav
+    python tools/breath_synth.py --preset apo_external --out b.wav
+    python tools/breath_synth.py --preset normal --out c.wav       (stethoscope)
+    python tools/breath_synth.py --preset apo_chest_mid --out d.wav    (stethoscope, mid-zones)
+    python tools/breath_synth.py --preset apo_chest_bases --out e.wav  (stethoscope, bases)
 """
 import argparse
 import numpy as np
@@ -25,14 +32,20 @@ from scipy.io import wavfile
 SR = 44100
 
 PRESETS = {
+    # --- Heard through the air, near the face (no stethoscope) -------------
+    # Healthy: soft nasal/mouth airflow, barely audible at arm's length.
+    "normal_external": dict(listener="external", rate=14, ie=0.42, effort=0.1, airway=1.0, fine=0, medium=0, coarse=0, wheeze=0),
+    # Joan: fast, effortful mouth breathing with a wet rattle from fluid in the
+    # larger airways, and a gasp on each in-breath.
+    "apo_external": dict(listener="external", rate=32, ie=0.45, effort=0.9, airway=1.0, fine=0, medium=0.2, coarse=0.8, wheeze=0.08),
+    # --- Heard through a stethoscope on the chest ---------------------------
     # Quiet breathing heard close to a healthy person.
-    "normal": dict(rate=14, ie=0.42, effort=0.1, airway=0.15, fine=0, medium=0, coarse=0, wheeze=0),
-    # Joan heard at close range without a stethoscope: effortful airway noise,
-    # coarse "rattly" crackles through both phases, faint expiratory wheeze.
-    "apo_bedside": dict(rate=32, ie=0.45, effort=0.85, airway=0.6, fine=0.2, medium=0.5, coarse=0.7, wheeze=0.15),
+    "normal": dict(listener="chest", rate=14, ie=0.42, effort=0.1, airway=0.15, fine=0, medium=0, coarse=0, wheeze=0),
+    # Joan, stethoscope over the mid-zones: crackles through both phases.
+    "apo_chest_mid": dict(listener="chest", rate=32, ie=0.45, effort=0.85, airway=0.6, fine=0.2, medium=0.5, coarse=0.7, wheeze=0.15),
     # Joan through a stethoscope at the bases (for later versions): late
     # inspiratory heart-failure crackles over harsh breath sounds.
-    "apo_chest": dict(rate=32, ie=0.45, effort=0.7, airway=0.0, fine=0.6, medium=0.8, coarse=0.2, wheeze=0.1),
+    "apo_chest_bases": dict(listener="chest", rate=32, ie=0.45, effort=0.7, airway=0.0, fine=0.6, medium=0.8, coarse=0.2, wheeze=0.1),
 }
 
 # Crackle families: (IDW ms, growth of each half-cycle, half-cycles, loudness)
@@ -49,6 +62,12 @@ def lowpass(x, f, order=2):
 
 def highpass(x, f, order=2):
     return sosfilt(butter(order, f, btype="high", fs=SR, output="sos"), x)
+
+
+def band_peak(x, f, q):
+    """Gentle resonance around f (Hz)."""
+    bw = f / q
+    return sosfilt(butter(2, [f - bw / 2, f + bw / 2], btype="band", fs=SR, output="sos"), x)
 
 
 def vesicular_noise(n, rng, top_hz):
@@ -108,23 +127,31 @@ def breath_masks(n, rate, ie, effort, rng):
     return insp, exp, phase
 
 
-def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed):
+def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed, listener="chest"):
     rng = np.random.default_rng(seed)
     n = int(seconds * SR)
     insp, exp, phase = breath_masks(n, rate, ie, effort, rng)
 
-    # Lung (vesicular) component: inspiration brighter than expiration.
-    insp_top = 450 + 500 * effort
-    exp_top = 290 + 250 * effort
-    out = vesicular_noise(n, rng, insp_top) * insp * (0.6 + 0.6 * effort)
-    out += vesicular_noise(n, rng, exp_top) * exp * 0.7
-
-    # Airway/mouth component heard near the face when breathing hard: broader,
-    # cut off around 1 kHz like tracheal sound, still soft.
-    if airway > 0:
-        a = rng.standard_normal(n)
-        a = lowpass(highpass(a, 150), 900, order=4)
-        out += a * (insp * 0.9 + exp * 0.6) * airway * 0.35
+    out = np.zeros(n)
+    if listener == "chest":
+        # Lung (vesicular) sound at the chest wall: low-pitched, inspiration
+        # brighter and louder than expiration.
+        insp_top = 450 + 500 * effort
+        exp_top = 290 + 250 * effort
+        out += vesicular_noise(n, rng, insp_top) * insp * (0.6 + 0.6 * effort)
+        out += vesicular_noise(n, rng, exp_top) * exp * 0.7
+    else:
+        # Air heard near the face: turbulent flow at the nose/mouth. No lung
+        # sound gets through the chest wall to the air. Broader, breathier
+        # spectrum with gentle mouth resonances; harder breathing = louder,
+        # brighter, with a gasping onset to each in-breath.
+        a = highpass(rng.standard_normal(n), 250, order=2)
+        a = lowpass(a, 2500 + 2500 * effort, order=2)
+        res = band_peak(a, 650, 1.5) * 0.5 + band_peak(a, 1700, 2.0) * 0.35
+        flow = a * 0.6 + res
+        gasp = np.clip(1.0 - phase / 0.25, 0.0, 1.0) * (phase < 1.0) * effort * 0.6
+        level = (0.15 + 0.85 * effort) * airway
+        out += flow * (insp * (1.0 + gasp) + exp * 0.75) * level
 
     # Crackles, timed by type: fine/medium mostly late inspiration,
     # coarse in early inspiration and through expiration.
@@ -143,8 +170,13 @@ def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed)
             w = crackle(kind, rng)
             if t0 + len(w) < n:
                 cr[t0:t0 + len(w)] += w
-    # Chest wall and air soften crackles a little.
-    out += lowpass(cr, 1500, order=2) * 0.28
+    if listener == "chest":
+        # Chest wall softens crackles a little.
+        out += lowpass(cr, 1500, order=2) * 0.28
+    else:
+        # In the air, only the coarse rattle from the larger airways carries,
+        # heard as a lower, wetter rumble.
+        out += lowpass(cr, 700, order=2) * 0.45
 
     # Wheeze: faint musical tone on expiration with slight pitch wander.
     if wheeze > 0:
@@ -175,7 +207,7 @@ if __name__ == "__main__":
     a = p.parse_args()
     params = dict(PRESETS[a.preset])
     for k in params:
-        if getattr(a, k) is not None:
+        if k != "listener" and getattr(a, k) is not None:
             params[k] = getattr(a, k)
     x = synth(seconds=a.seconds, seed=a.seed, **params)
     wavfile.write(a.out, SR, (x * a.gain * 32767).astype(np.int16))
