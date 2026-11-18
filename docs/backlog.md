@@ -99,7 +99,15 @@ Agreed ideas not yet scheduled. Newest first.
   (pitch, tremor, pace) and join phrases with synthesised breaths for
   breathlessness. Avoid Piper (most voices non-commercial).
 - **Breathing:** `tools/breath_synth.py` builds sounds from physiology
-  (rate, I:E, effort, wet, crackles, wheeze); no licensing issues. First
-  previews made; needs listening feedback and tuning.
+  (rate, I:E, effort, airway noise, fine/medium/coarse crackles, wheeze);
+  no licensing issues. v2 rebuilt on published acoustics:
+  - Vesicular sound: soft, low-pitched (<200 Hz), power falling with
+    frequency; inspiration max ~450 Hz, expiration ~290 Hz
+    (J Appl Physiol 1981;50:307; Crit Care 2023, PMC10543330).
+  - Crackles by CORSA time-domain features: fine IDW ~0.7 ms / 2CD ~5 ms,
+    coarse IDW ~1.5 ms / 2CD ~10 ms (Southampton crackle detection paper;
+    Munakata, Thorax 1991;46:651). Heart-failure crackles between the two.
+  - Presets: normal, apo_bedside (close up, no stethoscope), apo_chest
+    (stethoscope at the bases, for later versions).
 - **Other sounds (cough etc.):** Freesound.org filtered to CC0; log each in
   THIRD_PARTY_LICENSES.md.
