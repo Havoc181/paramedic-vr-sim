@@ -98,13 +98,13 @@ def crackle(kind, rng):
     return w * loud * rng.uniform(0.5, 1.0)
 
 
-def breath_masks(n, rate, ie, effort, rng):
+def breath_masks(n, rate, ie, effort, rng, jitter=0.06):
     insp = np.zeros(n)
     exp = np.zeros(n)
     phase = np.zeros(n)  # 0..1 within inspiration, 1..2 within expiration
     pos = 0
     while pos < n:
-        period = 60.0 / rate * rng.uniform(0.94, 1.06)
+        period = 60.0 / rate * rng.uniform(1.0 - jitter, 1.0 + jitter)
         n_b = int(period * SR)
         n_in = int(n_b * ie)
         # Pause at the end of expiration shrinks as breathing gets harder.
@@ -127,10 +127,12 @@ def breath_masks(n, rate, ie, effort, rng):
     return insp, exp, phase
 
 
-def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed, listener="chest"):
+def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed, listener="chest", single=False):
     rng = np.random.default_rng(seed)
     n = int(seconds * SR)
-    insp, exp, phase = breath_masks(n, rate, ie, effort, rng)
+    if single:
+        n = int(60.0 / rate * SR)
+    insp, exp, phase = breath_masks(n, rate, ie, effort, rng, jitter=0.0 if single else 0.06)
 
     out = np.zeros(n)
     if listener == "chest":
@@ -186,6 +188,13 @@ def synth(rate, ie, effort, airway, fine, medium, coarse, wheeze, seconds, seed,
         tone = np.sin(ph) + 0.25 * np.sin(2 * ph)
         out += tone * (exp / (0.55 + 0.3 * effort)) ** 2 * wheeze * 0.05
 
+    if single:
+        # One breath, to be triggered in time with the animation: short fades.
+        f = int(0.01 * SR)
+        out[:f] *= np.linspace(0, 1, f)
+        out[-f:] *= np.linspace(1, 0, f)
+        return out / (np.max(np.abs(out)) + 1e-9)
+
     # Seamless loop: crossfade the end into the start.
     xf = int(0.25 * SR)
     ramp = np.linspace(0, 1, xf)
@@ -202,6 +211,8 @@ if __name__ == "__main__":
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gain", type=float, default=0.8, help="peak level 0-1")
     p.add_argument("--out", default="breath.wav")
+    p.add_argument("--single", type=int, default=0,
+                   help="write N single-breath variants (out_1.wav ...) instead of a loop")
     for k in ("rate", "ie", "effort", "airway", "fine", "medium", "coarse", "wheeze"):
         p.add_argument("--" + k, type=float)
     a = p.parse_args()
@@ -209,6 +220,13 @@ if __name__ == "__main__":
     for k in params:
         if k != "listener" and getattr(a, k) is not None:
             params[k] = getattr(a, k)
-    x = synth(seconds=a.seconds, seed=a.seed, **params)
-    wavfile.write(a.out, SR, (x * a.gain * 32767).astype(np.int16))
-    print("wrote", a.out, params)
+    if a.single:
+        stem = a.out[:-4] if a.out.endswith(".wav") else a.out
+        for i in range(a.single):
+            x = synth(seconds=0, seed=a.seed + i, single=True, **params)
+            wavfile.write(f"{stem}_{i + 1}.wav", SR, (x * a.gain * 32767).astype(np.int16))
+        print(f"wrote {a.single} single breaths", params)
+    else:
+        x = synth(seconds=a.seconds, seed=a.seed, **params)
+        wavfile.write(a.out, SR, (x * a.gain * 32767).astype(np.int16))
+        print("wrote", a.out, params)

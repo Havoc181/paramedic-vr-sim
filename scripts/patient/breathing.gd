@@ -13,6 +13,11 @@ var inhaling := true
 var _phase := 0.0
 var _period := 3.75
 
+## Length of the current breath in seconds.
+var period: float:
+	get:
+		return _period
+
 
 func _init(breaths_per_minute := 16.0) -> void:
 	rate = breaths_per_minute

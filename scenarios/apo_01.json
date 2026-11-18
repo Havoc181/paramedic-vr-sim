@@ -36,9 +36,18 @@
         "sounds": {
           "_note": "Empty = subtitle/visual only. External = through the air near the face; chest = stethoscope (later versions).",
           "breathing_external": {
-            "file": "res://assets/audio/joan_breathing_external.ogg",
+            "clips": [
+              "res://assets/audio/generated/joan_breath_ext_1.ogg",
+              "res://assets/audio/generated/joan_breath_ext_2.ogg",
+              "res://assets/audio/generated/joan_breath_ext_3.ogg",
+              "res://assets/audio/generated/joan_breath_ext_4.ogg"
+            ],
             "synth_preset": "apo_external",
-            "audible_within_m": 1.5
+            "clip_period_s": 1.875,
+            "volume_db": 2.0,
+            "unit_size_m": 0.45,
+            "max_distance_m": 6.0,
+            "_note": "Inverse-square fall-off: full volume within ~0.45 m, about -12 dB at 0.9 m, -24 dB at 1.8 m, barely audible across the room."
           },
           "breathing_chest": {
             "bases": {
@@ -79,9 +88,16 @@
         "breath_depth": 0.3,
         "sounds": {
           "breathing_external": {
-            "file": "",
+            "clips": [
+              "res://assets/audio/generated/ken_breath_ext_1.ogg",
+              "res://assets/audio/generated/ken_breath_ext_2.ogg",
+              "res://assets/audio/generated/ken_breath_ext_3.ogg"
+            ],
             "synth_preset": "normal_external",
-            "audible_within_m": 0.5
+            "clip_period_s": 3.75,
+            "volume_db": -14.0,
+            "unit_size_m": 0.3,
+            "max_distance_m": 3.0
           }
         }
       }

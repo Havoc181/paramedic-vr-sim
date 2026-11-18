@@ -117,3 +117,20 @@ Agreed ideas not yet scheduled. Newest first.
     apo_chest_bases. Project lead's feedback on v2: chest sounds "bang on".
 - **Other sounds (cough etc.):** Freesound.org filtered to CC0; log each in
   THIRD_PARTY_LICENSES.md.
+
+## Equipment roadmap (agreed 2026-11-18)
+- First piece of equipment: **stethoscope**, which unlocks the chest
+  (auscultation) sounds per zone.
+- Later: **corpuls3** monitor/defibrillator, **Braun ThermoScan** tympanic
+  thermometer, capillary blood glucose meter.
+- Wait for the project lead's reference photos before modelling any of them.
+- Branding: real brand names, logos and distinctive designs are trademarks.
+  For a commercial release, either get permission or model generic
+  look-alikes without logos (decide before release).
+
+## External breathing loudness (agreed 2026-11-18)
+- Louder close to the patient, barely audible from across the room:
+  inverse-square fall-off from the mouth, tuned per character in the
+  scenario file (volume_db, unit_size_m, max_distance_m).
+- One clip per breath, triggered with the chest animation so sound and
+  movement stay in sync.

@@ -21,6 +21,9 @@ var _body: Node3D             # mannequin or imported model
 var _rig = null               # rig_driver when a real model is used
 var _subtitle: Label3D
 var _subtitle_timer := 0.0
+var _breath_player: AudioStreamPlayer3D
+var _breath_clips: Array[AudioStream] = []
+var _clip_period := 0.0
 
 
 func setup(character_id: String, character_data: Dictionary) -> void:
@@ -56,6 +59,7 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 
 	_add_collider(is_patient)
 	_make_subtitle(is_patient)
+	_setup_breath_audio(p.get("sounds", {}).get("breathing_external", {}), is_patient)
 
 
 func _process(delta: float) -> void:
@@ -81,6 +85,37 @@ func say(text: String) -> void:
 
 func interact() -> void:
 	interacted.emit(self)
+
+
+## External breathing (through the air): one short clip per breath, started
+## in time with the chest movement and played from the mouth in 3D.
+## Loud close up, fading to barely audible a few metres away.
+func _setup_breath_audio(cfg: Dictionary, seated: bool) -> void:
+	for path in cfg.get("clips", []):
+		if ResourceLoader.exists(path):
+			_breath_clips.append(load(path))
+	if _breath_clips.is_empty():
+		return
+	_clip_period = float(cfg.get("clip_period_s", 0.0))
+	_breath_player = AudioStreamPlayer3D.new()
+	_breath_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+	_breath_player.unit_size = float(cfg.get("unit_size_m", 0.45))
+	_breath_player.volume_db = float(cfg.get("volume_db", 0.0))
+	_breath_player.max_db = 6.0
+	_breath_player.max_distance = float(cfg.get("max_distance_m", 6.0))
+	_breath_player.position = Vector3(0, 0.78, 0.22) if seated else Vector3(0, 1.62, 0.08)
+	add_child(_breath_player)
+	_breath.breath_started.connect(_on_breath_started)
+
+
+func _on_breath_started() -> void:
+	if _breath_player == null:
+		return
+	_breath_player.stream = _breath_clips[randi() % _breath_clips.size()]
+	# Stretch the clip slightly to match this breath's length.
+	if _clip_period > 0.0:
+		_breath_player.pitch_scale = clampf(_clip_period / _breath.period, 0.88, 1.12)
+	_breath_player.play()
 
 
 func _add_collider(seated: bool) -> void:

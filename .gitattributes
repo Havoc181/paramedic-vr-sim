@@ -11,3 +11,7 @@
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.ogg filter=lfs diff=lfs merge=lfs -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
+
+# Small generated sounds (from tools/breath_synth.py) are kept in normal git,
+# not LFS: tiny, and regenerable from the tool.
+assets/audio/generated/** -filter -diff -merge -text
