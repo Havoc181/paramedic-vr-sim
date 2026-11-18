@@ -34,8 +34,11 @@ var input_enabled := true
 @onready var left: XRController3D = $LeftController
 @onready var right: XRController3D = $RightController
 
-var _comfort_material: ShaderMaterial
-var _comfort_sphere: MeshInstance3D
+var _comfort_sphere: Node3D
+var _vignette_mesh: MeshInstance3D
+var _vignette_material: StandardMaterial3D
+var _fade_mesh: MeshInstance3D
+var _fade_material: StandardMaterial3D
 var _vignette := 0.0
 var _fade := 0.0
 var _fade_tween: Tween
@@ -168,29 +171,75 @@ func _menu_button_input() -> void:
 # --- Comfort vignette and fade ---------------------------------------------
 
 func _create_comfort_sphere() -> void:
-	_comfort_material = ShaderMaterial.new()
-	_comfort_material.shader = load("res://shaders/comfort.gdshader")
-	_comfort_material.render_priority = 100
-	var sphere := SphereMesh.new()
-	sphere.radius = 0.25
-	sphere.height = 0.5
-	sphere.radial_segments = 32
-	sphere.rings = 16
-	_comfort_sphere = MeshInstance3D.new()
-	_comfort_sphere.name = "ComfortSphere"
-	_comfort_sphere.mesh = sphere
-	_comfort_sphere.material_override = _comfort_material
-	_comfort_sphere.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_comfort_sphere.visible = false
+	# Built from plain StandardMaterial3D (no custom shader) so it renders the
+	# same on every device. A ring in front of the eyes: clear in the middle,
+	# dark at the edges; plus a full black quad for teleport fades.
+	_comfort_sphere = Node3D.new()
+	_comfort_sphere.name = "Comfort"
 	camera.add_child(_comfort_sphere)
+
+	var d := 0.2
+	var r_clear := d * tan(deg_to_rad(28.0))
+	var r_dark := d * tan(deg_to_rad(52.0))
+	var r_outer := 1.5
+	var segs := 48
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var rings := [[r_clear, 0.0], [r_dark, 1.0], [r_outer, 1.0]]
+	for ring in 2:
+		for i in segs:
+			var a0 := TAU * i / segs
+			var a1 := TAU * (i + 1) / segs
+			var r_in: float = rings[ring][0]
+			var r_out: float = rings[ring + 1][0]
+			var c_in := Color(0, 0, 0, rings[ring][1])
+			var c_out := Color(0, 0, 0, rings[ring + 1][1])
+			var p0 := Vector3(cos(a0) * r_in, sin(a0) * r_in, -d)
+			var p1 := Vector3(cos(a1) * r_in, sin(a1) * r_in, -d)
+			var p2 := Vector3(cos(a1) * r_out, sin(a1) * r_out, -d)
+			var p3 := Vector3(cos(a0) * r_out, sin(a0) * r_out, -d)
+			for v in [[p0, c_in], [p1, c_in], [p2, c_out], [p0, c_in], [p2, c_out], [p3, c_out]]:
+				st.set_color(v[1])
+				st.add_vertex(v[0])
+	_vignette_mesh = MeshInstance3D.new()
+	_vignette_mesh.mesh = st.commit()
+	_vignette_material = _overlay_material(true)
+	_vignette_mesh.material_override = _vignette_material
+	_vignette_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_comfort_sphere.add_child(_vignette_mesh)
+
+	var quad := QuadMesh.new()
+	quad.size = Vector2(2.0, 2.0)
+	_fade_mesh = MeshInstance3D.new()
+	_fade_mesh.mesh = quad
+	_fade_mesh.position = Vector3(0, 0, -0.15)
+	_fade_material = _overlay_material(false)
+	_fade_mesh.material_override = _fade_material
+	_fade_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_comfort_sphere.add_child(_fade_mesh)
+	_vignette_mesh.visible = false
+	_fade_mesh.visible = false
+
+
+func _overlay_material(use_vertex_alpha: bool) -> StandardMaterial3D:
+	var m := StandardMaterial3D.new()
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.no_depth_test = true
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.vertex_color_use_as_albedo = use_vertex_alpha
+	m.albedo_color = Color(0, 0, 0, 0)
+	m.render_priority = 100
+	return m
 
 
 func _update_comfort_sphere() -> void:
-	var active := _vignette > 0.001 or _fade > 0.001
-	_comfort_sphere.visible = active
-	if active:
-		_comfort_material.set_shader_parameter("vignette", _vignette)
-		_comfort_material.set_shader_parameter("fade", _fade)
+	_vignette_mesh.visible = _vignette > 0.001
+	_fade_mesh.visible = _fade > 0.001
+	if _vignette_mesh.visible:
+		_vignette_material.albedo_color = Color(1, 1, 1, _vignette) if _vignette_material.vertex_color_use_as_albedo else Color(0, 0, 0, _vignette)
+	if _fade_mesh.visible:
+		_fade_material.albedo_color = Color(0, 0, 0, _fade)
 
 
 # --- Settings --------------------------------------------------------------
