@@ -134,3 +134,52 @@ Agreed ideas not yet scheduled. Newest first.
   scenario file (volume_db, unit_size_m, max_distance_m).
 - One clip per breath, triggered with the chest animation so sound and
   movement stay in sync.
+
+## Future thinking (logged 2026-11-18, nothing scheduled)
+
+### Scenes and situations
+- More environments reusing the patient system: bedroom, bathroom floor
+  (fall), care home, street, inside the ambulance. Night-time lighting with
+  a torch; clutter, trip hazards, pets; scene safety cues.
+- **Mixed reality:** Quest 3 passthrough could put the patient in the
+  learner's real room. Very cheap "environment", strong sense of presence.
+- Paperwork in the scene: medication lists, care plans, ReSPECT/DNACPR
+  forms on the fridge, as clues and as capacity/end-of-life teaching.
+
+### People and communication
+- Patient responds to the learner's manner (reassurance lowers anxiety).
+- Interruptions and human factors: Ken talking over, phone ringing,
+  time pressure.
+- End-of-scenario handover practice (e.g. ATMIST/SBAR), pre-alert call.
+- Voice input (offline speech recognition) instead of menus: deferred with
+  the other AI ideas.
+- Later scope: paediatrics, maternity, mental health, frailty, learning
+  disability, safeguarding, capacity.
+
+### Learning and teaching
+- **Instructor/facilitator mode:** a tablet or PC view to watch the learner
+  and change things live (observations, deterioration, Ken's behaviour).
+  Likely the strongest feature for universities and trusts.
+- **Two-person crew:** two headsets in one scene, practising teamwork.
+- Session replay for the debrief (where the learner went, what they
+  checked and when). Quest 3 has no eye tracking, so head direction only.
+- Desktop (non-VR) mode for classrooms, accessibility and people who get
+  motion sick.
+- Later: treatment and its effects, drug calculations, conveyance and
+  referral decisions, PPE/infection control, moving the patient.
+
+### Safety and comfort in the real room
+- Play-space guidance (enough space to kneel safely), reminders to check
+  the boundary, suggested session length, simulator-sickness check.
+
+### Platforms and content
+- Quest 3 first; later Quest 3S, other OpenXR headsets, PC VR.
+- Guideline tracking: note which JRCALC/NICE version each scenario uses,
+  review when they change. JRCALC is UK-specific; other countries would
+  need their own guideline sets.
+
+### Evidence and business
+- Evaluation: content/face validity with clinicians, usability (e.g. SUS),
+  simulator sickness questionnaire; publishable if ethics approval obtained.
+- Endorsement or CPD accreditation (e.g. College of Paramedics).
+- Pricing and licensing model for individuals vs. institutions.
