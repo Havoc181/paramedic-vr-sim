@@ -89,3 +89,17 @@ Agreed ideas not yet scheduled. Newest first.
   sales to universities/trusts. Product name needed eventually.
 - **Evidence:** a pilot evaluation with students/clinicians (ethics approval
   if it's going to be published).
+
+## Audio plan (agreed 2026-11-18)
+- **Framework first:** every spoken line and breathing state in the scenario
+  file has a sound slot; empty slot = subtitle only. Subtitles always on.
+- **Voices:** Kokoro TTS (Apache 2.0 weights, trained on permissive data,
+  British voices e.g. bf_emma, bf_isabella, bm_george, bm_lewis), run offline
+  on the PC. Generate lines phrase by phrase, age them in post-processing
+  (pitch, tremor, pace) and join phrases with synthesised breaths for
+  breathlessness. Avoid Piper (most voices non-commercial).
+- **Breathing:** `tools/breath_synth.py` builds sounds from physiology
+  (rate, I:E, effort, wet, crackles, wheeze); no licensing issues. First
+  previews made; needs listening feedback and tuning.
+- **Other sounds (cough etc.):** Freesound.org filtered to CC0; log each in
+  THIRD_PARTY_LICENSES.md.
