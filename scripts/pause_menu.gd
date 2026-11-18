@@ -10,6 +10,8 @@ var _buttons := {}
 var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
+## Shown in the menu so testers can say which build they ran.
+const APP_VERSION := "v0.03-dev"
 
 
 func _ready() -> void:
@@ -65,7 +67,7 @@ func _build() -> void:
 	add_child(bg)
 
 	var title := Label3D.new()
-	title.text = "Paramedic VR Sim"
+	title.text = "Paramedic VR Sim  " + APP_VERSION
 	title.font_size = 36
 	title.pixel_size = 0.0008
 	title.position = Vector3(0, 0.215, 0)
