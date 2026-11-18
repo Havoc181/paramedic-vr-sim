@@ -57,17 +57,27 @@ Agreed ideas not yet scheduled. Newest first.
 ### Technical
 - **Performance budget:** hold 90 Hz on Quest 3; check every version on the
   headset (shadows are the first thing to cut).
-- **Git LFS storage:** GitHub's free LFS quota is limited; models and audio
-  will grow. Check the current limits and plan (compress, or paid storage).
+- **Large-file storage plan (agreed 2026-11-18):** GitHub Free includes
+  10 GiB LFS storage and 10 GiB/month LFS bandwidth; every committed version
+  of a large file counts, not just the latest.
+  - Commit only game-ready exports (.glb, compressed textures, .ogg audio).
+  - Keep working source files (.blend, raw .wav, high-res textures) outside
+    the repo in a cloud-synced folder, e.g. C:\ClaudeDevP1\SourceAssets.
+  - Compress: textures 1-2k, mesh compression on export, OGG audio.
+  - Don't commit every small tweak of a large file; commit when it's settled.
+  - Check usage in GitHub Settings > Billing occasionally; optionally set a
+    small spending limit later instead of the default hard stop.
+  - If it's outgrown: compare other hosts or paid LFS at that point.
 - **Version number in the app** (menu) so testers can say what they ran.
 - **One-click build and install** to the headset.
 - **Logging:** write a log file on the headset to help diagnose problems.
 - **Test checklist** per version.
 
 ### Legal and commercial
-- **Employment / university IP:** check employment contract and any
-  university terms (thesis overlap) about side projects and who owns IP,
-  before anything is sold.
+- **IP:** project lead's own idea and work; no third parties involved so far
+  (others have only offered help). Keep it that way in writing if anyone
+  contributes later (simple contributor agreement). Worth a one-off glance at
+  employment/university terms for side-project clauses before selling.
 - **Licences:** keep a third-party licences file (Godot MIT, OpenXR vendors
   plugin, MakeHuman/MPFB assets, any sounds). Check each asset's licence
   before use.
