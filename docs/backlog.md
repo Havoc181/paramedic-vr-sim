@@ -335,3 +335,10 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - Laptop: `scenes/instructor.tscn` (run with F6 in the editor, or the "Instructor (Windows)" export, or `--instructor`): headset discovery + manual address, room map with learner position/facing/kneeling, colour-coded time-stamped log, pause/resume, patient better/worse slider, Ken interrupts, phone rings (generated UK ring), hint text, show observations, end scenario (learner asked for impression), notes, save log locally.
 - Networking notes: works on any network where both devices can see each other: phone hotspot (most allow device-to-device; some Android hotspots isolate clients, then use the laptop's own hotspot or a travel router), laptop hotspot, home/office Wi-Fi. If discovery is blocked, type the address shown in the headset menu. Windows firewall must allow the app.
 - Next for the instructor app: pre-run choices (scenario, difficulty, patient variant, distractions) once scenario 02 exists; debrief shown on the laptop; mirror via scrcpy button.
+
+## Business decisions and contacts (late 2026-11-19)
+
+- **Tiers:** standalone app on the Meta store first (personal, low price). Instructor link behind an extra paid tier, which also brings customisation. User agreement: personal licence = individual use, not institutional teaching; also enforce technically (institutional features unlock only with an institutional licence key; personal app has no instructor link).
+- **EEAST:** Tom spoke with Callum again and emailed the EEAST innovation team asking for help integrating with EEAST, stating he wants to keep the IP.
+- **Desktop accessibility version (after VR is functional):** same project, flat-screen camera and mouse/keyboard controls, reusing scenarios, characters, panel, debrief and instructor link. For people with VR sickness (Callum gets nausea in VR) or no headset; also demos, revision, lecture display.
+- Full overview, business model and licence check: claude.ai Project "Paramedic VR Sim", `claude/project-overview.md`.
