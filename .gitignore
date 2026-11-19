@@ -13,3 +13,7 @@ desktop.ini
 .DS_Store
 __pycache__/
 *.pyc
+
+# Textures/import files Godot extracts from the character .glb files (regenerated on import)
+assets/characters/*.png
+assets/characters/*.import
