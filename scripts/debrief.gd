@@ -80,11 +80,11 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 		_label_of(d.get("urgency_options", []), urgency).to_lower()]
 	t += "Most likely: " + String(ans.get("summary", "")) + "\n\n"
 	if impression == ans.get("impression", ""):
-		t += "Your impression matches. The next pages show what supported it, and anything you could add next time."
+		t += "Your impression matches the most likely cause. The next pages show the findings that support it and any that were not checked."
 	elif impression == "unsure":
-		t += "Not being sure is honest. The next pages show which findings point the way."
+		t += "No impression chosen. The next pages show the findings that point to the cause."
 	else:
-		t += "This is a different impression. The next pages show which findings point to pulmonary oedema, and how it compares with what you chose."
+		t += "Your impression differs from the most likely cause. The next pages show the findings that point to pulmonary oedema and how it compares with what you chose."
 	if urgency != ans.get("urgency", "") and ans.has("urgency"):
 		t += "\n\nOn urgency: " + _label_of(d.get("urgency_options", []), String(ans.get("urgency"))).to_lower() + "; her work of breathing alone makes her so."
 	out.append(["Your impression", t])
@@ -150,7 +150,9 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 	# 7. Coming later, summary, references
 	var ct := String(d.get("coming_later", "")) + "\n\n"
 	ct += "This run: you checked %d of %d first-impression features and asked %d of %d of the history points above.\n\n" % [found, total, asked_n, asked_total]
-	ct += String(d.get("closing", "")) + "\n\nReferences:\n"
+	# Objective for now; a supportive version is kept for the easy difficulty later.
+	var closing_key := "closing_supportive" if String(d.get("tone", "objective")) == "supportive" else "closing"
+	ct += String(d.get(closing_key, d.get("closing", ""))) + "\n\nReferences:\n"
 	for r in d.get("references", []):
 		ct += "- " + String(r.get("title", "")) + "\n  " + String(r.get("url", "")) + "\n"
 	out.append(["To finish", ct])

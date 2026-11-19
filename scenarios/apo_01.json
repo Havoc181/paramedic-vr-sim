@@ -418,7 +418,7 @@
  "debrief": {
   "opening_prompt": "Before the explanation: say out loud what you think is going on and why.",
   "doc": "Scenario 01 - Acute pulmonary oedema (Claude doc, clinical source of truth for this file)",
-  "tone": "Objective first, then supportive. Explain, don't score.",
+  "tone": "objective",
   "impression_options": [
    {
     "id": "apo",
@@ -465,7 +465,7 @@
    "summary": "acute pulmonary oedema (acute heart failure), brought on by stopping her furosemide five days ago. Time critical: severe work of breathing in a frail 78-year-old."
   },
   "first_impression": {
-   "intro": "A quick first impression, using the assessment triangle: appearance, work of breathing and circulation to the skin.",
+   "intro": "First impression, using the Patient Assessment Triangle (PAT): appearance, work of breathing and circulation to the skin.",
    "groups": [
     {
      "name": "Appearance",
@@ -641,7 +641,7 @@
    "Keep her sitting up; don't lie her flat."
   ],
   "coming_later": "In later versions you'll measure her observations and listen to her chest. For reference, she would have: RR 32, SpO2 87% on air, HR 112 AF, BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s; fine crackles at both bases up to the mid-zones, scattered wheeze; 12-lead ECG AF about 110, LVH, no ST elevation.",
-  "closing": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it.",
+  "closing": "Priority next time: complete the first impression early. It sets the urgency for everything that follows.",
   "references": [
    {
     "title": "JRCALC Q&A: GTN indication in heart failure",
@@ -651,6 +651,7 @@
     "title": "NICE CG187 Acute heart failure: recommendations",
     "url": "https://www.nice.org.uk/guidance/cg187/chapter/recommendations"
    }
-  ]
+  ],
+  "closing_supportive": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it."
  }
 }
