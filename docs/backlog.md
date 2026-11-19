@@ -247,3 +247,17 @@ Agreed ideas not yet scheduled. Newest first.
 - Posing is done in code (`scripts/patient/rig_driver.gd`): limb directions, trunk lean, shrug, hinge-aware two-joint reach for hands on knees, palm-down twist spread across forearm bones and wrist.
 - **Next step (agreed in principle):** author postures as short animation clips in Blender (script-generated, editable by eye), exported in the .glb and played in Godot with breathing layered on top. Needed once there are more postures (lying, pacing Ken, etc.).
 - Known: Joan's fringe falls over one eye (pack has few hairstyles); cushions are plain blocks.
+
+## Exposure and skin layers (agreed for later integration, 2026-11-19)
+
+Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn where a garment is opened or moved. Agreed approach:
+
+- **Body split into skin regions** in the Blender build (front chest, back, each upper arm, forearm, lower leg, foot, etc.). Each garment *state* lists the regions it covers; Godot shows only uncovered regions. Region edges sit just inside garment edges so no gaps show. Separate mesh pieces (not a pixel-discard shader, which is slow on Quest tile GPUs).
+- **Benefits:** no skin/clothes clipping; less overdraw and fewer triangles on Quest; skin regions can carry findings (sweating, mottling, cyanosis, accessory muscle use, ankle oedema) independently of clothing.
+- **Realistic garment states** (swapped meshes made in Blender, short fade + fabric sound, no cloth simulation):
+  - Blouse/shirt: on; unbuttoned/opened at front (chest, later ECG); lifted at back (posterior chest); sleeve rolled up (BP, cannula, cap refill).
+  - Trousers: on; legs rolled up to shin; shoes and socks off (ankle oedema; relevant to Joan).
+  - Later (trauma): cut with shears.
+  - All reversible; "cover up again" is recorded.
+- **Links:** consent before exposing/touching (asked first, stored); hands-on assessment; debrief can comment on dignity (expose only what's needed, re-cover).
+- **First slice when scheduled:** skin regions for Joan; blouse on/opened-front; jeans normal/rolled-up with shoes and socks off; panel options "Expose chest", "Check ankles", "Cover up again" with consent.
