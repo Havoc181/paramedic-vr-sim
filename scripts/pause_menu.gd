@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.03-dev8"
+const APP_VERSION := "v0.03-dev9"
 
 
 func _ready() -> void:

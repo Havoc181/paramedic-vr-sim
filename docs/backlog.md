@@ -239,3 +239,11 @@ Agreed ideas not yet scheduled. Newest first.
   R&D/innovation lead how their policy applies.
 - Prepare first: a short project brief (problem, what exists, demo, plan,
   asks) and a demo-ready build with one complete scenario and debrief.
+
+## Characters and posing (2026-11-19)
+
+- Joan and Ken are MakeHuman (MPFB 2, CC0 assets), built by `C:\ClaudeDevP1\SourceAssets\make_humans.py` run in Blender. Rig: MPFB `default_no_toes` (137 bones; upper arm and forearm each split in two so twist spreads along the limb).
+- Joan wears the elegant-suit blouse with the casual-suit jeans (skirt clipped badly when seated). Clothes pushed 8 mm off the skin.
+- Posing is done in code (`scripts/patient/rig_driver.gd`): limb directions, trunk lean, shrug, hinge-aware two-joint reach for hands on knees, palm-down twist spread across forearm bones and wrist.
+- **Next step (agreed in principle):** author postures as short animation clips in Blender (script-generated, editable by eye), exported in the .glb and played in Godot with breathing layered on top. Needed once there are more postures (lying, pacing Ken, etc.).
+- Known: Joan's fringe falls over one eye (pack has few hairstyles); cushions are plain blocks.
