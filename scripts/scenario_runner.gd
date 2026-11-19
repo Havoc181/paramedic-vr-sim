@@ -8,6 +8,7 @@ extends Node3D
 
 const CHARACTER := preload("res://scripts/patient/character.gd")
 const PANEL := preload("res://scripts/interaction_panel.gd")
+const DEBRIEF := preload("res://scripts/debrief.gd")
 
 var scenario := {}
 var characters := {}
@@ -16,6 +17,9 @@ var characters := {}
 @onready var player = get_node(player_path)
 
 var _panel
+var _debrief
+## Things in the room the learner has looked at (for the debrief).
+var seen := {}
 
 
 func _ready() -> void:
@@ -33,6 +37,15 @@ func _ready() -> void:
 	_panel.setup(self, player)
 	for c in characters.values():
 		c.interacted.connect(func(_who): _panel.open())
+	_debrief = DEBRIEF.new()
+	_debrief.name = "Debrief"
+	_debrief.visible = false
+	add_child(_debrief)
+	_panel.finished.connect(_on_finished)
+
+
+func _on_finished(impression: String, urgency: String) -> void:
+	_debrief.show_debrief(scenario, _panel.asked_ids(), _panel.assessed, seen, impression, urgency, player)
 
 
 static func load_scenario(path: String) -> Dictionary:
@@ -87,6 +100,7 @@ func _spawn_medicines_box(p: Dictionary) -> void:
 		lines.append("- " + String(item))
 	box.details = "\n".join(lines)
 	add_child(box)
+	box.read.connect(func(): seen["medicines_box"] = true)
 	box.global_position = Vector3(1.05, 0.625, -1.68)
 	box.rotation_degrees.y = 15.0
 

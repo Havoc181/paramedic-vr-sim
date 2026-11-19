@@ -1,6 +1,9 @@
 extends StaticBody3D
 ## A simple object you can point at and use to read what it is or contains.
 
+## Emitted once, the first time someone is close enough to read the details.
+signal read
+
 @export var size := Vector3(0.2, 0.1, 0.15)
 @export var colour := Color(0.8, 0.8, 0.8)
 @export var title := ""
@@ -42,6 +45,7 @@ func _ready() -> void:
 
 
 var _open := false
+var _was_read := false
 
 
 func interact() -> void:
@@ -56,6 +60,9 @@ func _process(_delta: float) -> void:
 	if cam == null:
 		return
 	var near := cam.global_position.distance_to(global_position) <= read_distance
+	if near and not _was_read:
+		_was_read = true
+		read.emit()
 	_label.text = (title + "\n" + details) if near else (title + "\n(get closer to read)")
 
 

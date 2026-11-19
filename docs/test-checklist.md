@@ -1,7 +1,7 @@
 # Headset test checklist
 
 Run on the Quest (standalone build). Note the version shown in the menu title
-(this round: **v0.03-dev10**). Anything that fails: a photo or a few words.
+(this round: **v0.03-dev11**). Anything that fails: a photo or a few words.
 
 ## 1. Start-up (1 min)
 - [ ] App opens in VR, no long black or grey screen
@@ -24,7 +24,15 @@ Run on the Quest (standalone build). Note the version shown in the menu title
 - [ ] Assessment panel size is comfortable to read
 - [ ] Pointing away from the panel and pulling the trigger closes it
 
-## 4. Performance tests (5 min) - menu items starting "Test:"
+## 4. Debrief (5 min) - new
+- [ ] Do a quick assessment (a few questions, a few look/listen/feel), then the panel's **Finish** tab
+- [ ] Choose your impression, then how urgent: the debrief opens in front of you
+- [ ] Pages: your impression, first impression (found / not checked), history, the scene, causes compared, what next, observations for reference, references
+- [ ] Text readable at that distance? Too much on a page?
+- [ ] Clinical wording: anything wrong or not how you'd say it (a photo of the page is enough)
+- [ ] Last page: Run again restarts the scenario; Close returns you to the room
+
+## 5. Performance tests (5 min) - menu items starting "Test:"
 These are not saved: if anything goes wrong, quit and reopen and it resets.
 - [ ] Test: frame rate shown: On. Note the fps standing by the door and kneeling by Joan
       (72 is the default target; lower means it's struggling)
@@ -33,7 +41,7 @@ These are not saved: if anything goes wrong, quit and reopen and it resets.
       Edges of your view a little softer is expected; grey screen is the old bug
 - [ ] If one setting causes the grey screen: note which, then quit and reopen
 
-## 5. Pitch screenshots
+## 6. Pitch screenshots
 - [ ] A few from the doorway, kneeling in front of Joan, and side-on, with the menu closed
 
 ## Always

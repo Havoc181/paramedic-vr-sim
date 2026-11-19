@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.03-dev10"
+const APP_VERSION := "v0.03-dev11"
 
 ## Test options: NOT saved, so if one misbehaves on the headset (e.g. the
 ## grey screen seen with foveation/90 Hz), quitting and reopening resets it.

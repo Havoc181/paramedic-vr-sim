@@ -298,3 +298,10 @@ Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn wher
   - Work/CPD: someone simply experiences the program; screenshots and a short video are enough for now.
 - **Project brief (Claude Doc):** https://claude.ai/artifact/DkNJsFgvXhK8QG4GFZ83su (screenshots and contact details to add).
 - **Questions for the VR training contacts:** Tom will ask for a prompt list when the meeting is arranged.
+
+## Debrief v1 (2026-11-19)
+
+- Built from Tom's notes: first impression via the assessment triangle (appearance: alert, complexion, clammy; work of breathing: tripod, noise, rate, speech; circulation to skin). Biggest miss to avoid: work of breathing. Key: WOB and position, meds (missed furosemide), PMHx; nice to spot: oedema findings, pertinent negatives. Differentials: MI, PE, LRTI, ECOPD. Next steps: ABCDE and treat life threats first; close to hospital O2 for low SpO2, GTN, pre-alert, blue lights; longer runs per JRCALC plus cannulate and IV furosemide (no doses in app).
+- Flow: panel **Finish** tab -> "say out loud what you think" -> pick impression -> pick urgency -> debrief pages (found vs available, why each matters, comparison table of causes, what next, obs for reference, counts, references) -> Run again / Close.
+- Tone: objective first, supportive close. **Difficulty levels** (later): feedback style can vary with difficulty, and this must be stated clearly when choosing the difficulty.
+- Lung sounds and observations will complete it (marked "coming later" in the debrief, obs shown for reference).

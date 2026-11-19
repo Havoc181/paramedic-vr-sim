@@ -1,432 +1,656 @@
 {
-  "format_version": 1,
-  "id": "apo_01",
-  "title": "Acute pulmonary oedema",
-  "status": "draft - clinically reviewed by project lead 2026-11-18; doses pending JRCALC check",
-  "dispatch": "03:40. 78-year-old female, difficulty in breathing, woke from sleep. Conscious and breathing. Called by husband.",
-  "characters": {
-    "joan": {
-      "role": "patient",
-      "name": "Joan Whitfield",
-      "age": 78,
-      "sex": "female",
-      "model": "res://assets/characters/joan.glb",
-      "seat": "Sofa/PatientSeat",
-      "presentation": {
-        "posture": "tripod",
-        "respiratory_rate": 32,
-        "breath_depth": 0.6,
-        "work_of_breathing": 0.85,
-        "accessory_muscles": true,
-        "speech": "short_phrases",
-        "words_per_breath": [
-          3,
-          4
-        ],
-        "breath_sound": "wet_bilateral",
-        "cough_interval_s": 20,
-        "skin": {
-          "colour": "pale_grey",
-          "clammy": true,
-          "temperature": "cool_peripheries"
-        },
-        "affect": "anxious",
-        "peripheral_oedema": "mid_shin_bilateral_pitting",
-        "neck_veins_visible": true,
-        "sounds": {
-          "_note": "Empty = subtitle/visual only. External = through the air near the face; chest = stethoscope (later versions).",
-          "breathing_external": {
-            "clips": [
-              "res://assets/audio/generated/joan_breath_ext_1.ogg",
-              "res://assets/audio/generated/joan_breath_ext_2.ogg",
-              "res://assets/audio/generated/joan_breath_ext_3.ogg",
-              "res://assets/audio/generated/joan_breath_ext_4.ogg"
-            ],
-            "synth_preset": "apo_external",
-            "clip_period_s": 1.875,
-            "volume_db": 2.0,
-            "unit_size_m": 0.45,
-            "max_distance_m": 6.0,
-            "_note": "Inverse-square fall-off: full volume within ~0.45 m, about -12 dB at 0.9 m, -24 dB at 1.8 m, barely audible across the room."
-          },
-          "breathing_chest": {
-            "bases": {
-              "file": "res://assets/audio/joan_chest_bases.ogg",
-              "synth_preset": "apo_chest_bases"
-            },
-            "mid_zones": {
-              "file": "res://assets/audio/joan_chest_mid.ogg",
-              "synth_preset": "apo_chest_mid"
-            },
-            "apices": {
-              "file": "",
-              "synth_preset": "normal",
-              "note": "to define"
-            }
-          },
-          "cough": {
-            "file": "",
-            "source": "Freesound CC0 (to find)"
-          }
-        }
-      }
-    },
-    "ken": {
-      "role": "bystander",
-      "name": "Ken Whitfield",
-      "age": 80,
-      "sex": "male",
-      "model": "res://assets/characters/ken.glb",
-      "behaviour": {
-        "uses_lay_terms": true,
-        "knows_doses": false,
-        "anxiety_rises_if_ignored": true,
-        "notes": "Knows the conditions but not doses; hands over the medicines box. Vague on timings until asked twice. Downplays the ankles until asked if they are worse."
-      },
-      "presentation": {
-        "respiratory_rate": 16,
-        "breath_depth": 0.3,
-        "sounds": {
-          "breathing_external": {
-            "clips": [
-              "res://assets/audio/generated/ken_breath_ext_1.ogg",
-              "res://assets/audio/generated/ken_breath_ext_2.ogg",
-              "res://assets/audio/generated/ken_breath_ext_3.ogg"
-            ],
-            "synth_preset": "normal_external",
-            "clip_period_s": 3.75,
-            "volume_db": -14.0,
-            "unit_size_m": 0.3,
-            "max_distance_m": 3.0
-          }
-        }
-      }
-    }
-  },
-  "props": [
-    {
-      "id": "pillows",
-      "where": "sofa",
-      "description": "Three pillows stacked at one end of the sofa"
-    },
-    {
-      "id": "medicines_box",
-      "where": "SideTable",
-      "interactable": true,
-      "description": "Plastic tub of medicine packets. The furosemide packet is still sealed, dispensed two weeks ago.",
-      "contents": [
-        "furosemide (sealed)",
-        "ramipril",
-        "bisoprolol",
-        "spironolactone",
-        "dapagliflozin",
-        "apixaban",
-        "metformin",
-        "atorvastatin",
-        "omeprazole",
-        "paracetamol"
-      ]
-    },
-    {
-      "id": "tissue",
-      "where": "sofa_arm",
-      "description": "Tissue with frothy, pink-tinged sputum"
-    }
-  ],
-  "history": {
-    "past_medical": [
-      "Heart failure with reduced ejection fraction (2023)",
-      "Hypertension",
-      "Atrial fibrillation",
-      "Type 2 diabetes",
-      "High cholesterol",
-      "Osteoarthritis of both knees",
-      "Reflux"
+ "format_version": 1,
+ "id": "apo_01",
+ "title": "Acute pulmonary oedema",
+ "status": "draft - clinically reviewed by project lead 2026-11-18; doses pending JRCALC check",
+ "dispatch": "03:40. 78-year-old female, difficulty in breathing, woke from sleep. Conscious and breathing. Called by husband.",
+ "characters": {
+  "joan": {
+   "role": "patient",
+   "name": "Joan Whitfield",
+   "age": 78,
+   "sex": "female",
+   "model": "res://assets/characters/joan.glb",
+   "seat": "Sofa/PatientSeat",
+   "presentation": {
+    "posture": "tripod",
+    "respiratory_rate": 32,
+    "breath_depth": 0.6,
+    "work_of_breathing": 0.85,
+    "accessory_muscles": true,
+    "speech": "short_phrases",
+    "words_per_breath": [
+     3,
+     4
     ],
-    "medications_todo": "Doses deliberately not shown in-app until checked against current JRCALC/BNF before release.",
-    "allergies": [
-      "Penicillin (rash)"
-    ],
-    "key_event": "Stopped furosemide about 5 days ago because of night-time urination; ankles more swollen all week.",
-    "previous_episode": "Admitted with pulmonary oedema last winter."
-  },
-  "questions": [
-    {
-      "id": "events",
-      "label": "What's happened tonight?",
-      "answers": [
-        {
-          "by": "joan",
-          "text": "Woke up... couldn't breathe... like drowning.",
-          "audio": ""
-        }
-      ]
+    "breath_sound": "wet_bilateral",
+    "cough_interval_s": 20,
+    "skin": {
+     "colour": "pale_grey",
+     "clammy": true,
+     "temperature": "cool_peripheries"
     },
-    {
-      "id": "onset",
-      "label": "When did it start?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "About three. She sat bolt upright and came down to the sofa, said she couldn't lie down.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "previous",
-      "label": "Has this happened before?",
-      "answers": [
-        {
-          "by": "joan",
-          "text": "Last winter... water on my lungs.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "chest_pain",
-      "label": "Any chest pain?",
-      "answers": [
-        {
-          "by": "joan",
-          "text": "Tight... not pain. Just... can't get air.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "cough",
-      "label": "Any cough or phlegm?",
-      "answers": [
-        {
-          "by": "joan",
-          "text": "Bit of a cough... frothy stuff.",
-          "action": "show_tissue",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "infection",
-      "label": "Any fever, or been unwell recently?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "No temperature. She's not had a cold or anything.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "legs",
-      "label": "Any problems with your legs?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Her ankles are always a bit puffy.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "legs_worse",
-      "label": "Are the ankles worse than usual?",
-      "requires": [
-        "legs"
+    "affect": "anxious",
+    "peripheral_oedema": "mid_shin_bilateral_pitting",
+    "neck_veins_visible": true,
+    "sounds": {
+     "_note": "Empty = subtitle/visual only. External = through the air near the face; chest = stethoscope (later versions).",
+     "breathing_external": {
+      "clips": [
+       "res://assets/audio/generated/joan_breath_ext_1.ogg",
+       "res://assets/audio/generated/joan_breath_ext_2.ogg",
+       "res://assets/audio/generated/joan_breath_ext_3.ogg",
+       "res://assets/audio/generated/joan_breath_ext_4.ogg"
       ],
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Well... yes, now you say it. Both of them, all week. She's not said they hurt.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "sleep",
-      "label": "How have you been sleeping?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "On three pillows for about a week. She says she gets breathless lying flat.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "pmh",
-      "label": "Any medical history?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Heart failure, blood pressure, an irregular heartbeat, diabetes, high cholesterol, and arthritis in her knees.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "meds",
-      "label": "What medications do you take?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Oh, loads. The water tablet, the blood thinner, the heart ones... it's all in the box, here.",
-          "action": "offer_medicines_box",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "med_changes",
-      "label": "Any changes to your tablets?",
-      "answers": [
-        {
-          "by": "joan",
-          "text": "Stopped... water tablet... up all night.",
-          "audio": ""
-        },
-        {
-          "by": "ken",
-          "text": "A week or so ago.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "med_changes_when",
-      "label": "When exactly did she stop it?",
-      "requires": [
-        "med_changes"
-      ],
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Friday. So... five days.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "allergies",
-      "label": "Any allergies?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Penicillin. Gives her a rash.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "last_meal",
-      "label": "When did you last eat or drink?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "Fish and chips for tea, about six.",
-          "audio": ""
-        }
-      ]
-    },
-    {
-      "id": "function",
-      "label": "How far can you usually walk?",
-      "answers": [
-        {
-          "by": "ken",
-          "text": "To the shops and back, slowly. Not this week though.",
-          "audio": ""
-        }
-      ]
-    }
-  ],
-  "first_impression": [
-    {
-      "id": "position",
-      "method": "look",
-      "finding": "Bolt upright on the edge of the sofa, tripod, frightened, won't lie back."
-    },
-    {
-      "id": "breathing",
-      "method": "look",
-      "finding": "Fast (about 32 a minute if you count), shoulders lifting, neck muscles working."
-    },
-    {
-      "id": "speech",
-      "method": "listen",
-      "finding": "3-4 words per breath, gasps between phrases."
-    },
-    {
-      "id": "breath_sounds",
-      "method": "listen",
-      "finding": "Wet, bubbly breathing audible without a stethoscope; occasional cough."
-    },
-    {
-      "id": "sputum",
-      "method": "look",
-      "finding": "Frothy, pink-tinged sputum on a tissue."
-    },
-    {
-      "id": "colour",
-      "method": "look",
-      "finding": "Pale and grey, sweaty forehead and upper lip."
-    },
-    {
-      "id": "skin",
-      "method": "feel",
-      "finding": "Hands cool and clammy."
-    },
-    {
-      "id": "radial_pulse",
-      "method": "feel",
-      "finding": "Fast, irregularly irregular, strong."
-    },
-    {
-      "id": "ankles",
-      "method": "look_feel",
-      "finding": "Both ankles swollen; pressing leaves a dent; calves soft, not tender."
-    },
-    {
-      "id": "neck_veins",
-      "method": "look",
-      "finding": "Neck veins visibly full while sitting upright.",
-      "optional": true
-    },
-    {
-      "id": "mental_state",
-      "method": "look_listen",
-      "finding": "Alert, answers sensibly, very anxious."
-    }
-  ],
-  "later_versions": {
-    "observations": {
-      "rr": 32,
-      "spo2_air": 87,
-      "hr": 112,
-      "rhythm": "AF",
-      "bp": "176/98",
-      "temp_c": 36.8,
-      "gcs": 15,
-      "bm_mmol": 9.4,
-      "crt_s": 3,
-      "ecg": "AF ~110, LVH, no ST elevation"
-    },
-    "auscultation": "Fine bibasal crackles to mid-zones bilaterally; scattered expiratory wheeze",
-    "jvp_cm": 6
-  },
-  "debrief": {
-    "opening_prompt": "Before the explanation: say out loud what you think is going on and why.",
-    "doc": "Scenario 01 - Acute pulmonary oedema (Claude doc, clinical source of truth for this file)",
-    "references": [
-      {
-        "title": "JRCALC Q&A: GTN indication in heart failure",
-        "url": "https://jrcalc.org.uk/jrcalc-q-and-as/changes-to-the-indication-of-gtn-for-heart-failure/"
+      "synth_preset": "apo_external",
+      "clip_period_s": 1.875,
+      "volume_db": 2.0,
+      "unit_size_m": 0.45,
+      "max_distance_m": 6.0,
+      "_note": "Inverse-square fall-off: full volume within ~0.45 m, about -12 dB at 0.9 m, -24 dB at 1.8 m, barely audible across the room."
+     },
+     "breathing_chest": {
+      "bases": {
+       "file": "res://assets/audio/joan_chest_bases.ogg",
+       "synth_preset": "apo_chest_bases"
       },
-      {
-        "title": "NICE CG187 Acute heart failure: recommendations",
-        "url": "https://www.nice.org.uk/guidance/cg187/chapter/recommendations"
+      "mid_zones": {
+       "file": "res://assets/audio/joan_chest_mid.ogg",
+       "synth_preset": "apo_chest_mid"
+      },
+      "apices": {
+       "file": "",
+       "synth_preset": "normal",
+       "note": "to define"
       }
-    ]
+     },
+     "cough": {
+      "file": "",
+      "source": "Freesound CC0 (to find)"
+     }
+    }
+   }
+  },
+  "ken": {
+   "role": "bystander",
+   "name": "Ken Whitfield",
+   "age": 80,
+   "sex": "male",
+   "model": "res://assets/characters/ken.glb",
+   "behaviour": {
+    "uses_lay_terms": true,
+    "knows_doses": false,
+    "anxiety_rises_if_ignored": true,
+    "notes": "Knows the conditions but not doses; hands over the medicines box. Vague on timings until asked twice. Downplays the ankles until asked if they are worse."
+   },
+   "presentation": {
+    "respiratory_rate": 16,
+    "breath_depth": 0.3,
+    "sounds": {
+     "breathing_external": {
+      "clips": [
+       "res://assets/audio/generated/ken_breath_ext_1.ogg",
+       "res://assets/audio/generated/ken_breath_ext_2.ogg",
+       "res://assets/audio/generated/ken_breath_ext_3.ogg"
+      ],
+      "synth_preset": "normal_external",
+      "clip_period_s": 3.75,
+      "volume_db": -14.0,
+      "unit_size_m": 0.3,
+      "max_distance_m": 3.0
+     }
+    }
+   }
   }
+ },
+ "props": [
+  {
+   "id": "pillows",
+   "where": "sofa",
+   "description": "Three pillows stacked at one end of the sofa"
+  },
+  {
+   "id": "medicines_box",
+   "where": "SideTable",
+   "interactable": true,
+   "description": "Plastic tub of medicine packets. The furosemide packet is still sealed, dispensed two weeks ago.",
+   "contents": [
+    "furosemide (sealed)",
+    "ramipril",
+    "bisoprolol",
+    "spironolactone",
+    "dapagliflozin",
+    "apixaban",
+    "metformin",
+    "atorvastatin",
+    "omeprazole",
+    "paracetamol"
+   ]
+  },
+  {
+   "id": "tissue",
+   "where": "sofa_arm",
+   "description": "Tissue with frothy, pink-tinged sputum"
+  }
+ ],
+ "history": {
+  "past_medical": [
+   "Heart failure with reduced ejection fraction (2023)",
+   "Hypertension",
+   "Atrial fibrillation",
+   "Type 2 diabetes",
+   "High cholesterol",
+   "Osteoarthritis of both knees",
+   "Reflux"
+  ],
+  "medications_todo": "Doses deliberately not shown in-app until checked against current JRCALC/BNF before release.",
+  "allergies": [
+   "Penicillin (rash)"
+  ],
+  "key_event": "Stopped furosemide about 5 days ago because of night-time urination; ankles more swollen all week.",
+  "previous_episode": "Admitted with pulmonary oedema last winter."
+ },
+ "questions": [
+  {
+   "id": "events",
+   "label": "What's happened tonight?",
+   "answers": [
+    {
+     "by": "joan",
+     "text": "Woke up... couldn't breathe... like drowning.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "onset",
+   "label": "When did it start?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "About three. She sat bolt upright and came down to the sofa, said she couldn't lie down.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "previous",
+   "label": "Has this happened before?",
+   "answers": [
+    {
+     "by": "joan",
+     "text": "Last winter... water on my lungs.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "chest_pain",
+   "label": "Any chest pain?",
+   "answers": [
+    {
+     "by": "joan",
+     "text": "Tight... not pain. Just... can't get air.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "cough",
+   "label": "Any cough or phlegm?",
+   "answers": [
+    {
+     "by": "joan",
+     "text": "Bit of a cough... frothy stuff.",
+     "action": "show_tissue",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "infection",
+   "label": "Any fever, or been unwell recently?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "No temperature. She's not had a cold or anything.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "legs",
+   "label": "Any problems with your legs?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Her ankles are always a bit puffy.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "legs_worse",
+   "label": "Are the ankles worse than usual?",
+   "requires": [
+    "legs"
+   ],
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Well... yes, now you say it. Both of them, all week. She's not said they hurt.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "sleep",
+   "label": "How have you been sleeping?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "On three pillows for about a week. She says she gets breathless lying flat.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "pmh",
+   "label": "Any medical history?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Heart failure, blood pressure, an irregular heartbeat, diabetes, high cholesterol, and arthritis in her knees.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "meds",
+   "label": "What medications do you take?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Oh, loads. The water tablet, the blood thinner, the heart ones... it's all in the box, here.",
+     "action": "offer_medicines_box",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "med_changes",
+   "label": "Any changes to your tablets?",
+   "answers": [
+    {
+     "by": "joan",
+     "text": "Stopped... water tablet... up all night.",
+     "audio": ""
+    },
+    {
+     "by": "ken",
+     "text": "A week or so ago.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "med_changes_when",
+   "label": "When exactly did she stop it?",
+   "requires": [
+    "med_changes"
+   ],
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Friday. So... five days.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "allergies",
+   "label": "Any allergies?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Penicillin. Gives her a rash.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "last_meal",
+   "label": "When did you last eat or drink?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "Fish and chips for tea, about six.",
+     "audio": ""
+    }
+   ]
+  },
+  {
+   "id": "function",
+   "label": "How far can you usually walk?",
+   "answers": [
+    {
+     "by": "ken",
+     "text": "To the shops and back, slowly. Not this week though.",
+     "audio": ""
+    }
+   ]
+  }
+ ],
+ "first_impression": [
+  {
+   "id": "position",
+   "method": "look",
+   "finding": "Bolt upright on the edge of the sofa, tripod, frightened, won't lie back."
+  },
+  {
+   "id": "breathing",
+   "method": "look",
+   "finding": "Fast (about 32 a minute if you count), shoulders lifting, neck muscles working."
+  },
+  {
+   "id": "speech",
+   "method": "listen",
+   "finding": "3-4 words per breath, gasps between phrases."
+  },
+  {
+   "id": "breath_sounds",
+   "method": "listen",
+   "finding": "Wet, bubbly breathing audible without a stethoscope; occasional cough."
+  },
+  {
+   "id": "sputum",
+   "method": "look",
+   "finding": "Frothy, pink-tinged sputum on a tissue."
+  },
+  {
+   "id": "colour",
+   "method": "look",
+   "finding": "Pale and grey, sweaty forehead and upper lip."
+  },
+  {
+   "id": "skin",
+   "method": "feel",
+   "finding": "Hands cool and clammy."
+  },
+  {
+   "id": "radial_pulse",
+   "method": "feel",
+   "finding": "Fast, irregularly irregular, strong."
+  },
+  {
+   "id": "ankles",
+   "method": "look_feel",
+   "finding": "Both ankles swollen; pressing leaves a dent; calves soft, not tender."
+  },
+  {
+   "id": "neck_veins",
+   "method": "look",
+   "finding": "Neck veins visibly full while sitting upright.",
+   "optional": true
+  },
+  {
+   "id": "mental_state",
+   "method": "look_listen",
+   "finding": "Alert, answers sensibly, very anxious."
+  }
+ ],
+ "later_versions": {
+  "observations": {
+   "rr": 32,
+   "spo2_air": 87,
+   "hr": 112,
+   "rhythm": "AF",
+   "bp": "176/98",
+   "temp_c": 36.8,
+   "gcs": 15,
+   "bm_mmol": 9.4,
+   "crt_s": 3,
+   "ecg": "AF ~110, LVH, no ST elevation"
+  },
+  "auscultation": "Fine bibasal crackles to mid-zones bilaterally; scattered expiratory wheeze",
+  "jvp_cm": 6
+ },
+ "debrief": {
+  "opening_prompt": "Before the explanation: say out loud what you think is going on and why.",
+  "doc": "Scenario 01 - Acute pulmonary oedema (Claude doc, clinical source of truth for this file)",
+  "tone": "Objective first, then supportive. Explain, don't score.",
+  "impression_options": [
+   {
+    "id": "apo",
+    "label": "Acute pulmonary oedema / acute heart failure"
+   },
+   {
+    "id": "mi",
+    "label": "Heart attack (MI / ACS)"
+   },
+   {
+    "id": "pe",
+    "label": "Pulmonary embolism"
+   },
+   {
+    "id": "lrti",
+    "label": "Chest infection (LRTI)"
+   },
+   {
+    "id": "ecopd",
+    "label": "COPD exacerbation"
+   },
+   {
+    "id": "unsure",
+    "label": "Not sure yet"
+   }
+  ],
+  "urgency_options": [
+   {
+    "id": "time_critical",
+    "label": "Time critical: treat and go"
+   },
+   {
+    "id": "urgent",
+    "label": "Urgent, but time to assess fully"
+   },
+   {
+    "id": "not_urgent",
+    "label": "Not urgent"
+   }
+  ],
+  "answer": {
+   "impression": "apo",
+   "urgency": "time_critical",
+   "summary": "acute pulmonary oedema (acute heart failure), brought on by stopping her furosemide five days ago. Time critical: severe work of breathing in a frail 78-year-old."
+  },
+  "first_impression": {
+   "intro": "A quick first impression, using the assessment triangle: appearance, work of breathing and circulation to the skin.",
+   "groups": [
+    {
+     "name": "Appearance",
+     "items": [
+      {
+       "id": "mental_state",
+       "why": "Alert and talking means she is still compensating; drowsiness would mean she is tiring."
+      },
+      {
+       "id": "colour",
+       "why": "Pale, grey and sweaty points to a very unwell patient, before any observations."
+      }
+     ]
+    },
+    {
+     "name": "Work of breathing",
+     "items": [
+      {
+       "id": "position",
+       "why": "Tripod and refusing to lie back: classic of severe breathlessness, and of fluid on the lungs (orthopnoea)."
+      },
+      {
+       "id": "breathing",
+       "why": "A rate around 32 with accessory muscles working is severe respiratory distress."
+      },
+      {
+       "id": "speech",
+       "why": "Only a few words per breath is a simple, powerful severity sign."
+      },
+      {
+       "id": "breath_sounds",
+       "why": "Wet, bubbly breathing you can hear from the doorway suggests fluid in the airways."
+      },
+      {
+       "id": "sputum",
+       "why": "Frothy, pink-tinged sputum is a strong pointer to pulmonary oedema."
+      }
+     ]
+    },
+    {
+     "name": "Circulation to the skin",
+     "items": [
+      {
+       "id": "skin",
+       "why": "Cool, clammy hands: her circulation is under strain."
+      },
+      {
+       "id": "radial_pulse",
+       "why": "Fast and irregularly irregular: AF, which she has, and which can worsen heart failure."
+      }
+     ]
+    }
+   ],
+   "nice_to_spot": [
+    {
+     "id": "ankles",
+     "why": "Pitting ankle oedema fits fluid overload, and the calves being soft and non-tender makes a DVT/PE less likely."
+    },
+    {
+     "id": "neck_veins",
+     "why": "Full neck veins while sitting up support raised pressure on the right side of the heart."
+    }
+   ],
+   "key": "Missing the work of breathing is the main thing to avoid: it is what makes her time critical."
+  },
+  "history": {
+   "key": [
+    {
+     "id": "med_changes",
+     "why": "She stopped her furosemide five days ago: the likely trigger. The sealed packet in the medicines box shows it too.",
+     "also": [
+      "med_changes_when"
+     ]
+    },
+    {
+     "id": "meds",
+     "why": "Her medicines (furosemide, ramipril, bisoprolol, spironolactone, dapagliflozin) tell you she has heart failure even before she says so."
+    },
+    {
+     "id": "pmh",
+     "why": "Known heart failure, AF, hypertension and diabetes: high risk for exactly this."
+    },
+    {
+     "id": "previous",
+     "why": "Admitted with the same thing last winter."
+    },
+    {
+     "id": "onset",
+     "why": "Woke at 3am and had to sit up: paroxysmal nocturnal dyspnoea, typical of heart failure."
+    }
+   ],
+   "supporting": [
+    {
+     "id": "sleep",
+     "why": "Needing more pillows (orthopnoea) builds the picture."
+    },
+    {
+     "id": "legs",
+     "why": "Swollen ankles fit fluid overload."
+    },
+    {
+     "id": "legs_worse",
+     "why": "Worse all week: fluid building up since stopping the tablets."
+    },
+    {
+     "id": "allergies",
+     "why": "Penicillin allergy matters if a chest infection is being considered."
+    }
+   ],
+   "pertinent_negatives": [
+    {
+     "id": "chest_pain",
+     "why": "Tightness but no actual pain makes a heart attack less likely as the cause, but not impossible: get a 12-lead ECG."
+    },
+    {
+     "id": "cough",
+     "why": "A cough with frothy sputum rather than green phlegm points away from infection."
+    },
+    {
+     "id": "infection",
+     "why": "No fever or recent illness makes a chest infection less likely."
+    }
+   ]
+  },
+  "scene": [
+   {
+    "id": "medicines_box",
+    "why": "Reading the medicines box shows the sealed furosemide and her heart failure medicines."
+   },
+   {
+    "id": "pillows",
+    "why": "Pillows stacked on the sofa: she can't lie flat. No need to check it, but it's there to notice."
+   }
+  ],
+  "differentials": [
+   {
+    "id": "apo",
+    "name": "Acute pulmonary oedema",
+    "for": "Known heart failure, stopped furosemide, sudden breathlessness at night, can't lie flat, wet breathing, pink frothy sputum, ankle oedema.",
+    "against": "Nothing strongly against."
+   },
+   {
+    "id": "mi",
+    "name": "Heart attack (MI / ACS)",
+    "for": "Can cause pulmonary oedema, can be painless in older people and people with diabetes.",
+    "against": "No chest pain. Get a 12-lead ECG: an MI can be the trigger."
+   },
+   {
+    "id": "pe",
+    "name": "Pulmonary embolism",
+    "for": "Sudden breathlessness.",
+    "against": "On apixaban; lungs wet, not clear; calves soft and non-tender; bilateral ankle swelling."
+   },
+   {
+    "id": "lrti",
+    "name": "Chest infection (LRTI)",
+    "for": "Breathless, coughing.",
+    "against": "No fever or recent illness; frothy pink sputum rather than green; a clear trigger (stopped furosemide)."
+   },
+   {
+    "id": "ecopd",
+    "name": "COPD exacerbation",
+    "for": "Breathless, tripod, some wheeze can occur in heart failure too.",
+    "against": "No COPD history; wet crackly breathing and frothy sputum rather than mainly wheeze; a heart failure history and trigger."
+   }
+  ],
+  "next_steps": [
+   "ABCDE: find and treat life-threatening problems first, then assess, form your impression and treat.",
+   "Oxygen for low saturations, to the target in JRCALC.",
+   "GTN, if her blood pressure and the JRCALC criteria allow.",
+   "Close to hospital: oxygen, GTN, pre-alert for her work of breathing, and go on blue lights.",
+   "Longer journey: as above, plus cannulate and give IV furosemide as per JRCALC.",
+   "Keep her sitting up; don't lie her flat."
+  ],
+  "coming_later": "In later versions you'll measure her observations and listen to her chest. For reference, she would have: RR 32, SpO2 87% on air, HR 112 AF, BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s; fine crackles at both bases up to the mid-zones, scattered wheeze; 12-lead ECG AF about 110, LVH, no ST elevation.",
+  "closing": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it.",
+  "references": [
+   {
+    "title": "JRCALC Q&A: GTN indication in heart failure",
+    "url": "https://jrcalc.org.uk/jrcalc-q-and-as/changes-to-the-indication-of-gtn-for-heart-failure/"
+   },
+   {
+    "title": "NICE CG187 Acute heart failure: recommendations",
+    "url": "https://www.nice.org.uk/guidance/cg187/chapter/recommendations"
+   }
+  ]
+ }
 }

@@ -1,7 +1,12 @@
 extends Node3D
 ## Panel opened by pointing at the patient or bystander.
 ## "Ask" lists history questions (answered aloud as subtitles by whoever
-## would answer); "Look, listen, feel" lists first-impression assessments.
+## would answer); "Look, listen, feel" lists first-impression assessments;
+## "Finish" asks for your impression and how urgent it is, then hands over
+## to the debrief.
+
+## Emitted when the learner finishes: impression id, urgency id.
+signal finished(impression: String, urgency: String)
 
 const BUTTON := preload("res://scripts/menu_button.gd")
 const PER_PAGE := 6
@@ -12,6 +17,8 @@ var player
 var _tab := "ask"
 var _page := 0
 var _asked := {}
+var assessed := {}
+var _impression := ""
 var _tab_buttons := {}
 var _item_buttons: Array = []
 var _prev
@@ -71,9 +78,11 @@ func _build() -> void:
 	bg.position = Vector3(0, 0, -0.008)
 	add_child(bg)
 
-	var tabs := [["ask", "Ask"], ["assess", "Look, listen, feel"], ["close", "Close"]]
+	var tabs := [["ask", "Ask"], ["assess", "Look, listen, feel"], ["finish", "Finish"], ["close", "Close"]]
 	for i in tabs.size():
-		var b = _button(Vector2(0.19, 0.05), tabs[i][1], Vector3(-0.2 + i * 0.2, 0.31, 0))
+		var w := 0.2 if tabs[i][0] == "assess" else 0.12
+		var x: float = [-0.225, -0.055, 0.115, 0.245][i]
+		var b = _button(Vector2(w, 0.05), tabs[i][1], Vector3(x, 0.31, 0))
 		b.pressed.connect(_on_tab.bind(tabs[i][0]))
 		_tab_buttons[tabs[i][0]] = b
 	for i in PER_PAGE:
@@ -119,6 +128,9 @@ func _on_tab(tab: String) -> void:
 	_tab = tab
 	_page = 0
 	_result.text = ""
+	if tab == "finish":
+		_impression = ""
+		_result.text = "Before you choose: say out loud what you think is going on, and why."
 	_refresh()
 
 
@@ -132,7 +144,12 @@ func _refresh() -> void:
 		if idx < _items.size():
 			var it: Dictionary = _items[idx]
 			var done := _asked.has(it.get("id", ""))
-			b.text = ("(asked) " if done and _tab == "ask" else "") + String(it.get("label", ""))
+			var mark := ""
+			if _tab == "ask" and done:
+				mark = "(asked) "
+			elif _tab == "assess" and assessed.has(it.get("id", "")):
+				mark = "(checked) "
+			b.text = mark + String(it.get("label", ""))
 			b.visible = true
 			b.collision_layer = 1
 		else:
@@ -146,6 +163,10 @@ func _refresh() -> void:
 		t.collision_layer = 1
 
 
+func asked_ids() -> Dictionary:
+	return _asked
+
+
 func _available_items() -> Array:
 	var out := []
 	if _tab == "ask":
@@ -156,6 +177,11 @@ func _available_items() -> Array:
 					ok = false
 			if ok:
 				out.append(q)
+	elif _tab == "finish":
+		var deb: Dictionary = runner.scenario.get("debrief", {})
+		var opts: Array = deb.get("impression_options", []) if _impression == "" else deb.get("urgency_options", [])
+		for o in opts:
+			out.append(o)
 	else:
 		for f in runner.scenario.get("first_impression", []):
 			out.append({"id": f.get("id", ""), "label": _assess_label(f), "finding": f.get("finding", "")})
@@ -175,7 +201,20 @@ func _on_item(slot: int) -> void:
 		return
 	var it: Dictionary = _items[idx]
 	if _tab == "assess":
+		assessed[it.get("id", "")] = true
 		_result.text = String(it.get("finding", ""))
+		_refresh()
+		return
+	if _tab == "finish":
+		if _impression == "":
+			_impression = String(it.get("id", ""))
+			_result.text = "How urgent is she?"
+			_refresh()
+		else:
+			var urgency := String(it.get("id", ""))
+			close()
+			_tab = "ask"
+			finished.emit(_impression, urgency)
 		return
 	if _speaking:
 		return
