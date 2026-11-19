@@ -307,3 +307,14 @@ Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn wher
 - Lung sounds and observations will complete it (marked "coming later" in the debrief, obs shown for reference).
 - **Reporting, not judging (Tom, 2026-11-19):** what's expected in assessment is often grey, so the debrief reports what was available and what was checked ("[Checked]" / "[Available, not checked]"), with why each finding matters, and avoids "you should have". Expectations, required items and pass criteria belong in a future **course profile** (e.g. one per university), layered on top of the same scenario.
 - Tom (evening): wording "still a bit bossy" but leave as is for now; useful as a discussion point in testing.
+
+## Equipment reference photos (shot list agreed 2026-11-19)
+
+Generic designs only in the app (no logos, brand names or exact copies); photos are for proportions, layout, colours and how things are used.
+- **Priority:** 1 monitor/defib (corpuls3: screen layouts, buttons, ports, cable set) - needs Tom's photos; 2 stethoscope - online fine, Tom's photo for the type crews carry; 3 SpO2 probe, BP cuff, ECG electrodes and leads - Tom's photos (cables, connectors, lengths); 4 PEFR meter, tympanic thermometer, glucometer - online fine, Tom's photos if easy.
+- **For each item:** front, back, both sides, top, roughly straight on; plain background; something for scale (tape measure or A4 sheet); close-ups of controls and connectors.
+- **Monitor screens:** the main obs screen, 12-lead screen, NIBP/SpO2 in progress, alarms, using a colleague or yourself or the demo/simulator mode - never real patient data.
+- **Cables:** laid flat beside a tape measure, plus close-ups of each connector end.
+- **In use (on a volunteer, no faces needed):** probe on finger, cuff on arm, electrode positions, thermometer in the ear, finger-prick, PEFR blow.
+- **Timings and behaviour from Tom:** e.g. how long NIBP, SpO2, tympanic temp and CBG take to give a reading, what the monitor shows and sounds like while doing it.
+- **Avoid in photos:** patient details, faces, vehicle or trust identifiers.
