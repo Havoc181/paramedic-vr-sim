@@ -7,6 +7,8 @@ extends Node3D
 
 ## Emitted when the learner finishes: impression id, urgency id.
 signal finished(impression: String, urgency: String)
+## Emitted for the instructor log: kind ("asked", "checked", "finished"), text.
+signal logged(kind: String, text: String)
 
 const BUTTON := preload("res://scripts/menu_button.gd")
 const PER_PAGE := 6
@@ -163,6 +165,19 @@ func _refresh() -> void:
 		t.collision_layer = 1
 
 
+func _option_label(key: String, id: String) -> String:
+	for o in runner.scenario.get("debrief", {}).get(key, []):
+		if String(o.get("id", "")) == id:
+			return String(o.get("label", id))
+	return id
+
+
+## Open straight on the Finish tab (instructor ended the scenario).
+func open_finish() -> void:
+	open()
+	_on_tab("finish")
+
+
 func asked_ids() -> Dictionary:
 	return _asked
 
@@ -201,6 +216,8 @@ func _on_item(slot: int) -> void:
 		return
 	var it: Dictionary = _items[idx]
 	if _tab == "assess":
+		if not assessed.has(it.get("id", "")):
+			logged.emit("checked", String(it.get("label", "")) + ": " + String(it.get("finding", "")))
 		assessed[it.get("id", "")] = true
 		_result.text = String(it.get("finding", ""))
 		_refresh()
@@ -212,6 +229,7 @@ func _on_item(slot: int) -> void:
 			_refresh()
 		else:
 			var urgency := String(it.get("id", ""))
+			logged.emit("finished", "Impression: %s. Urgency: %s." % [_option_label("impression_options", _impression), String(it.get("label", ""))])
 			close()
 			_tab = "ask"
 			finished.emit(_impression, urgency)
@@ -219,6 +237,10 @@ func _on_item(slot: int) -> void:
 	if _speaking:
 		return
 	_asked[it.get("id", "")] = true
+	var reply := PackedStringArray()
+	for a in it.get("answers", []):
+		reply.append(String(a.get("by", "")).capitalize() + ": " + String(a.get("text", "")))
+	logged.emit("asked", "\"" + String(it.get("label", "")) + "\"  " + " / ".join(reply))
 	_result.text = ""
 	_refresh()
 	_speak(it.get("answers", []))

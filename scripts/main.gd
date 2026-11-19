@@ -6,6 +6,11 @@ extends Node3D
 ## once the cause is confirmed.
 
 func _ready() -> void:
+	# The laptop instructor app is the same project: the "Instructor (Windows)"
+	# export, or running with --instructor, opens that instead of VR.
+	if OS.has_feature("instructor") or "--instructor" in OS.get_cmdline_user_args():
+		get_tree().change_scene_to_file.call_deferred("res://scenes/instructor.tscn")
+		return
 	var xr := XRServer.find_interface("OpenXR") as OpenXRInterface
 	if xr and xr.is_initialized():
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)

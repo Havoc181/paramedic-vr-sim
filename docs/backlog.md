@@ -329,3 +329,9 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
   - During: pause/resume, deteriorate or improve the patient, trigger events (Ken interrupts, loud TV, phone rings), show a hint, reveal observations, end the scenario.
   - After: debrief shown on both, instructor notes added, session log saved locally (no student data leaves the laptop).
 - **Phase 3:** a free-moving 3D spectator camera on the laptop (rebuilt from the same events), several headsets in one session, course profiles applied by the instructor.
+
+### Phase 2 built (v0.04-dev1)
+- Headset: `scripts/session_link.gd` (UDP beacon on 47801 every second; TCP 47800, one instructor, JSON lines; sends log, learner pose 4 Hz, state; receives commands). Android export now has INTERNET + ACCESS_WIFI_STATE permissions (local network only).
+- Laptop: `scenes/instructor.tscn` (run with F6 in the editor, or the "Instructor (Windows)" export, or `--instructor`): headset discovery + manual address, room map with learner position/facing/kneeling, colour-coded time-stamped log, pause/resume, patient better/worse slider, Ken interrupts, phone rings (generated UK ring), hint text, show observations, end scenario (learner asked for impression), notes, save log locally.
+- Networking notes: works on any network where both devices can see each other: phone hotspot (most allow device-to-device; some Android hotspots isolate clients, then use the laptop's own hotspot or a travel router), laptop hotspot, home/office Wi-Fi. If discovery is blocked, type the address shown in the headset menu. Windows firewall must allow the app.
+- Next for the instructor app: pre-run choices (scenario, difficulty, patient variant, distractions) once scenario 02 exists; debrief shown on the laptop; mirror via scrcpy button.

@@ -653,5 +653,23 @@
   ],
   "closing_supportive": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it.",
   "next_steps_title": "Management considered for this presentation"
+ },
+ "instructor_events": {
+  "ken_interrupt": {
+   "by": "ken",
+   "lines": [
+    "Is she going to be alright? She's never been this bad.",
+    "Should I get her coat? Are you taking her in?",
+    "She was fine yesterday... well, sort of.",
+    "Do you want me to ring our daughter?"
+   ]
+  },
+  "phone_ring": {
+   "after_line": {
+    "by": "ken",
+    "text": "Leave it, that'll be our Sarah. She can wait."
+   }
+  },
+  "obs_text": "Observations: RR 32, SpO2 87% on air, HR 112 irregular (AF), BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s."
  }
 }

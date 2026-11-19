@@ -11,12 +11,13 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.03-dev11"
+const APP_VERSION := "v0.04-dev1"
 
 ## Test options: NOT saved, so if one misbehaves on the headset (e.g. the
 ## grey screen seen with foveation/90 Hz), quitting and reopening resets it.
 const FOVEATION_NAMES := ["Off", "Low", "Medium", "High"]
 var _fps_label: Label3D
+var _link_label: Label3D
 var _foveation := 0
 var _refresh_rates: Array = []
 var _refresh_index := -1
@@ -84,6 +85,15 @@ func _build() -> void:
 	title.render_priority = 11
 	add_child(title)
 
+	_link_label = Label3D.new()
+	_link_label.font_size = 20
+	_link_label.pixel_size = 0.0008
+	_link_label.position = Vector3(0, -0.505, 0)
+	_link_label.modulate = Color(0.7, 0.8, 0.9)
+	_link_label.no_depth_test = true
+	_link_label.render_priority = 11
+	add_child(_link_label)
+
 	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "foveation", "refresh", "quit"]
 	for i in items.size():
 		var b = MENU_BUTTON.new()
@@ -139,6 +149,11 @@ func _refresh_labels() -> void:
 	_buttons.foveation.text = "Test: foveation: " + FOVEATION_NAMES[_foveation]
 	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
 	_buttons.quit.text = "Quit app"
+	var link = get_tree().get_first_node_in_group("session_link")
+	if link and _link_label:
+		var addr: PackedStringArray = link.local_addresses()
+		_link_label.text = "Instructor link: " + ("connected" if link.connected() else
+				("waiting on " + ", ".join(addr) if addr.size() > 0 else "no network"))
 
 
 func _xr() -> OpenXRInterface:

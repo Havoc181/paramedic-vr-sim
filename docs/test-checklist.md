@@ -1,7 +1,7 @@
 # Headset test checklist
 
 Run on the Quest (standalone build). Note the version shown in the menu title
-(this round: **v0.03-dev11**). Anything that fails: a photo or a few words.
+(this round: **v0.04-dev1**). Anything that fails: a photo or a few words.
 
 ## 1. Start-up (1 min)
 - [ ] App opens in VR, no long black or grey screen
@@ -32,7 +32,18 @@ Run on the Quest (standalone build). Note the version shown in the menu title
 - [ ] Clinical wording: anything wrong or not how you'd say it (a photo of the page is enough)
 - [ ] Last page: Run again restarts the scenario; Close returns you to the room
 
-## 5. Performance tests (5 min) - menu items starting "Test:"
+## 5. Instructor link (10 min) - new
+Headset and PC on the same network (home Wi-Fi, or both on your phone hotspot). No internet needed.
+- [ ] On the PC: in Godot, open `scenes/instructor.tscn` and press F6 (Run Current Scene). If Windows asks about the firewall, tick Private (and Public if on a hotspot) and allow
+- [ ] Headset menu: bottom line shows "Instructor link: waiting on <address>"
+- [ ] PC: the headset appears under "Headsets found" (or type that address) - double-click it / Connect
+- [ ] Walk about: your dot moves on the room map; kneel: it says kneeling
+- [ ] Ask a question and look at something: both appear in the log with times
+- [ ] Try each control: Pause/Resume, Worse / Much worse (her breathing speeds up and gets louder), Better, Ken interrupts, Phone rings, Show observations, a typed hint, End scenario
+- [ ] Save log and notes, then Open saved logs
+- [ ] Optional: repeat with the headset and laptop both on your phone hotspot
+
+## 6. Performance tests (5 min) - menu items starting "Test:"
 These are not saved: if anything goes wrong, quit and reopen and it resets.
 - [ ] Test: frame rate shown: On. Note the fps standing by the door and kneeling by Joan
       (72 is the default target; lower means it's struggling)
@@ -41,7 +52,7 @@ These are not saved: if anything goes wrong, quit and reopen and it resets.
       Edges of your view a little softer is expected; grey screen is the old bug
 - [ ] If one setting causes the grey screen: note which, then quit and reopen
 
-## 6. Pitch screenshots
+## 7. Pitch screenshots
 - [ ] A few from the doorway, kneeling in front of Joan, and side-on, with the menu closed
 
 ## Always

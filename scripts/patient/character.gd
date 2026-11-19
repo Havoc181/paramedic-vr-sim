@@ -24,6 +24,10 @@ var _subtitle_timer := 0.0
 var _breath_player: AudioStreamPlayer3D
 var _breath_clips: Array[AudioStream] = []
 var _clip_period := 0.0
+var _base_rate := 14.0
+var _base_depth := 0.35
+var _base_accessory := 0.0
+var _base_volume := 0.0
 
 
 func setup(character_id: String, character_data: Dictionary) -> void:
@@ -36,6 +40,9 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 	_breath.inhale_fraction = 0.45 if float(p.get("work_of_breathing", 0.0)) > 0.6 else 0.4
 	_depth = float(p.get("breath_depth", 0.35))
 	_accessory = 1.0 if p.get("accessory_muscles", false) else 0.0
+	_base_rate = _breath.rate
+	_base_depth = _depth
+	_base_accessory = _accessory
 
 	var model_path := String(data.get("model", ""))
 	if model_path != "" and ResourceLoader.exists(model_path):
@@ -76,6 +83,17 @@ func _process(delta: float) -> void:
 			_subtitle.visible = false
 
 
+## Instructor control: -1 = much better, 0 = as written, +1 = much worse.
+## Changes breathing rate, depth, shoulder use and how loud the breathing is.
+func set_severity(v: float) -> void:
+	v = clampf(v, -1.0, 1.0)
+	_breath.rate = clampf(_base_rate * (1.0 + 0.3 * v), 8.0, 50.0)
+	_depth = clampf(_base_depth * (1.0 + 0.25 * v), 0.15, 1.0)
+	_accessory = clampf(_base_accessory + 0.6 * v, 0.0, 1.0)
+	if _breath_player:
+		_breath_player.volume_db = _base_volume + 4.0 * v
+
+
 ## Show a spoken line above the head for a time based on its length.
 func say(text: String) -> void:
 	_subtitle.text = display_name.get_slice(" ", 0) + ": " + text
@@ -101,6 +119,7 @@ func _setup_breath_audio(cfg: Dictionary, seated: bool) -> void:
 	_breath_player.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
 	_breath_player.unit_size = float(cfg.get("unit_size_m", 0.45))
 	_breath_player.volume_db = float(cfg.get("volume_db", 0.0))
+	_base_volume = _breath_player.volume_db
 	_breath_player.max_db = 6.0
 	_breath_player.max_distance = float(cfg.get("max_distance_m", 6.0))
 	_breath_player.position = Vector3(0, 0.78, 0.22) if seated else Vector3(0, 1.62, 0.08)
