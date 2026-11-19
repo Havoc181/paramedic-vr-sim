@@ -318,3 +318,14 @@ Generic designs only in the app (no logos, brand names or exact copies); photos 
 - **In use (on a volunteer, no faces needed):** probe on finger, cuff on arm, electrode positions, thermometer in the ear, finger-prick, PEFR blow.
 - **Timings and behaviour from Tom:** e.g. how long NIBP, SpO2, tympanic temp and CBG take to give a reading, what the monitor shows and sounds like while doing it.
 - **Avoid in photos:** patient details, faces, vehicle or trust identifiers.
+
+## Supervisor / instructor view (agreed direction 2026-11-19)
+
+Tom: a laptop view with some in-scenario customisability, plus casting at least.
+- **Phase 1, casting (no development):** mirror the headset on a laptop over USB with scrcpy (free, open source, works offline with developer mode); or Meta's own casting to phone/browser/TV (needs Wi-Fi with internet and the Meta app). Fine for demos now.
+- **Phase 2, instructor app on a laptop (same Godot project, desktop build):** connects to the headset over local Wi-Fi or the laptop's own hotspot, no internet. Sends small events, not video, so it stays smooth and the headset barely notices.
+  - Live log of what the student asks, checks and says, time-stamped.
+  - Before the run: choose scenario, difficulty, patient variant (severity, age, skin tone), distractions on/off.
+  - During: pause/resume, deteriorate or improve the patient, trigger events (Ken interrupts, loud TV, phone rings), show a hint, reveal observations, end the scenario.
+  - After: debrief shown on both, instructor notes added, session log saved locally (no student data leaves the laptop).
+- **Phase 3:** a free-moving 3D spectator camera on the laptop (rebuilt from the same events), several headsets in one session, course profiles applied by the instructor.
