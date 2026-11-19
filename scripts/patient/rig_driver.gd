@@ -29,7 +29,6 @@ const POSTURES := {
 		"lean_to_reach": true,
 		"shrug_deg": 12.0,
 		"hands_on_knees": true,
-		"seated_clothes": true,
 		# Model origin relative to the seat marker (seat surface).
 		"offset": Vector3(0.0, -0.67, 0.02),
 	},
@@ -42,7 +41,6 @@ const POSTURES := {
 			"lowerarm_l": Vector3(0.0, -0.3, 1.0), "lowerarm_r": Vector3(0.0, -0.3, 1.0),
 		},
 		"offset": Vector3(0.0, -0.67, -0.05),
-		"seated_clothes": true,
 	},
 }
 
