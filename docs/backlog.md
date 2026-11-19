@@ -342,3 +342,4 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - **EEAST:** Tom spoke with Callum again and emailed the EEAST innovation team asking for help integrating with EEAST, stating he wants to keep the IP.
 - **Desktop accessibility version (after VR is functional):** same project, flat-screen camera and mouse/keyboard controls, reusing scenarios, characters, panel, debrief and instructor link. For people with VR sickness (Callum gets nausea in VR) or no headset; also demos, revision, lecture display.
 - Full overview, business model and licence check: claude.ai Project "Paramedic VR Sim", `claude/project-overview.md`.
+- **Brand (Tom, 2026-11-19):** sub-brand **Havoc Education**, alongside Havoc Aviation under the Havoc umbrella. Use this name on the store listing, licences, brief and company materials; trademark check to cover "Havoc Education".
