@@ -109,7 +109,7 @@ func _wrist_target(side: String) -> Vector3:
 	var knee := _gpose(skeleton.find_bone("calf_" + side)).origin
 	var thigh := _gpose(skeleton.find_bone("thigh_" + side)).origin
 	var along := (knee - thigh).normalized()
-	return knee - along * 0.09 + Vector3(0, 0.085, 0)
+	return knee - along * 0.09 + Vector3(0, 0.115, 0)
 
 
 func _arm_ratio(side: String) -> float:
@@ -180,21 +180,46 @@ func _hands_on_knees() -> void:
 		_point_bone(lo, (t - e).normalized())
 		var finger_dir := Vector3(-sgn * 0.3, -0.45, 1.0).normalized()
 		_point_bone(hand, finger_dir)
-		# Pronate: twist the forearm about its own axis until the palm (+Z of
-		# the hand bone in this rig) faces down onto the thigh.
-		for _i in 3:
-			var hb := _gpose(hand).basis.orthonormalized()
-			var fa := _gpose(lo).basis.orthonormalized().y
-			var down := Vector3.DOWN - fa * Vector3.DOWN.dot(fa)
-			var palm := hb.z - fa * hb.z.dot(fa)
-			if down.length() < 0.01 or palm.length() < 0.01:
+		# Pronate: twist the forearm about its own axis until the palm faces
+		# down onto the thigh (tilted a touch inwards so the thumb side stays
+		# clear of the rounded top of the leg). The palm normal is measured from
+		# the knuckles, since the hand bone's own axes sit at an angle to the palm.
+		var idx := skeleton.find_bone("index_01_" + side)
+		var pky := skeleton.find_bone("pinky_01_" + side)
+		var palm_want := Vector3(-sgn * 0.3, -1.0, 0.0).normalized()
+		for _i in 4:
+			if idx < 0 or pky < 0:
 				break
-			var twist := palm.normalized().signed_angle_to(down.normalized(), fa)
+			var hy := _gpose(hand).basis.orthonormalized().y
+			var across := _gpose(idx).origin - _gpose(pky).origin
+			var palm := (hy.cross(across) * sgn).normalized()
+			var fa := _gpose(lo).basis.orthonormalized().y
+			var want := palm_want - fa * palm_want.dot(fa)
+			var have := palm - fa * palm.dot(fa)
+			if want.length() < 0.01 or have.length() < 0.01:
+				break
+			var twist := have.normalized().signed_angle_to(want.normalized(), fa)
+			if absf(twist) < 0.01:
+				break
 			var lparent := _gpose(up).basis.orthonormalized()
 			var cur := (lparent * Basis(skeleton.get_bone_pose_rotation(lo))).orthonormalized()
 			var wanted := (Basis(fa, twist) * cur).orthonormalized()
 			skeleton.set_bone_pose_rotation(lo, (lparent.inverse() * wanted).get_rotation_quaternion())
 			_point_bone(hand, finger_dir)
+		# Final small roll of the hand itself about its own axis.
+		for _j in 3:
+			if idx < 0 or pky < 0:
+				break
+			var hy2 := _gpose(hand).basis.orthonormalized().y
+			var palm2 := (hy2.cross(_gpose(idx).origin - _gpose(pky).origin) * sgn).normalized()
+			var want2 := palm_want - hy2 * palm_want.dot(hy2)
+			var have2 := palm2 - hy2 * palm2.dot(hy2)
+			var roll := have2.normalized().signed_angle_to(want2.normalized(), hy2)
+			if absf(roll) < 0.01:
+				break
+			var hparent := _gpose(lo).basis.orthonormalized()
+			var hcur := (hparent * Basis(skeleton.get_bone_pose_rotation(hand))).orthonormalized()
+			skeleton.set_bone_pose_rotation(hand, (hparent.inverse() * (Basis(hy2, roll) * hcur).orthonormalized()).get_rotation_quaternion())
 		_base_local[lo] = skeleton.get_bone_pose_rotation(lo)
 		_base_local[hand] = skeleton.get_bone_pose_rotation(hand)
 
