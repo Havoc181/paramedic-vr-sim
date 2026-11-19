@@ -6,7 +6,8 @@ const SHOTS := [
 	["shot_kneel.png", Vector3(-0.35, 0.95, -0.35), Vector3(-0.3, 0.75, -1.4)],
 	["shot_door.png", Vector3(-1.4, 1.65, 1.4), Vector3(-0.2, 0.8, -1.2)],
 	["shot_ken.png", Vector3(0.0, 1.6, 0.6), Vector3(0.95, 1.45, -0.55)],
-	["shot_side.png", Vector3(1.3, 1.0, -1.0), Vector3(-0.3, 0.8, -1.4)],
+	["shot_knees.png", Vector3(-0.25, 0.85, -0.6), Vector3(-0.3, 0.5, -1.3)],
+	["shot_side.png", Vector3(0.6, 0.8, -0.9), Vector3(-0.3, 0.6, -1.3)],
 ]
 
 func _initialize() -> void:
