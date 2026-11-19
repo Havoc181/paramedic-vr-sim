@@ -275,3 +275,16 @@ Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn wher
   - Simple jaw movement driven by speech loudness (mouth opens on loud segments, closes in gaps) as a cheap stand-in for lip sync.
   - Voice and breath audio come from one AudioStreamPlayer3D at the head, same distance fall-off as the breathing; subtitles stay.
   - Optional later upgrade: Tom's own recorded breaths, or a higher-quality commercial TTS at build time; both drop into the same pipeline.
+
+## Organisational interest and IP (update 2026-11-19)
+
+- **Jay (local auditor, policy compliance):** keen for Tom to establish IP ownership now.
+- **John Perry (Area Manager):** impressed, wants it to go further; linking Tom with two people working on operational training through VR; suggested NHS QI routes to get it off the ground.
+- **Tom's position:** learn from them, but check what any route means for IP before agreeing to anything.
+- **To prepare (not legal advice; get an IP solicitor's view before signing anything):**
+  - Evidence of independent creation: the GitHub history (dates, own equipment, own time), the Claude conversation history, design docs. Keep working on personal kit and outside paid hours.
+  - Read the employment contract and the trust's IP policy (NHS trusts usually claim IP made in the course of employment or with trust time/resources). UK law: employer owns copyright in works made by an employee "in the course of employment" (CDPA 1988 s11(2)) and inventions made in normal duties (Patents Act 1977 s39). Building a training simulator isn't part of a paramedic's normal duties, which helps, but the contract/policy wording matters.
+  - Before any QI project uses trust time, data or equipment: get written agreement that pre-existing IP stays with Tom (or agree terms, e.g. trust gets a licence, Tom keeps ownership).
+  - Clinical content: JRCALC/NICE are referenced, not copied; anything a trust or College of Paramedics contributes should come with an agreed licence.
+- **Business infrastructure wanted:** company set-up, name/trademark check, domain and simple landing page, contact email, pitch deck, demo video, in-headset screenshots.
+- **Reminder:** take real in-headset screenshots and a short video once the dev10 build works (also in the test checklist).
