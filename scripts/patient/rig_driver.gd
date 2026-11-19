@@ -16,16 +16,18 @@ const POSTURES := {
 		},
 		"offset": Vector3.ZERO,
 	},
-	# Sitting forward on the edge of the seat, leaning on straight arms.
+	# Tripod: sitting forward on the edge of the seat, knees apart, trunk
+	# leaning well forward and held up on straight, braced arms with the hands
+	# gripping the lower thighs just above the knees; shoulders hunched up,
+	# head up looking ahead. (The lean is solved so the arms just reach.)
 	"tripod": {
 		"bones": {
-			"thigh_l": Vector3(0.05, -0.08, 1.0), "thigh_r": Vector3(-0.05, -0.08, 1.0),
-			"calf_l": Vector3(0.06, -1.0, 0.12), "calf_r": Vector3(-0.06, -1.0, 0.12),
-			"foot_l": Vector3(0.05, -0.45, 0.9), "foot_r": Vector3(-0.05, -0.45, 0.9),
-			"spine_01": Vector3(0.0, 0.8, 0.6), "spine_02": Vector3(0.0, 0.82, 0.57),
-			"spine_03": Vector3(0.0, 0.85, 0.52),
-			"neck_01": Vector3(0.0, 0.95, 0.3), "head": Vector3(0.0, 1.0, 0.02),
+			"thigh_l": Vector3(0.2, -0.06, 1.0), "thigh_r": Vector3(-0.2, -0.06, 1.0),
+			"calf_l": Vector3(0.05, -1.0, 0.1), "calf_r": Vector3(-0.05, -1.0, 0.1),
+			"foot_l": Vector3(0.1, -0.45, 0.9), "foot_r": Vector3(-0.1, -0.45, 0.9),
 		},
+		"lean_to_reach": true,
+		"shrug_deg": 12.0,
 		"hands_on_knees": true,
 		"seated_clothes": true,
 		# Model origin relative to the seat marker (seat surface).
@@ -44,6 +46,8 @@ const POSTURES := {
 	},
 }
 
+const LEAN_DEG := 42
+
 var skeleton: Skeleton3D
 var model: Node3D
 var _base_local := {}   # bone index -> posed local rotation (Quaternion)
@@ -61,6 +65,10 @@ func _init(model_root: Node3D, posture: String) -> void:
 	var p: Dictionary = POSTURES.get(posture, POSTURES["standing"])
 	model.position = p.get("offset", Vector3.ZERO)
 	_apply_posture(p["bones"])
+	if p.get("lean_to_reach", false):
+		_lean_to_reach()
+	if p.has("shrug_deg"):
+		_shrug(deg_to_rad(p["shrug_deg"]))
 	if p.get("hands_on_knees", false):
 		_hands_on_knees()
 	if p.get("seated_clothes", false):
@@ -98,26 +106,72 @@ func _apply_posture(bones: Dictionary) -> void:
 			_base_local[b] = skeleton.get_bone_pose_rotation(b)
 
 
-## Two-joint reach: put each wrist just above and behind its knee, elbow
-## bent outwards, palm resting on the thigh with fingers over the kneecap.
+## Where each wrist goes: on top of the lower thigh, just above the knee.
+func _wrist_target(side: String) -> Vector3:
+	var knee := _gpose(skeleton.find_bone("calf_" + side)).origin
+	var thigh := _gpose(skeleton.find_bone("thigh_" + side)).origin
+	var along := (knee - thigh).normalized()
+	return knee - along * 0.09 + Vector3(0, 0.085, 0)
+
+
+func _arm_ratio(side: String) -> float:
+	var up := skeleton.find_bone("upperarm_" + side)
+	var lo := skeleton.find_bone("lowerarm_" + side)
+	var hand := skeleton.find_bone("hand_" + side)
+	var s := _gpose(up).origin
+	var reach := s.distance_to(_gpose(lo).origin) + _gpose(lo).origin.distance_to(_gpose(hand).origin)
+	return s.distance_to(_wrist_target(side)) / reach
+
+
+## Lean the trunk well forward; the arms then brace on the knees with the
+## elbows flaring out (MakeHuman arms are long enough to reach even upright).
+func _lean_to_reach() -> void:
+	var chain := ["spine_01", "spine_02", "spine_03", "neck_01", "head"]
+	var share := [1.0, 1.0, 0.9, 0.5, -0.15]   # head tips back to look ahead
+	for lean_deg in [LEAN_DEG]:
+		for i in chain.size():
+			var b: int = skeleton.find_bone(chain[i])
+			if b < 0:
+				continue
+			var ang: float = deg_to_rad(lean_deg) * share[i]
+			_point_bone(b, Vector3(0.0, cos(ang), sin(ang)))
+			_base_local[b] = skeleton.get_bone_pose_rotation(b)
+
+
+## Shoulders hunched up (accessory muscle use).
+func _shrug(angle: float) -> void:
+	for side in ["l", "r"]:
+		var b := skeleton.find_bone("clavicle_" + side)
+		if b < 0:
+			continue
+		var sgn := 1.0 if side == "l" else -1.0
+		var parent_basis := _gpose(skeleton.get_bone_parent(b)).basis.orthonormalized()
+		var current := (parent_basis * Basis(skeleton.get_bone_pose_rotation(b))).orthonormalized()
+		var wanted := (Basis(Vector3(0, 0, 1), angle * sgn) * current).orthonormalized()
+		skeleton.set_bone_pose_rotation(b, (parent_basis.inverse() * wanted).get_rotation_quaternion())
+		_base_local[b] = skeleton.get_bone_pose_rotation(b)
+
+
+## Two-joint reach: wrists on the lower thighs, elbows nearly straight and
+## pointing slightly out, forearms turned so the palms face down onto the legs,
+## fingers wrapping forward over the knees.
 func _hands_on_knees() -> void:
 	for side in ["l", "r"]:
 		var sgn := 1.0 if side == "l" else -1.0
 		var up := skeleton.find_bone("upperarm_" + side)
 		var lo := skeleton.find_bone("lowerarm_" + side)
 		var hand := skeleton.find_bone("hand_" + side)
-		var knee := skeleton.find_bone("calf_" + side)
-		if up < 0 or lo < 0 or hand < 0 or knee < 0:
+		if up < 0 or lo < 0 or hand < 0:
 			continue
 		var s := _gpose(up).origin
 		var l1 := s.distance_to(_gpose(lo).origin)
 		var l2 := _gpose(lo).origin.distance_to(_gpose(hand).origin)
-		var t := _gpose(knee).origin + Vector3(-sgn * 0.03, 0.1, -0.04)
+		var t := _wrist_target(side)
 		var to_t := t - s
 		var d := clampf(to_t.length(), 0.05, l1 + l2 - 0.001)
 		var axis := to_t.normalized()
 		t = s + axis * d
-		var pole := Vector3(sgn, 0.0, -0.6)
+		var pole := Vector3(sgn, 0.15, -0.35)
 		var perp := (pole - axis * pole.dot(axis)).normalized()
 		var a := (l1 * l1 - l2 * l2 + d * d) / (2.0 * d)
 		var h := sqrt(maxf(l1 * l1 - a * a, 0.0))
@@ -126,8 +180,24 @@ func _hands_on_knees() -> void:
 		_base_local[up] = skeleton.get_bone_pose_rotation(up)
 		var e := _gpose(lo).origin
 		_point_bone(lo, (t - e).normalized())
+		var finger_dir := Vector3(-sgn * 0.3, -0.45, 1.0).normalized()
+		_point_bone(hand, finger_dir)
+		# Pronate: twist the forearm about its own axis until the palm (+Z of
+		# the hand bone in this rig) faces down onto the thigh.
+		for _i in 3:
+			var hb := _gpose(hand).basis.orthonormalized()
+			var fa := _gpose(lo).basis.orthonormalized().y
+			var down := Vector3.DOWN - fa * Vector3.DOWN.dot(fa)
+			var palm := hb.z - fa * hb.z.dot(fa)
+			if down.length() < 0.01 or palm.length() < 0.01:
+				break
+			var twist := palm.normalized().signed_angle_to(down.normalized(), fa)
+			var lparent := _gpose(up).basis.orthonormalized()
+			var cur := (lparent * Basis(skeleton.get_bone_pose_rotation(lo))).orthonormalized()
+			var wanted := (Basis(fa, twist) * cur).orthonormalized()
+			skeleton.set_bone_pose_rotation(lo, (lparent.inverse() * wanted).get_rotation_quaternion())
+			_point_bone(hand, finger_dir)
 		_base_local[lo] = skeleton.get_bone_pose_rotation(lo)
-		_point_bone(hand, Vector3(-sgn * 0.15, -0.5, 1.0).normalized())
 		_base_local[hand] = skeleton.get_bone_pose_rotation(hand)
 
 
