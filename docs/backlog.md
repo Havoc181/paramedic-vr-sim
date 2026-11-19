@@ -261,3 +261,9 @@ Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn wher
   - All reversible; "cover up again" is recorded.
 - **Links:** consent before exposing/touching (asked first, stored); hands-on assessment; debrief can comment on dignity (expose only what's needed, re-cover).
 - **First slice when scheduled:** skin regions for Joan; blouse on/opened-front; jeans normal/rolled-up with shoes and socks off; panel options "Expose chest", "Check ankles", "Cover up again" with consent.
+
+## Voices and interpreters (2026-11-19)
+
+- **Working now (build-time, offline):** Kokoro-82M (Apache-2.0) via ONNX + espeak-ng (built from source, tool only). `tools/voice/setup.sh` rebuilds it; `say.py` makes a line; `sampler.py` made the auditions. British voices: bf_alice, bf_emma, bf_isabella, bf_lily, bm_daniel, bm_fable, bm_george, bm_lewis. Joan: slower, pitch down ~5%, breath clips between phrases. Awaiting Tom's voice picks.
+- **Planned pipeline:** per-character `voice` block in scenario JSON (voice, speed, age pitch, language, breathless); build tool generates only new/changed lines (hash of text + settings) into `assets/audio/generated/voice/<scenario>/`, with a manifest of durations for subtitle timing; characters speak from the head via AudioStreamPlayer3D; subtitles stay.
+- **Interpreter scenarios (later):** patient speaks own language, subtitle shows "(speaks Portuguese)"; options: telephone interpreter (works, realistic time cost, relays), family member (quicker, debrief discusses problems with family interpreting), or struggle on. Kokoro covers English, Spanish, French, Italian, Brazilian Portuguese, Hindi, Mandarin, Japanese. Not Polish, Romanian, Urdu, Punjabi, Bengali, Arabic; offline voices for those are mostly non-commercial licences, so native-speaker recordings later.
