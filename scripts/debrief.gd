@@ -1,7 +1,8 @@
 extends Node3D
-## End-of-scenario debrief. Explains rather than scores: what you found
-## against what was there to find, why each thing matters, how the likely
-## causes compare, and what to do next. Content comes from the scenario's
+## End-of-scenario debrief. Reports rather than judges: what was available
+## in the scenario and what was checked, why each thing matters, how the
+## likely causes compare, and the management considered. Expectations
+## ("you should have...") are left to a future course profile. Content comes from the scenario's
 ## "debrief" block; what you found comes from the interaction panel.
 
 const BUTTON := preload("res://scripts/menu_button.gd")
@@ -66,7 +67,7 @@ func _question(scenario: Dictionary, id: String) -> String:
 
 
 func _mark(done: bool) -> String:
-	return "[Found]  " if done else "[Not checked]  "
+	return "[Checked]  " if done else "[Available, not checked]  "
 
 
 func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed: Dictionary,
@@ -85,8 +86,8 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 		t += "No impression chosen. The next pages show the findings that point to the cause."
 	else:
 		t += "Your impression differs from the most likely cause. The next pages show the findings that point to pulmonary oedema and how it compares with what you chose."
-	if urgency != ans.get("urgency", "") and ans.has("urgency"):
-		t += "\n\nOn urgency: " + _label_of(d.get("urgency_options", []), String(ans.get("urgency"))).to_lower() + "; her work of breathing alone makes her so."
+	if ans.has("urgency"):
+		t += "\n\nUrgency in this scenario: " + _label_of(d.get("urgency_options", []), String(ans.get("urgency"))).to_lower() + "."
 	out.append(["Your impression", t])
 
 	# 2. First impression (assessment triangle)
@@ -108,8 +109,9 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 	for it in fi.get("nice_to_spot", []):
 		var id := String(it.get("id", ""))
 		extra += _mark(assessed.has(id)) + _finding(scenario, id) + "\n      Why it matters: " + String(it.get("why", "")) + "\n\n"
-	extra += String(fi.get("key", ""))
-	out.append(["First impression: nice to spot", extra])
+	if fi.has("key"):
+		extra += String(fi.get("key"))
+	out.append(["First impression: also available", extra.strip_edges()])
 
 	# 3. History
 	var h: Dictionary = d.get("history", {})
@@ -123,14 +125,14 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 			var done := asked.has(id)
 			asked_total += 1
 			asked_n += 1 if done else 0
-			ht += ("[Asked]  " if done else "[Not asked]  ") + "\"" + _question(scenario, id) + "\"\n      Why it matters: " + String(it.get("why", "")) + "\n\n"
+			ht += ("[Asked]  " if done else "[Available, not asked]  ") + "\"" + _question(scenario, id) + "\"\n      Why it matters: " + String(it.get("why", "")) + "\n\n"
 		out.append([part[1], ht.strip_edges()])
 
 	# 4. The scene
 	var st := ""
 	for it in d.get("scene", []):
 		var id := String(it.get("id", ""))
-		var prefix := "[Seen]  " if seen.has(id) else ("[Not checked]  " if id == "medicines_box" else "[In the room]  ")
+		var prefix := "[Checked]  " if seen.has(id) else ("[Available, not checked]  " if id == "medicines_box" else "[In the room]  ")
 		st += prefix + String(it.get("why", "")) + "\n\n"
 	out.append(["The scene", st.strip_edges()])
 
@@ -145,11 +147,11 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 	for line in d.get("next_steps", []):
 		nt += "- " + String(line) + "\n"
 	nt += "\nDoses and criteria: check current JRCALC guidance."
-	out.append(["What to do next", nt])
+	out.append([String(d.get("next_steps_title", "Management considered for this presentation")), nt])
 
 	# 7. Coming later, summary, references
 	var ct := String(d.get("coming_later", "")) + "\n\n"
-	ct += "This run: you checked %d of %d first-impression features and asked %d of %d of the history points above.\n\n" % [found, total, asked_n, asked_total]
+	ct += "This run: %d of %d first-impression findings checked; %d of %d history points asked.\n\n" % [found, total, asked_n, asked_total]
 	# Objective for now; a supportive version is kept for the easy difficulty later.
 	var closing_key := "closing_supportive" if String(d.get("tone", "objective")) == "supportive" else "closing"
 	ct += String(d.get(closing_key, d.get("closing", ""))) + "\n\nReferences:\n"

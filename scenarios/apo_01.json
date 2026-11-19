@@ -528,8 +528,7 @@
      "id": "neck_veins",
      "why": "Full neck veins while sitting up support raised pressure on the right side of the heart."
     }
-   ],
-   "key": "Missing the work of breathing is the main thing to avoid: it is what makes her time critical."
+   ]
   },
   "history": {
    "key": [
@@ -641,7 +640,7 @@
    "Keep her sitting up; don't lie her flat."
   ],
   "coming_later": "In later versions you'll measure her observations and listen to her chest. For reference, she would have: RR 32, SpO2 87% on air, HR 112 AF, BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s; fine crackles at both bases up to the mid-zones, scattered wheeze; 12-lead ECG AF about 110, LVH, no ST elevation.",
-  "closing": "Priority next time: complete the first impression early. It sets the urgency for everything that follows.",
+  "closing": "This debrief reports what was available in the scenario and what was checked. It does not set what must be done: expectations vary between services and courses.",
   "references": [
    {
     "title": "JRCALC Q&A: GTN indication in heart failure",
@@ -652,6 +651,7 @@
     "url": "https://www.nice.org.uk/guidance/cg187/chapter/recommendations"
    }
   ],
-  "closing_supportive": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it."
+  "closing_supportive": "Every run is practice. Next time, try to cover the first impression in the first minute, then build the history around it.",
+  "next_steps_title": "Management considered for this presentation"
  }
 }
