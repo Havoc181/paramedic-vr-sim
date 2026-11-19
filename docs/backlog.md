@@ -288,3 +288,13 @@ Idea (Tom): clothes layer drawn normally; the skin underneath is only drawn wher
   - Clinical content: JRCALC/NICE are referenced, not copied; anything a trust or College of Paramedics contributes should come with an agreed licence.
 - **Business infrastructure wanted:** company set-up, name/trademark check, domain and simple landing page, contact email, pitch deck, demo video, in-headset screenshots.
 - **Reminder:** take real in-headset screenshots and a short video once the dev10 build works (also in the test checklist).
+
+## Decisions and notes (2026-11-19, afternoon)
+
+- **Scenario 02: COPD exacerbation** (agreed). Reuses the breathing, breathless-speech and tripod systems; contrasts with APO (wheeze/prolonged expiration vs crackles, pursed lips, history, inhalers/home oxygen, management differences). Debrief should help tell the two apart.
+- **Brand:** the project sits under Tom's existing **Havoc** brand (umbrella over Havoc Aviation); Havoc can also be the company name.
+- **Showing it works, two settings:**
+  - University: lecturer watches what the student does (needs a **supervisor view**: mirror of the headset view on a laptop/screen, later an instructor panel), then talks it through.
+  - Work/CPD: someone simply experiences the program; screenshots and a short video are enough for now.
+- **Project brief (Claude Doc):** https://claude.ai/artifact/DkNJsFgvXhK8QG4GFZ83su (screenshots and contact details to add).
+- **Questions for the VR training contacts:** Tom will ask for a prompt list when the meeting is arranged.
