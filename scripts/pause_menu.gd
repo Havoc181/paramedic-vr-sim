@@ -11,10 +11,19 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.03-dev9"
+const APP_VERSION := "v0.03-dev10"
+
+## Test options: NOT saved, so if one misbehaves on the headset (e.g. the
+## grey screen seen with foveation/90 Hz), quitting and reopening resets it.
+const FOVEATION_NAMES := ["Off", "Low", "Medium", "High"]
+var _fps_label: Label3D
+var _foveation := 0
+var _refresh_rates: Array = []
+var _refresh_index := -1
 
 
 func _ready() -> void:
+	set_process(false)
 	visible = false
 	_build()
 	player.menu_toggle_requested.connect(toggle)
@@ -53,7 +62,7 @@ func close() -> void:
 
 func _build() -> void:
 	var bg_mesh := BoxMesh.new()
-	bg_mesh.size = Vector3(0.42, 0.5, 0.005)
+	bg_mesh.size = Vector3(0.42, 0.78, 0.005)
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	bg_mat.albedo_color = Color(0.07, 0.08, 0.1)
@@ -62,7 +71,7 @@ func _build() -> void:
 	var bg := MeshInstance3D.new()
 	bg.mesh = bg_mesh
 	bg.material_override = bg_mat
-	bg.position = Vector3(0, 0, -0.008)
+	bg.position = Vector3(0, -0.14, -0.008)
 	bg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(bg)
 
@@ -75,7 +84,7 @@ func _build() -> void:
 	title.render_priority = 11
 	add_child(title)
 
-	var items := ["resume", "movement", "turning", "vignette", "seated", "quit"]
+	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "foveation", "refresh", "quit"]
 	for i in items.size():
 		var b = MENU_BUTTON.new()
 		b.name = "Button_" + items[i]
@@ -99,6 +108,19 @@ func _on_pressed(id: String) -> void:
 			player.vignette_enabled = not player.vignette_enabled
 		"seated":
 			player.set_seated(not player.seated)
+		"fps":
+			_toggle_fps()
+		"foveation":
+			_foveation = (_foveation + 1) % 4
+			var xr := _xr()
+			if xr:
+				xr.foveation_level = _foveation
+				xr.foveation_dynamic = _foveation > 0
+		"refresh":
+			var xr2 := _xr()
+			if xr2 and not _refresh_rates.is_empty():
+				_refresh_index = (_refresh_index + 1) % _refresh_rates.size()
+				xr2.display_refresh_rate = _refresh_rates[_refresh_index]
 		"quit":
 			get_tree().quit()
 			return
@@ -113,7 +135,51 @@ func _refresh_labels() -> void:
 	_buttons.turning.text = "Turning: " + turn_names[player.turn_mode]
 	_buttons.vignette.text = "Comfort vignette: " + ("On" if player.vignette_enabled else "Off")
 	_buttons.seated.text = "Seated mode: " + ("On" if player.seated else "Off")
+	_buttons.fps.text = "Test: frame rate shown: " + ("On" if _fps_label and _fps_label.visible else "Off")
+	_buttons.foveation.text = "Test: foveation: " + FOVEATION_NAMES[_foveation]
+	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
 	_buttons.quit.text = "Quit app"
+
+
+func _xr() -> OpenXRInterface:
+	var xr := XRServer.find_interface("OpenXR") as OpenXRInterface
+	return xr if xr and xr.is_initialized() else null
+
+
+func _refresh_text() -> String:
+	var xr := _xr()
+	if xr == null:
+		return "n/a"
+	if _refresh_rates.is_empty():
+		_refresh_rates = Array(xr.get_available_display_refresh_rates())
+		_refresh_rates.sort()
+		_refresh_index = _refresh_rates.find(xr.display_refresh_rate)
+	if _refresh_rates.is_empty():
+		return "%d Hz (fixed)" % int(round(xr.display_refresh_rate))
+	return "%d Hz" % int(round(xr.display_refresh_rate))
+
+
+## Small frame-rate readout fixed below your view, for performance testing.
+func _toggle_fps() -> void:
+	if _fps_label == null:
+		_fps_label = Label3D.new()
+		_fps_label.font_size = 28
+		_fps_label.pixel_size = 0.0006
+		_fps_label.position = Vector3(0, -0.12, -0.5)
+		_fps_label.no_depth_test = true
+		_fps_label.render_priority = 30
+		_fps_label.modulate = Color(0.6, 1.0, 0.6)
+		_fps_label.visible = false
+		player.get_node("XRCamera3D").add_child(_fps_label)
+	_fps_label.visible = not _fps_label.visible
+	set_process(_fps_label.visible)
+
+
+func _process(_delta: float) -> void:
+	if _fps_label and _fps_label.visible:
+		var ms := Performance.get_monitor(Performance.TIME_PROCESS) * 1000.0
+		_fps_label.text = "%d fps   %.1f ms   %d draw calls" % [Engine.get_frames_per_second(), ms,
+				Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME)]
 
 
 ## Hidden buttons must not block the pointer or the teleport arc.

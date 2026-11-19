@@ -1,40 +1,40 @@
 # Headset test checklist
 
-Run on the Quest (standalone build) for each version. Note the version shown
-in the menu title. Anything that fails: a photo or a few words is enough.
+Run on the Quest (standalone build). Note the version shown in the menu title
+(this round: **v0.03-dev10**). Anything that fails: a photo or a few words.
 
-## Start-up
-- [ ] App opens in VR (not a flat window), no long black screen
+## 1. Start-up (1 min)
+- [ ] App opens in VR, no long black or grey screen
 - [ ] Standing in the living room by the door, floor at the right height
-- [ ] Smooth: no judder when turning your head (90 Hz)
 
-## Movement and comfort
-- [ ] Left stick moves you where you look; edges darken while moving (vignette)
-- [ ] Right stick left/right turns 30°
-- [ ] Right stick forward shows a blue arc; release jumps there with a quick fade
-- [ ] Arc turns red on furniture and walls, and won't teleport there
-- [ ] Can't walk through walls
+## 2. Characters (3 min)
+- [ ] Joan on the sofa in the tripod position: leaning forward, elbows out, palms on her knees, head up
+- [ ] Her hands sit on her knees: no fingers or thumbs through her legs
+- [ ] Sleeves look smooth from shoulder to wrist (no twisted stripes at the elbow)
+- [ ] Blouse and jeans: no skin showing through anywhere, walk right round her
+- [ ] Ken standing by the window, arms down, shirt and jeans look right
+- [ ] Faces and eyes look normal close up (no see-through patches)
+- [ ] Joan's breathing: shoulders lift, chest moves
 
-## Menu
-- [ ] Left menu button opens the menu in front of you; sticks stop moving you
-- [ ] Each option changes and the label updates
-- [ ] Settings are remembered after quitting and reopening
-- [ ] Hands: left palm towards you shows a Menu button; pinch to open
-- [ ] Quit app works
+## 3. Things fixed since the first test (3 min)
+- [ ] Comfort vignette: edges darken while you move with the stick
+- [ ] Right stick click: crouch / kneel, click again to stand
+- [ ] Ask Ken about her medicines: he hands you the box
+- [ ] Medicines box: says "get closer to read" from a distance, readable close up
+- [ ] Assessment panel size is comfortable to read
+- [ ] Pointing away from the panel and pulling the trigger closes it
 
-## Room
-- [ ] Sunlight through the window, shadows look right, no flickering
-- [ ] Materials (floor, sofa, rug) look OK up close, no shimmering
+## 4. Performance tests (5 min) - menu items starting "Test:"
+These are not saved: if anything goes wrong, quit and reopen and it resets.
+- [ ] Test: frame rate shown: On. Note the fps standing by the door and kneeling by Joan
+      (72 is the default target; lower means it's struggling)
+- [ ] Test: refresh rate: step to 90 Hz. Still a normal picture? fps now?
+- [ ] Back to 72 Hz, then Test: foveation: Low, Medium, High in turn. Normal picture each time?
+      Edges of your view a little softer is expected; grey screen is the old bug
+- [ ] If one setting causes the grey screen: note which, then quit and reopen
 
-## Patient and bystander
-- [ ] Joan on the sofa, Ken standing at the far end
-- [ ] Joan's breathing looks fast and laboured; shoulders lift
-- [ ] Point at Joan or Ken and pull the trigger: panel opens beside them
-- [ ] Ask: answers appear above the right person's head; follow-ups appear
-- [ ] Look, listen, feel: findings appear
-- [ ] Medicines box: use it to see the contents; furosemide marked sealed
-- [ ] Kneel in front of Joan: comfortable distance, nothing in the way
+## 5. Pitch screenshots
+- [ ] A few from the doorway, kneeling in front of Joan, and side-on, with the menu closed
 
-## Controllers and hands
-- [ ] Both controllers track throughout (note any drop-outs)
-- [ ] Hand tracking: hands appear as dots; right-hand pinch works like the trigger
+## Always
+- [ ] Both controllers track throughout; Quit app works
