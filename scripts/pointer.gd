@@ -28,7 +28,20 @@ func _physics_process(_delta: float) -> void:
 		_hovered = target
 
 	var pressed := controller.is_button_pressed("trigger_click")
+	if pressed and not _was_pressed:
+		_close_panels_outside(target)
 	if pressed and not _was_pressed and target and target.has_method("interact"):
 		target.interact()
 		controller.trigger_haptic_pulse("haptic", 0.0, 0.4, 0.08, 0.0)
 	_was_pressed = pressed
+
+
+## Panels in the "closes_on_outside_click" group close when the trigger is
+## pulled while pointing anywhere other than at the panel itself.
+func _close_panels_outside(target: Object) -> void:
+	for panel in get_tree().get_nodes_in_group("closes_on_outside_click"):
+		if not panel.visible:
+			continue
+		if target is Node and (panel == target or panel.is_ancestor_of(target)):
+			continue
+		panel.close()

@@ -19,8 +19,8 @@ const POSTURES := {
 	# Sitting forward on the edge of the seat, leaning on straight arms.
 	"tripod": {
 		"bones": {
-			"thigh_l": Vector3(0.14, -0.08, 1.0), "thigh_r": Vector3(-0.14, -0.08, 1.0),
-			"calf_l": Vector3(0.03, -1.0, 0.12), "calf_r": Vector3(-0.03, -1.0, 0.12),
+			"thigh_l": Vector3(0.05, -0.08, 1.0), "thigh_r": Vector3(-0.05, -0.08, 1.0),
+			"calf_l": Vector3(0.06, -1.0, 0.12), "calf_r": Vector3(-0.06, -1.0, 0.12),
 			"foot_l": Vector3(0.05, -0.45, 0.9), "foot_r": Vector3(-0.05, -0.45, 0.9),
 			"spine_01": Vector3(0.0, 0.8, 0.6), "spine_02": Vector3(0.0, 0.82, 0.57),
 			"spine_03": Vector3(0.0, 0.85, 0.52),
@@ -64,6 +64,7 @@ func _init(model_root: Node3D, posture: String) -> void:
 	_chest = skeleton.find_bone("spine_03")
 	_clav_l = skeleton.find_bone("clavicle_l")
 	_clav_r = skeleton.find_bone("clavicle_r")
+	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
 
 
@@ -136,17 +137,48 @@ func _lift_clavicle(b: int, angle: float) -> void:
 
 # --- Looks -------------------------------------------------------------------
 
+## MakeHuman exports every material as alpha-blended and double-sided. Blended
+## surfaces aren't depth-sorted per pixel, so on Quest the skin under the
+## clothes, and the eyes and mouth inside the head, showed through in patches.
+## Make solid things opaque and strand-like things (hair, brows, lashes) cut-out.
+func _fix_materials() -> void:
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		var strands := _is_strands(n) or n.contains("eyebrow") or n.contains("eyelash") \
+				or n.contains("high-poly") or n.contains("low-poly")
+		var mesh: Mesh = mi.mesh
+		for s in mesh.get_surface_count():
+			var src := mesh.surface_get_material(s) as BaseMaterial3D
+			if src == null:
+				continue
+			var m := src.duplicate() as BaseMaterial3D
+			if strands:
+				m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA_SCISSOR
+				m.alpha_scissor_threshold = 0.4
+				m.cull_mode = BaseMaterial3D.CULL_DISABLED
+			else:
+				m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+				m.cull_mode = BaseMaterial3D.CULL_BACK
+			mi.set_surface_override_material(s, m)
+
+
+func _is_strands(n: String) -> bool:
+	for k in ["hair", "bob", "short0", "long0", "ponytail", "braid", "afro"]:
+		if n.contains(k):
+			return true
+	return false
+
+
 ## MakeHuman hair textures are coloured; grey them for older characters.
 func _tint_hair(tint: Color) -> void:
 	var shader := load("res://shaders/hair_grey.gdshader")
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		var n := String(mi.name).to_lower()
-		if not (n.contains("bob") or n.contains("short") or n.contains("hair") or n.contains("long")
-				or n.contains("ponytail") or n.contains("braid") or n.contains("eyebrow")):
+		if not (_is_strands(n) or n.contains("eyebrow")):
 			continue
 		var mesh: Mesh = mi.mesh
 		for s in mesh.get_surface_count():
-			var src := mesh.surface_get_material(s) as StandardMaterial3D
+			var src := mesh.surface_get_material(s) as BaseMaterial3D
 			if src == null:
 				continue
 			var m := ShaderMaterial.new()

@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode cull_disabled, depth_prepass_alpha;
+render_mode cull_disabled;
 // Greys a coloured MakeHuman hair texture (keeps its strand detail and alpha).
 
 uniform sampler2D hair_texture : source_color, filter_linear_mipmap;

@@ -27,6 +27,7 @@ func setup(scenario_runner, xr_player) -> void:
 	player.menu_toggle_requested.connect(close)
 	_build()
 	visible = false
+	add_to_group("closes_on_outside_click")
 	_set_enabled(false)
 
 
