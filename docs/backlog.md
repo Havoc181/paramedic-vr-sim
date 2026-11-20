@@ -355,3 +355,7 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - Tom: debrief is readable but a lot of pages and text -> to discuss (options: summary page first with drill-down; fewer "why it matters" lines; let the instructor/course profile choose depth).
 - Instructor link: headset menu showed no link line and the PC found no headset -> dev2 shows link status/errors in the menu for diagnosis.
 - Pitch screenshots taken (in-headset).
+
+## Website (planned 20 Nov 2026, later today)
+- Havoc Education site in the same branded style as Tom's Havoc Aviation site (flyhavoc.com, made with ChatGPT). One page: what it is, in-headset screenshots, who it's for, contact; plus a privacy policy page (the app collects nothing; instructor logs stay on the laptop). Needed for the Meta store listing and for EEAST / universities.
+- Hosting: GitHub Pages (free), custom domain later. Draft for Tom's review before anything is public.
