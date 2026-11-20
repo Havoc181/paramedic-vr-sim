@@ -371,3 +371,18 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - In the tripod, the hands slide slightly sideways as the shoulders lift with each breath. The rest of the movement is right; the hands should stay planted on the knees/thighs.
 - Cause: `rig_driver.apply_breath()` lifts the clavicles every breath, and the whole arm chain hangs off them, so the wrists move.
 - Fix plan: after the clavicle lift each frame, re-run the two-joint arm IK to the stored wrist targets (cheap: two bones per arm), so the elbows absorb the movement and the hands stay fixed. Same for the sit-back hands on the seat.
+
+## Next PC session: follow-up actions (saved 20 Nov, 21:57)
+Do these next time Claude has the PC (Tom not gaming; approve Blender when asked):
+1. **Run `make_humans.py` in Blender** (SourceAssets). Builds Joan + Ken + **Maureen** (81, Black British, old_african_female skin, short grey hair, plain muted-purple long-sleeved top via `clothes_colour`, dark jogging bottoms, shoes04) and the **legs exposure** layers (skin_legs patch, trousers rolled above the knees, shoes off) for Joan and Maureen. Confirm the look of Maureen with Tom first if he has preferences.
+2. **Check the build:** stage the new glbs, run `tests/sign_sheet.gd` for Joan and `WHO=maureen`, `tests/exposure_shot.gd`; fix any clipping (top lifted/off, legs rolled). Check darker-skin readings of pallor / cyanosis / clamminess on Maureen and adjust (relative to skin; tongue and inner lips most reliable).
+3. **Tom commits** `joan.glb`, `ken.glb`, `maureen.glb` in GitHub Desktop (LFS; never from the cloud).
+4. **Voices for Maureen:** voice tools (Kokoro, WORLD) are no longer in the cloud workspace and package installs are blocked on the account. Either Tom allows package installs in settings (new chat picks it up), or set the tools up on the PC. Then `build_voices.py scenarios/copd_02.json` and pick a different voice from Joan's.
+5. **Tripod hands drift** with breathing (see above): re-solve arm IK after the clavicle lift.
+6. **Clinical review by Tom:** draft sign strengths in apo_01 / copd_02 (`presentation.signs`), heart rates, capillary refill times; copd_02 history answers and debrief.
+7. Real props for scenario 02 (sputum pot, tissues, inhalers, rescue pack, dog bed) to replace the labelled boxes.
+8. Retake the instructor-app screenshot for the website when convenient (now has the signs sliders).
+
+## Decision: production app and future split (Tom, 20 Nov)
+- What exists now is the **production app** (Quest app + instructor laptop app from one Godot project).
+- We'll later split development across separate applications (for example: production headset app, a development/sandbox build for trying signs and characters, the instructor app, and the character/asset pipeline). Not yet: choose the right opportunity, e.g. a natural break such as the v0.05 milestone, before scenario authoring by others, or before a first external pilot.
