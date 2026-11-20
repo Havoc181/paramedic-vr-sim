@@ -46,11 +46,26 @@ func _ready() -> void:
 
 var _open := false
 var _was_read := false
+var _held := false
+var _home: Transform3D
 
 
 func interact() -> void:
+	if _held:
+		put_back()
+		return
 	_open = not _open
 	_label.visible = _open
+
+
+## Back where it came from (e.g. after Ken handed it over), closed.
+func put_back() -> void:
+	if not _held:
+		return
+	_held = false
+	global_transform = _home
+	_open = false
+	_label.visible = false
 
 
 func _process(_delta: float) -> void:
@@ -64,10 +79,15 @@ func _process(_delta: float) -> void:
 		_was_read = true
 		read.emit()
 	_label.text = (title + "\n" + details) if near else (title + "\n(get closer to read)")
+	if _held:
+		_label.text += "\n(point and click the box to put it back)"
 
 
 ## Someone hands this to you: it moves to just in front of you, open.
 func hand_to(cam: Node3D) -> void:
+	if not _held:
+		_home = global_transform
+		_held = true
 	var fwd := -cam.global_transform.basis.z
 	fwd.y = 0.0
 	fwd = fwd.normalized() if fwd.length() > 0.01 else Vector3.FORWARD

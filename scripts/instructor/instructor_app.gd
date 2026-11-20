@@ -18,6 +18,7 @@ var _connected_to := ""
 var _session_start := ""
 var _log_lines: Array[String] = []
 var _state := {}
+var _auto_connect := true   # connect by itself when exactly one headset is found
 
 # UI
 var _status: Label
@@ -55,6 +56,10 @@ func _process(_delta: float) -> void:
 			_found[from] = {"scenario": msg.get("scenario", ""), "busy": msg.get("busy", false),
 				"seen": Time.get_ticks_msec()}
 	_refresh_headsets()
+	if _tcp == null and _auto_connect and _found.size() == 1:
+		var only: String = _found.keys()[0]
+		if not bool(_found[only].get("busy", false)):
+			_connect_to(only)
 
 	if _tcp == null:
 		return
@@ -63,7 +68,9 @@ func _process(_delta: float) -> void:
 	if st == StreamPeerTCP.STATUS_CONNECTING:
 		return
 	if st != StreamPeerTCP.STATUS_CONNECTED:
-		_disconnected("Connection lost.")
+		_auto_connect = false
+		_disconnected("Couldn't connect to %s (status %d). If this keeps happening, check the Windows firewall allows Godot / the instructor app." % [_connected_to, st]
+				if _session_start == "" else "Connection lost.")
 		return
 	var n := _tcp.get_available_bytes()
 	if n > 0:
@@ -105,6 +112,7 @@ func _disconnected(why: String) -> void:
 func _on_message(msg: Dictionary) -> void:
 	match String(msg.get("t", "")):
 		"hello":
+			_auto_connect = true
 			_session_start = Time.get_datetime_string_from_system(false, true)
 			_log.clear()
 			_log_lines.clear()
@@ -197,7 +205,10 @@ func _build_ui() -> void:
 	_headsets = ItemList.new()
 	_headsets.custom_minimum_size.y = 70
 	_headsets.item_activated.connect(func(i): _connect_to(_headsets.get_item_metadata(i)))
-	_headsets.item_selected.connect(func(i): _ip.text = _headsets.get_item_metadata(i))
+	_headsets.item_selected.connect(func(i):
+		_ip.text = _headsets.get_item_metadata(i)
+		if _tcp == null:
+			_connect_to(_ip.text))
 	left.add_child(_headsets)
 	var row := HBoxContainer.new()
 	_ip = LineEdit.new()
@@ -208,8 +219,11 @@ func _build_ui() -> void:
 	_connect_btn.text = "Connect"
 	_connect_btn.pressed.connect(func():
 		if _tcp:
+			_auto_connect = false
 			_tcp.disconnect_from_host()
 			_disconnected("Disconnected.")
+		elif _ip.text.strip_edges() == "" and not _found.is_empty():
+			_connect_to(_found.keys()[0])
 		else:
 			_connect_to(_ip.text))
 	row.add_child(_connect_btn)
