@@ -47,7 +47,9 @@
         "affect": "tired_anxious",
         "peripheral_oedema": "none",
         "calves": "soft_non_tender",
-        "neck_veins_visible": false
+        "neck_veins_visible": false,
+        "abdominal_movement_cm": 4.0,
+        "_abdominal_note": "Belly moves up to this far (cm). Paradoxical = drawn in on the in-breath. Bigger for a larger, frailer abdomen; mild ~2.5, marked ~4-5."
       },
       "voice": {
         "voice": "bf_lily",

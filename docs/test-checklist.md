@@ -1,4 +1,17 @@
-# Test checklist — v0.05-dev6 (exposure and belly breathing)
+# Test checklist — v0.05-dev7 (exposure fixes)
+
+Fixed from dev6 test: sleeves warped/hands out of sleeves when she sits back (lifted top);
+see-through lifted top from inside; belly moving through the jeans; belly movement now
+deeper (3.5 cm default, Maureen 4 cm).
+
+## Retest
+- [ ] Lifted top: sleeves follow her arms down to the wrists
+- [ ] Lifted top: no see-through from the side/inside of the gathered fabric
+- [ ] Belly never pokes through the front of the jeans (normal or paradoxical)
+- [ ] Paradoxical movement now clearer
+
+---
+(dev6 list below)
 
 **Before exporting:** commit the rebuilt `assets/characters/joan.glb` (and `ken.glb`
 if it shows as changed) in GitHub Desktop.

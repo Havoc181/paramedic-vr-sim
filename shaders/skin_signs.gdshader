@@ -14,7 +14,7 @@ uniform vec3 dusky = vec3(0.47, 0.47, 0.62);
 // Abdominal movement with breathing, -1..1 (negative = drawn in). COLOR.b masks
 // it to the middle of the abdomen patch; elsewhere it is 0.
 uniform float belly = 0.0;
-uniform float belly_depth = 0.022;
+uniform float belly_depth = 0.035;
 
 varying vec2 mask;
 

@@ -33,7 +33,7 @@ func _initialize() -> void:
 			cam.look_at(chest + Vector3(0, -0.02, 0))
 			ch.set_process(false)
 			for b in [0.0, 1.0]:
-				ch._rig.abdominal_paradox = true
+				ch._rig.abdominal_paradox = OS.get_environment("NORMAL_BELLY") != "1"
 				ch._rig.apply_breath(b, 0.6, 0.0)
 				for f in 3:
 					await process_frame

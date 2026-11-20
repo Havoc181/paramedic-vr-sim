@@ -510,7 +510,9 @@ func _fix_materials() -> void:
 				m.cull_mode = BaseMaterial3D.CULL_DISABLED
 			else:
 				m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
-				m.cull_mode = BaseMaterial3D.CULL_BACK
+				# The lifted top's gathered folds are seen from inside at the
+				# sides, so draw both faces of that one.
+				m.cull_mode = BaseMaterial3D.CULL_DISABLED if n.ends_with("_lifted") else BaseMaterial3D.CULL_BACK
 			# Inside the mouth there is no ambient occlusion, so stark white
 			# teeth and a bright tongue glow. Age the teeth and shade both.
 			if n.contains("teeth"):
@@ -547,6 +549,12 @@ func set_clammy(v: float) -> void:
 
 
 var abdominal_paradox := false
+
+
+## How far the belly moves at most, in metres (scenario: abdominal_movement_cm).
+func set_belly_depth(metres: float) -> void:
+	if _skin_mat:
+		_skin_mat.set_shader_parameter("belly_depth", metres)
 
 
 ## Swap the skin material (body and the hidden skin patches under the top) for
@@ -595,7 +603,14 @@ func _setup_skin_signs() -> void:
 		for mi in model.find_children("*", "MeshInstance3D", true, false):
 			var n := String(mi.name).to_lower()
 			if n.contains("casualsuit") or n.contains("trouser") or n.contains("jeans"):
-				y0 = minf(y0, mi.mesh.get_aabb().end.y - 0.05)
+				# Fade out at the front of the waistband (the highest point of
+				# the trousers' front), so the belly never moves through them.
+				var front_top := -INF
+				for v in (mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
+					if v.z > 0.04 and absf(v.x) < 0.08:
+						front_top = maxf(front_top, v.y)
+				if front_top > -INF:
+					y0 = front_top + 0.005
 		_belly_box = AABB(Vector3(pb.position.x, y0, pb.position.z), Vector3(pb.size.x, pb.end.y - y0, pb.size.z))
 	for mi in targets:
 		_bake_skin_masks(mi, mouth if teeth else Vector3.INF)

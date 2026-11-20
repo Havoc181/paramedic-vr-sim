@@ -56,6 +56,7 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
 		reset_skin_signs()
 		_rig.abdominal_paradox = bool(p.get("abdominal_paradox", false))
+		_rig.set_belly_depth(float(p.get("abdominal_movement_cm", 3.5)) / 100.0)
 	else:
 		var m = MANNEQUIN.new()
 		m.seated = is_patient
