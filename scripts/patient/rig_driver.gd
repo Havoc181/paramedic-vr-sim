@@ -130,7 +130,7 @@ func set_jaw(open: float) -> void:
 		return
 	skeleton.set_bone_pose_rotation(b, _base_local[b])
 	if open > 0.01:
-		_rotate_global(b, Basis(Vector3(1, 0, 0), deg_to_rad(6.0) * clampf(open, 0.0, 1.0)))
+		_rotate_global(b, Basis(Vector3(1, 0, 0), deg_to_rad(8.0) * clampf(open, 0.0, 1.0)))
 
 
 func apply_breath(breath: float, depth: float, accessory: float) -> void:
@@ -381,6 +381,14 @@ func _fix_materials() -> void:
 			else:
 				m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 				m.cull_mode = BaseMaterial3D.CULL_BACK
+			# Inside the mouth there is no ambient occlusion, so stark white
+			# teeth and a bright tongue glow. Age the teeth and shade both.
+			if n.contains("teeth"):
+				m.albedo_color = m.albedo_color * Color(0.86, 0.81, 0.72)
+				m.roughness = 0.55
+			elif n.contains("tongue"):
+				m.albedo_color = m.albedo_color * Color(0.6, 0.5, 0.5)
+				m.roughness = 0.6
 			mi.set_surface_override_material(s, m)
 
 

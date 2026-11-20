@@ -1,23 +1,13 @@
-# Test checklist — v0.05-dev3 (menu visibility)
+# Test checklist — v0.05-dev4 (teeth and tongue)
 
-Export to the Quest as usual, then check:
+Before exporting: in GitHub Desktop, commit the rebuilt `assets/characters/joan.glb`
+and `ken.glb` (they now include teeth and a tongue).
 
-## Pointer over menus
-- [ ] The laser beam stays visible in front of the menu panel (not hidden behind it)
-- [ ] Both controllers stay visible when held in front of / behind a panel
-- [ ] A small white dot shows exactly where you're pointing on a button
-- [ ] Same in the pause menu, debrief and info boxes
-- [ ] Nothing looks odd when pointing at the room (beam/dot drawing through walls is expected, say if it's distracting)
-
-## Paging in the Ask / Look, listen, feel lists
-- [ ] Blue "More >" and "< Back" buttons are obvious
-- [ ] A horizontal page bar sits between them, one segment per page, current page lit
-- [ ] Pointing at a segment highlights it; clicking jumps straight to that page
-- [ ] Segments are easy enough to hit (target is taller than the thin bar)
-- [ ] "Page 1 of 3" shows under the bar
-- [ ] Bar and page text are hidden when the list fits on one page
-
-## Debrief
-- [ ] Next / Back buttons are blue and easy to spot
+## Mouths
+- [ ] When Joan and Ken speak, the mouth opens and you can see teeth (mostly lower) and a tongue
+- [ ] Teeth look aged/off-white, not glowing white; nothing bright red or odd inside the mouth
+- [ ] With the mouth closed, no teeth poke through the lips or chin
+- [ ] Joan's breathless phrases: jaw movement still looks right
+- [ ] No drop in frame rate (each character is ~3–6 MB bigger)
 
 Notes:
