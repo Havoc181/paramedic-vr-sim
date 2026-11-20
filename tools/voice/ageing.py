@@ -23,8 +23,8 @@ FP = 5.0  # ms per frame
 
 PRESETS = {
     # f0 scale, jitter (fraction), shimmer (dB), tremor (fraction, Hz), breathy (0-1), formant scale
-    "old_woman": dict(f0=0.84, jitter=0.012, shimmer=0.9, tremor=(0.012, 5.0), breathy=0.35, formant=0.95),
-    "old_man":   dict(f0=1.04, jitter=0.010, shimmer=0.8, tremor=(0.008, 5.0), breathy=0.20, formant=0.97),
+    "old_woman": dict(f0=0.86, jitter=0.008, shimmer=0.7, tremor=(0.0, 5.0), drift=0.008, breathy=0.30, formant=0.96),
+    "old_man":   dict(f0=0.97, jitter=0.006, shimmer=0.6, tremor=(0.0, 5.0), drift=0.0, breathy=0.15, formant=0.97),
 }
 
 
@@ -48,7 +48,7 @@ def age(x, preset="old_woman", rng=None, strength=1.0, breathless=0.0):
     # pitch: lower/raise, add slow drift, jitter and tremor
     scale = 1 + (p["f0"] - 1) * strength
     jit = gaussian_filter1d(rng.standard_normal(n), 1.0) * p["jitter"] * strength
-    drift = gaussian_filter1d(rng.standard_normal(n), 25) * 0.02 * strength
+    drift = gaussian_filter1d(rng.standard_normal(n), 25) * p.get("drift", 0.0) * strength
     trem = p["tremor"][0] * strength * np.sin(2 * np.pi * p["tremor"][1] * np.arange(n) * FP / 1000.0)
     f0 = np.where(voiced, f0 * scale * (1 + jit + drift + trem), 0)
     if breathless > 0:   # pitch sags slightly as air runs out
