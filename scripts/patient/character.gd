@@ -54,6 +54,7 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 		_body = (load(model_path) as PackedScene).instantiate()
 		add_child(_body)
 		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
+		reset_skin_signs()
 	else:
 		var m = MANNEQUIN.new()
 		m.seated = is_patient
@@ -110,6 +111,15 @@ func _process(delta: float) -> void:
 
 ## Instructor control: -1 = much better, 0 = as written, +1 = much worse.
 ## Changes breathing rate, depth, shoulder use and how loud the breathing is.
+## Lip cyanosis and sweat sheen as the scenario describes them.
+func reset_skin_signs() -> void:
+	if _rig == null:
+		return
+	var skin: Dictionary = data.get("presentation", {}).get("skin", {})
+	_rig.set_cyanosis(float(skin.get("cyanosis", 0.0)))
+	_rig.set_clammy(float(skin.get("clammy_level", 0.6 if skin.get("clammy", false) else 0.0)))
+
+
 func set_severity(v: float) -> void:
 	v = clampf(v, -1.0, 1.0)
 	_breath.rate = clampf(_base_rate * (1.0 + 0.3 * v), 8.0, 50.0)

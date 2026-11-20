@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.05-dev4"
+const APP_VERSION := "v0.05-dev5"
 
 ## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
 ## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.
@@ -19,6 +19,10 @@ var _fps_label: Label3D
 var _link_label: Label3D
 var _refresh_rates: Array = []
 var _refresh_index := -1
+## Test only: preview the skin signs on the patient (lips / sheen levels).
+const SIGNS := [["As scenario", -1.0, -1.0], ["Lips mild", 0.4, 0.0], ["Lips marked", 0.75, 0.0],
+		["Clammy mild", 0.0, 0.45], ["Clammy marked", 0.0, 0.8], ["Normal", 0.0, 0.0]]
+var _signs_index := 0
 
 
 func _ready() -> void:
@@ -92,11 +96,11 @@ func _build() -> void:
 	_link_label.render_priority = 11
 	add_child(_link_label)
 
-	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "refresh", "quit"]
+	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "refresh", "signs", "quit"]
 	for i in items.size():
 		var b = MENU_BUTTON.new()
 		b.name = "Button_" + items[i]
-		b.position = Vector3(0, 0.15 - i * 0.07, 0)
+		b.position = Vector3(0, 0.15 - i * 0.062, 0)
 		add_child(b)
 		b.pressed.connect(_on_pressed.bind(items[i]))
 		_buttons[items[i]] = b
@@ -123,6 +127,9 @@ func _on_pressed(id: String) -> void:
 			if xr2 and not _refresh_rates.is_empty():
 				_refresh_index = (_refresh_index + 1) % _refresh_rates.size()
 				xr2.display_refresh_rate = _refresh_rates[_refresh_index]
+		"signs":
+			_signs_index = (_signs_index + 1) % SIGNS.size()
+			_apply_signs()
 		"quit":
 			get_tree().quit()
 			return
@@ -139,6 +146,7 @@ func _refresh_labels() -> void:
 	_buttons.seated.text = "Seated mode: " + ("On" if player.seated else "Off")
 	_buttons.fps.text = "Test: frame rate shown: " + ("On" if _fps_label and _fps_label.visible else "Off")
 	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
+	_buttons.signs.text = "Test: patient skin: " + SIGNS[_signs_index][0]
 	_buttons.quit.text = "Quit app"
 	var link = get_tree().get_first_node_in_group("session_link")
 	if _link_label:
@@ -196,3 +204,14 @@ func _process(_delta: float) -> void:
 func _set_buttons_enabled(value: bool) -> void:
 	for b in _buttons.values():
 		(b as StaticBody3D).collision_layer = 1 if value else 0
+
+
+func _apply_signs() -> void:
+	for c in get_tree().root.find_children("*", "", true, false):
+		if c.has_method("reset_skin_signs") and c.data.get("role", "") == "patient":
+			var p = SIGNS[_signs_index]
+			if p[1] < 0.0:
+				c.reset_skin_signs()
+			elif c._rig:
+				c._rig.set_cyanosis(p[1])
+				c._rig.set_clammy(p[2])

@@ -1,13 +1,21 @@
-# Test checklist — v0.05-dev4 (teeth and tongue)
+# Test checklist — v0.05-dev5 (skin signs: lip cyanosis, clamminess)
 
-Before exporting: in GitHub Desktop, commit the rebuilt `assets/characters/joan.glb`
-and `ken.glb` (they now include teeth and a tongue).
+If you haven't yet: commit the rebuilt `joan.glb` and `ken.glb` in GitHub Desktop
+(teeth and tongue, from dev4) before exporting.
 
-## Mouths
-- [ ] When Joan and Ken speak, the mouth opens and you can see teeth (mostly lower) and a tongue
-- [ ] Teeth look aged/off-white, not glowing white; nothing bright red or odd inside the mouth
-- [ ] With the mouth closed, no teeth poke through the lips or chin
-- [ ] Joan's breathless phrases: jaw movement still looks right
-- [ ] No drop in frame rate (each character is ~3–6 MB bigger)
+Joan (scenario 01) now has a moderate clammy sheen (clammy_level 0.6), no cyanosis.
+Scenario 02's patient will use: lips 0.4 (mild), clammy 0.45 (mild).
+
+## Preview in the headset
+Pause menu > "Test: patient skin" cycles: As scenario / Lips mild / Lips marked /
+Clammy mild / Clammy marked / Normal. Kneel close to Joan and compare.
+
+- [ ] Lips mild: you'd notice it if you looked at her mouth, but it isn't cartoonish
+- [ ] Lips marked: clearly dusky/blue-grey, still looks like lips (texture kept)
+- [ ] No blue tint spreading under the nose or onto the chin
+- [ ] Clammy mild: a faint sheen on nose, cheeks, upper lip as you move your head
+- [ ] Clammy marked: obviously sweaty, but not plastic
+- [ ] Joan's default (moderate sheen) looks right for APO
+- [ ] Frame rate unchanged
 
 Notes:

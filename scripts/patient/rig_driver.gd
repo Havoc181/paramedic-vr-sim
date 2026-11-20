@@ -119,6 +119,7 @@ func _init(model_root: Node3D, posture: String) -> void:
 		_clav[side] = c[0] if c.size() > 0 else -1
 	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
+	_setup_skin_signs()
 
 
 ## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
@@ -397,6 +398,84 @@ func _is_strands(n: String) -> bool:
 		if n.contains(k):
 			return true
 	return false
+
+
+# --- Clinical skin signs ------------------------------------------------------
+
+var _skin_mat: ShaderMaterial
+
+
+## Lip cyanosis, 0..1. Mild/subtle is about 0.4-0.5.
+func set_cyanosis(v: float) -> void:
+	if _skin_mat:
+		_skin_mat.set_shader_parameter("cyanosis", clampf(v, 0.0, 1.0))
+
+
+## Sweaty sheen, 0..1. Mild clamminess is about 0.35.
+func set_clammy(v: float) -> void:
+	if _skin_mat:
+		_skin_mat.set_shader_parameter("clammy", clampf(v, 0.0, 1.0))
+
+
+## Swap the body's skin material for one that can show cyanosis and clamminess.
+## The lips aren't separate in MakeHuman, so find them by position: just in
+## front of the teeth, in an ellipse around the mouth. The mask is baked into
+## vertex colours so the shader stays cheap on Quest.
+func _setup_skin_signs() -> void:
+	var body: MeshInstance3D = null
+	var teeth: MeshInstance3D = null
+	var best := 0
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		if n.contains("teeth"):
+			teeth = mi
+			continue
+		if _is_strands(n) or n.contains("suit") or n.contains("shoe") or n.contains("eye") \
+				or n.contains("poly") or n.contains("tongue") or mi.mesh == null:
+			continue
+		var count: int = mi.mesh.surface_get_array_len(0)
+		if count > best:
+			best = count
+			body = mi
+	if body == null:
+		return
+	var src_mat := body.get_active_material(0) as BaseMaterial3D
+	if src_mat == null or src_mat.albedo_texture == null:
+		return
+	# Mouth centre from the teeth (or a fallback from the head height).
+	var ta := teeth.mesh.get_aabb() if teeth else AABB()
+	var centre := Vector3(ta.get_center().x, ta.position.y + ta.size.y * 0.6, ta.end.z) if teeth \
+			else Vector3.ZERO
+	var mesh: ArrayMesh = body.mesh
+	var out := ArrayMesh.new()
+	for s in mesh.get_surface_count():
+		var arrays := mesh.surface_get_arrays(s)
+		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		var cols := PackedColorArray()
+		cols.resize(verts.size())
+		for i in verts.size():
+			var v := verts[i]
+			var lip := 0.0
+			var face := 0.0
+			if teeth:
+				var dz := v.z - (centre.z - 0.012)
+				if dz > 0.0:
+					var d := Vector2((v.x - centre.x) / 0.03, (v.y - centre.y) / 0.014).length()
+					lip = 1.0 - smoothstep(0.55, 1.0, d)
+				var fy := v.y - centre.y
+				if fy > -0.045 and fy < 0.13 and v.z > centre.z - 0.06 and absf(v.x - centre.x) < 0.075:
+					face = smoothstep(centre.z - 0.06, centre.z - 0.01, v.z)
+			cols[i] = Color(lip, face, 0.0, 1.0)
+		arrays[Mesh.ARRAY_COLOR] = cols
+		var fmt := mesh.surface_get_format(s) & ~Mesh.ARRAY_FORMAT_VERTEX & Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+		out.add_surface_from_arrays(mesh.surface_get_primitive_type(s), arrays, [], {}, fmt)
+		_skin_mat = ShaderMaterial.new()
+		_skin_mat.shader = load("res://shaders/skin_signs.gdshader")
+		_skin_mat.set_shader_parameter("albedo_texture", src_mat.albedo_texture)
+		out.surface_set_material(s, _skin_mat)
+	body.mesh = out
+	for s in out.get_surface_count():
+		body.set_surface_override_material(s, null)
 
 
 ## MakeHuman hair textures are coloured; grey them for older characters.

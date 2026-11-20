@@ -28,6 +28,7 @@
     "skin": {
      "colour": "pale_grey",
      "clammy": true,
+        "clammy_level": 0.6,
      "temperature": "cool_peripheries"
     },
     "affect": "anxious",

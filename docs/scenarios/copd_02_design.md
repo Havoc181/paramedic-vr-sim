@@ -8,8 +8,8 @@ pet details, timings, observation values all changed). No doses in app.
    paradoxical abdominal movement, cyanosis).
 2. Anchoring: the exacerbation explains most of the picture, but not the fresh
    haemoptysis or new pleuritic pain. Pneumonia and PE remain open.
-3. (Next version) Informed refusal: decision-specific capacity, supporting the
-   decision without coercion, and reducing risk vs resolving it.
+Scope: assessment only. Treatment, response to treatment and refusal/capacity
+are deliberately left for a separate, later piece of work (project lead, 20 Nov).
 
 ## Build plan (one focus per build)
 - v1 (this file): assessment, history, scene clues, impression, debrief.
@@ -18,13 +18,10 @@ pet details, timings, observation values all changed). No doses in app.
   - Scenario chooser at start (apo_01 / copd_02).
   - Props: sputum pot, tissues, inhalers, sealed rescue pack, dog bed/bowl/lead.
   - Paradoxical abdominal movement in the breathing animation.
-  - Dusky lip tint.
+  - Dusky lip tint: DONE (skin_signs shader, cyanosis 0.4 = mild).
+  - Mild clamminess sheen: DONE (clammy_level 0.45).
   - Wince-and-hold-back cough.
   - Dog whine instructor event (replaces the bystander interrupt).
   - Distinct patient model and voice (not Joan).
-- v2: "Discuss and decide" tab: recommend hospital, explore her reasons,
-  MCA functional test (understand, retain, use/weigh, communicate), senior
-  advice, safety-netting, help with the dog. Debrief reports what was explored,
-  not whether she went.
 - Later: observations, auscultation, treatment response (no doses until
   JRCALC permission).
