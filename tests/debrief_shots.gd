@@ -9,7 +9,7 @@ func _initialize() -> void:
 		panel.assessed[id] = true
 	for id in ["events", "onset", "pmh", "meds", "chest_pain"]:
 		panel.asked_ids()[id] = true
-	runner._on_finished("lrti", "urgent")
+	runner._on_finished("apo", "")
 	var deb = runner._debrief
 	var xcam: Camera3D = main.find_child("XRCamera3D", true, false)
 	var cam := Camera3D.new(); root.add_child(cam); cam.current = true; cam.fov = 70
