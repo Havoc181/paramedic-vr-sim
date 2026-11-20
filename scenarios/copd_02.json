@@ -1,0 +1,266 @@
+{
+  "format_version": 1,
+  "id": "copd_02",
+  "title": "Breathless with COPD: more than an exacerbation?",
+  "status": "DRAFT for clinical review by project lead. Fictionalised from a real case: patient details, pet, timings and observation values all changed. No doses in app.",
+  "dispatch": "18:20. 81-year-old female, known COPD, difficulty in breathing, coughing up blood. Lives alone. Conscious and breathing.",
+  "learning_focus": [
+    "Recognise severe respiratory distress and signs of tiring in COPD.",
+    "Notice the features an exacerbation does not explain (haemoptysis, new pleuritic pain) and avoid anchoring.",
+    "Later version: informed refusal, decision-specific capacity, and reducing versus resolving risk."
+  ],
+  "characters": {
+    "maureen": {
+      "role": "patient",
+      "name": "Maureen Hale",
+      "age": 81,
+      "sex": "female",
+      "model": "res://assets/characters/joan.glb",
+      "_model_note": "Placeholder: reuses Joan's model. A distinct character (different face, hair, cardigan) to be built with make_humans.py once the scenario is approved.",
+      "seat": "Sofa/PatientSeat",
+      "presentation": {
+        "posture": "tripod",
+        "respiratory_rate": 30,
+        "breath_depth": 0.55,
+        "work_of_breathing": 0.9,
+        "accessory_muscles": true,
+        "abdominal_paradox": true,
+        "_abdominal_paradox_note": "New: belly moves in as the chest rises. Needs a rig_driver change.",
+        "pursed_lip": true,
+        "speech": "short_phrases",
+        "words_per_breath": [3, 5],
+        "breath_sound": "wheeze_expiratory",
+        "cough_interval_s": 25,
+        "cough_wince": true,
+        "_cough_wince_note": "Catches her breath and holds the right side of her back when she coughs (pleuritic pain).",
+        "skin": {
+          "colour": "pale_lips_dusky",
+          "_lips_note": "Dusky blue lips (central cyanosis). Needs a lip tint in the skin material.",
+          "clammy": false,
+          "temperature": "cool"
+        },
+        "affect": "tired_determined",
+        "peripheral_oedema": "none",
+        "calves": "soft_non_tender",
+        "neck_veins_visible": false
+      },
+      "voice": {
+        "voice": "bf_lily",
+        "speed": 0.86,
+        "age": "old_woman",
+        "age_strength": 1.0,
+        "breathless": 0.7,
+        "breath_gain": 0.45,
+        "_note": "Same voice as Joan for now; pick a different Kokoro voice when the new model is built so the two patients don't sound alike."
+      }
+    }
+  },
+  "props": [
+    {"id": "sputum_tissue", "where": "sofa_arm", "interactable": true,
+     "description": "Crumpled tissues: thick green-yellow sputum, and one with bright red blood mixed through clear sputum."},
+    {"id": "sputum_pot", "where": "SideTable", "interactable": true,
+     "description": "A small pot she has been spitting into: a couple of tablespoons of mostly fresh red blood mixed with sputum."},
+    {"id": "inhalers", "where": "SideTable", "interactable": true,
+     "description": "Blue reliever inhaler (salbutamol) and a combination preventer inhaler. Reliever nearly empty.",
+     "contents": ["salbutamol inhaler (nearly empty)", "steroid/long-acting combination inhaler"]},
+    {"id": "rescue_pack", "where": "Sideboard", "interactable": true,
+     "description": "COPD rescue pack from the GP: steroid tablets and antibiotics. Sealed, not started.",
+     "contents": ["prednisolone (sealed)", "amoxicillin (sealed)"]},
+    {"id": "medicines_box", "where": "SideTable", "interactable": true,
+     "description": "Medicines tub with her regular tablets.",
+     "contents": ["amlodipine", "atorvastatin", "omeprazole", "alendronic acid", "calcium and vitamin D", "paracetamol"]},
+    {"id": "dog_things", "where": "Floor", "interactable": false,
+     "description": "Dog bed by the radiator, water bowl, a lead on the door handle. Young dog shut in the kitchen, whining now and then."}
+  ],
+  "history": {
+    "past_medical": ["COPD (ex-smoker, stopped 10 years ago)", "Hypertension", "Osteoporosis", "Two exacerbations last year, one admission"],
+    "medications_todo": "Doses deliberately not shown in-app until checked against current JRCALC/BNF before release.",
+    "allergies": ["None known"],
+    "key_event": "A week of worsening cough with green sputum; today coughing up fresh blood and a new sharp pain in the right side of her back when she breathes in.",
+    "social": "Lives alone with a young rescue dog she got after her previous dog died. Independent, walks the dog twice a day until this week.",
+    "anticoagulants": "None",
+    "vte_risk": "Less mobile this week, mostly in her chair. No recent surgery, travel or known cancer."
+  },
+  "questions": [
+    {"id": "events", "label": "What's happened today?", "answers": [
+      {"by": "maureen", "text": "Chest's been bad... all week... today I coughed up... blood. Frightened me."}]},
+    {"id": "onset", "label": "When did it start?", "answers": [
+      {"by": "maureen", "text": "Cough... about a week... the blood... this afternoon."}]},
+    {"id": "sputum", "label": "What are you coughing up?", "answers": [
+      {"by": "maureen", "text": "Green... all week. Today... red. Proper blood... it's in that pot."}]},
+    {"id": "blood_amount", "label": "How much blood?", "answers": [
+      {"by": "maureen", "text": "Couple of... spoonfuls... maybe more. Bright red."}]},
+    {"id": "chest_pain", "label": "Any chest pain?", "answers": [
+      {"by": "maureen", "text": "In my back... the right... sharp... when I breathe in. Started today."}]},
+    {"id": "pain_more", "label": "Does anything make the pain worse?", "answers": [
+      {"by": "maureen", "text": "Coughing... deep breath... catches me... like a knife."}]},
+    {"id": "previous", "label": "Has your chest been this bad before?", "answers": [
+      {"by": "maureen", "text": "Bad, yes... last winter... never the blood. Never."}]},
+    {"id": "fever", "label": "Have you felt hot or shivery?", "answers": [
+      {"by": "maureen", "text": "Cold... can't get warm... shivery last night."}]},
+    {"id": "rescue_pack", "label": "Do you have a rescue pack? Have you started it?", "answers": [
+      {"by": "maureen", "text": "In the drawer... didn't want to... make a fuss."}]},
+    {"id": "inhaler_use", "label": "How much are you using your blue inhaler?", "answers": [
+      {"by": "maureen", "text": "All day... it's not... touching it."}]},
+    {"id": "legs", "label": "Any pain or swelling in your legs?", "answers": [
+      {"by": "maureen", "text": "No... legs are fine."}]},
+    {"id": "mobility", "label": "Have you been less mobile lately?", "answers": [
+      {"by": "maureen", "text": "In this chair... most of the week. Neighbour's... walked the dog."}]},
+    {"id": "clots", "label": "Any history of clots, recent surgery or travel?", "answers": [
+      {"by": "maureen", "text": "No... nothing like that."}]},
+    {"id": "weight", "label": "Any weight loss or night sweats recently?", "answers": [
+      {"by": "maureen", "text": "Don't think so... clothes still fit."}]},
+    {"id": "pmh", "label": "Any medical history?", "answers": [
+      {"by": "maureen", "text": "COPD... blood pressure... bones are thin."}]},
+    {"id": "meds", "label": "What medications do you take?", "answers": [
+      {"by": "maureen", "text": "Inhalers... and tablets... in the tub there."}]},
+    {"id": "home_oxygen", "label": "Do you use oxygen at home?", "answers": [
+      {"by": "maureen", "text": "No... never needed it."}]},
+    {"id": "smoking", "label": "Do you smoke?", "answers": [
+      {"by": "maureen", "text": "Gave up... ten years ago. Forty a day... before that."}]},
+    {"id": "allergies", "label": "Any allergies?", "answers": [
+      {"by": "maureen", "text": "No."}]},
+    {"id": "home", "label": "Who's at home with you?", "answers": [
+      {"by": "maureen", "text": "Just me... and the dog. She's in the kitchen... she's only young."}]},
+    {"id": "wishes", "label": "How do you feel about going to hospital?", "answers": [
+      {"by": "maureen", "text": "I'm not going in. I'm tired... I want my bed. Who'd see to her?"}],
+     "_note": "Seeds the refusal theme. The full capacity and refusal conversation is planned for the next version."}
+  ],
+  "first_impression": [
+    {"id": "position", "method": "look", "finding": "Sitting forward on the edge of the sofa, hands on her knees (tripod)."},
+    {"id": "breathing", "method": "look", "finding": "Fast (about 30 a minute if you count), pursed lips, shoulders and neck muscles working hard."},
+    {"id": "abdomen", "method": "look", "finding": "Her belly moves in as her chest rises: paradoxical abdominal movement."},
+    {"id": "speech", "method": "listen", "finding": "3-5 words per breath."},
+    {"id": "breath_sounds", "method": "listen", "finding": "Audible wheeze on breathing out, long expiration."},
+    {"id": "cough", "method": "look_listen", "finding": "Wet cough; she winces and holds the right side of her back."},
+    {"id": "colour", "method": "look", "finding": "Pale, with dusky blue lips."},
+    {"id": "sputum", "method": "look", "finding": "Tissues with green sputum, and fresh red blood in the pot."},
+    {"id": "mental_state", "method": "look_listen", "finding": "Alert, answers appropriately, tired but clear in what she wants."},
+    {"id": "skin", "method": "feel", "finding": "Cool to touch, dry."},
+    {"id": "radial_pulse", "method": "feel", "finding": "Regular, about 95."},
+    {"id": "calves", "method": "look_feel", "finding": "Calves soft, not swollen or tender. No ankle swelling."}
+  ],
+  "later_versions": {
+    "observations": {
+      "rr": 30, "spo2_air": 86, "hr": 96, "rhythm": "sinus", "bp": "138/80",
+      "temp_c": 35.6, "gcs": 15, "bm_mmol": 5.6, "pefr_l_min": 90, "etco2_kpa": 4.1,
+      "ecg": "Sinus rhythm about 95"
+    },
+    "auscultation": "Reduced air entry throughout with widespread expiratory wheeze; after bronchodilators: wheeze, coarse crackles right base and a possible rub.",
+    "response_to_treatment": "Improves but does not settle: SpO2 to about 92% on air, RR about 26, still working hard.",
+    "refusal": {
+      "summary": "Declines hospital despite clear advice. Understands she could deteriorate and die; believes she'll be alright. Main reasons: tired, wants her bed, won't leave the young dog.",
+      "capacity": "Has capacity for this decision if assessed properly (understand, retain, use/weigh, communicate). The scenario should reward a structured, decision-specific assessment, not a particular outcome.",
+      "mitigation_options": ["Senior clinical advice", "Next-morning community/rapid-response review", "GP referral", "Clear worsening advice and how to call back", "Help with the dog so it isn't a barrier (neighbour, family)"]
+    }
+  },
+  "debrief": {
+    "opening_prompt": "Before the explanation: say out loud what you think is going on and why.",
+    "tone": "objective",
+    "impression_options": [
+      {"id": "copd_plus", "label": "COPD exacerbation, with another cause (PE / pneumonia) not excluded"},
+      {"id": "copd_infective", "label": "Infective exacerbation of COPD"},
+      {"id": "pneumonia", "label": "Pneumonia"},
+      {"id": "pe", "label": "Pulmonary embolism"},
+      {"id": "apo", "label": "Acute pulmonary oedema / heart failure"},
+      {"id": "pneumothorax", "label": "Pneumothorax"}
+    ],
+    "answer": {
+      "impression": "copd_plus",
+      "summary": "a severe exacerbation of COPD, probably infective, but with fresh haemoptysis and new pleuritic pain that an exacerbation alone does not explain. Pneumonia and pulmonary embolism both remain possible and need hospital assessment."
+    },
+    "first_impression": {
+      "intro": "First impression, using the Patient Assessment Triangle (PAT): appearance, work of breathing and circulation to the skin.",
+      "groups": [
+        {"name": "Appearance", "items": [
+          {"id": "mental_state", "why": "Alert and clear now. Watch for drowsiness or confusion: in COPD that can mean rising CO2."},
+          {"id": "colour", "why": "Dusky lips are central cyanosis: she is significantly hypoxic before you measure anything."}]},
+        {"name": "Work of breathing", "items": [
+          {"id": "position", "why": "Tripod: she is bracing to use every muscle she has to breathe."},
+          {"id": "breathing", "why": "Rate around 30 with accessory muscles and pursed lips: severe distress."},
+          {"id": "abdomen", "why": "Paradoxical abdominal movement suggests the diaphragm is failing or tiring. A sign to take very seriously."},
+          {"id": "speech", "why": "A few words per breath is a simple severity marker."},
+          {"id": "breath_sounds", "why": "Wheeze and long expiration fit airflow obstruction from COPD."}]},
+        {"name": "Circulation to the skin", "items": [
+          {"id": "skin", "why": "Cool and dry; she says she can't get warm. Low temperature can occur in serious infection in older people."},
+          {"id": "radial_pulse", "why": "Regular and not very fast. That does not rule out a PE."}]}
+      ],
+      "nice_to_spot": [
+        {"id": "sputum", "why": "Green sputum fits infection; fresh blood is new and needs explaining."},
+        {"id": "cough", "why": "Wincing and holding her back on coughing points to pleuritic pain."},
+        {"id": "calves", "why": "Normal calves make a DVT less likely but do not exclude a PE."}
+      ]
+    },
+    "history": {
+      "key": [
+        {"id": "sputum", "why": "A week of green sputum, then fresh blood today: two different stories in one cough.", "also": ["blood_amount"]},
+        {"id": "chest_pain", "why": "New sharp pain on breathing in is pleuritic: pneumonia or PE, not typical of an exacerbation alone.", "also": ["pain_more"]},
+        {"id": "previous", "why": "Bad chests before, but never blood. New features deserve new explanations."},
+        {"id": "mobility", "why": "Mostly in a chair all week: immobility raises clot risk."},
+        {"id": "home", "why": "Lives alone with a young dog: this will shape her decisions about hospital."}
+      ],
+      "supporting": [
+        {"id": "fever", "why": "Shivery and cold: fits infection, and a low temperature is not reassuring."},
+        {"id": "rescue_pack", "why": "Rescue pack not started: a missed chance for earlier treatment, and useful for the next plan."},
+        {"id": "inhaler_use", "why": "Reliever not helping despite heavy use: a marker of a severe exacerbation."},
+        {"id": "home_oxygen", "why": "Not on home oxygen; still use a controlled target until a blood gas shows her CO2."},
+        {"id": "smoking", "why": "Heavy past smoking: COPD, and raises the possibility of other causes of haemoptysis later on."}
+      ],
+      "pertinent_negatives": [
+        {"id": "legs", "why": "No leg symptoms: makes DVT less likely, does not exclude PE."},
+        {"id": "clots", "why": "No previous clots, surgery or travel."},
+        {"id": "weight", "why": "No weight loss or night sweats reported."}
+      ]
+    },
+    "scene": [
+      {"id": "sputum_pot", "why": "Seeing the amount of blood yourself is better than an estimate."},
+      {"id": "rescue_pack", "why": "Sealed rescue pack: not started."},
+      {"id": "inhalers", "why": "Nearly empty reliever: heavy use this week."}
+    ],
+    "differentials": [
+      {"id": "copd_infective", "name": "Infective exacerbation of COPD",
+       "for": "Known COPD, a week of worsening cough with green sputum, wheeze, reliever not helping.",
+       "against": "Does not explain fresh blood or new pleuritic pain on its own."},
+      {"id": "pneumonia", "name": "Pneumonia",
+       "for": "Green sputum, pleuritic pain, can cause blood-streaked sputum, feels cold and shivery.",
+       "against": "Can't be confirmed or excluded at home; needs examination over time, bloods and a chest X-ray."},
+      {"id": "pe", "name": "Pulmonary embolism",
+       "for": "New pleuritic pain, haemoptysis, hypoxia, a week of immobility.",
+       "against": "Normal calves and no marked tachycardia make it less likely, but neither excludes it."},
+      {"id": "other_haemoptysis", "name": "Other causes of haemoptysis",
+       "for": "Heavy smoking history.",
+       "against": "Not the immediate question tonight, but a reason the blood should be investigated."},
+      {"id": "apo", "name": "Acute pulmonary oedema",
+       "for": "Breathless, older, hypoxic.",
+       "against": "No heart failure history, no ankle swelling, wheeze rather than wet crackles, green rather than pink frothy sputum."}
+    ],
+    "anchoring_note": "The trap in this case is stopping at \"COPD exacerbation\" because it fits most of the picture. The blood and the new pain are the parts that don't fit, and they are the ones that could be dangerous.",
+    "next_steps_title": "Management considered for this presentation",
+    "next_steps": [
+      "ABCDE: find and treat life-threatening problems first.",
+      "Controlled oxygen to the COPD target in JRCALC, pending a blood gas.",
+      "Bronchodilators and steroids per JRCALC for a COPD exacerbation.",
+      "Full observations including temperature, ECG, peak flow if able.",
+      "She needs hospital assessment: blood gas, chest X-ray, bloods and investigation for PE.",
+      "If she declines: a decision-specific capacity assessment, senior advice, and the best safety net you can arrange."
+    ],
+    "coming_later": "In later versions you'll measure her observations, listen to her chest, treat her, and handle her refusal to go to hospital. For reference, she would have: RR 30, SpO2 86% on air, HR 96 sinus, BP 138/80, temp 35.6, GCS 15, BM 5.6, PEFR about 90 L/min, EtCO2 4.1 kPa; reduced air entry with widespread wheeze. A normal-looking EtCO2 does not exclude a high arterial CO2 in severe COPD.",
+    "closing": "This debrief reports what was available in the scenario and what was checked. It does not set what must be done: expectations vary between services and courses.",
+    "references": [
+      {"title": "NICE NG115: Chronic obstructive pulmonary disease in over 16s", "url": "https://www.nice.org.uk/guidance/ng115"},
+      {"title": "NICE NG158: Venous thromboembolic diseases", "url": "https://www.nice.org.uk/guidance/ng158"},
+      {"title": "Mental Capacity Act 2005, section 3", "url": "https://www.legislation.gov.uk/ukpga/2005/9/section/3"}
+    ]
+  },
+  "instructor_events": {
+    "dog_whine": {
+      "_note": "Replaces the bystander interrupt: the dog whines and scratches at the kitchen door.",
+      "by": "maureen",
+      "lines": ["She wants... her tea.", "It's alright... baby. Mummy's here.", "She's not used... to strangers."]
+    },
+    "phone_ring": {
+      "after_line": {"by": "maureen", "text": "Leave it... it'll be... my neighbour."}
+    },
+    "obs_text": "Observations: RR 30, SpO2 86% on air, HR 96 regular, BP 138/80, temp 35.6, GCS 15, BM 5.6, PEFR ~90 L/min."
+  }
+}
