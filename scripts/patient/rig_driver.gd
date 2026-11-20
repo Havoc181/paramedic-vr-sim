@@ -63,6 +63,7 @@ const RIGS := {
 		"thigh": ["upperleg01%s", "upperleg02%s"],
 		"calf": ["lowerleg01%s", "lowerleg02%s"],
 		"foot": ["foot%s"],
+		"jaw": ["jaw"],
 	},
 	"game_engine": {
 		"side": ["_l", "_r"],
@@ -118,6 +119,18 @@ func _init(model_root: Node3D, posture: String) -> void:
 		_clav[side] = c[0] if c.size() > 0 else -1
 	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
+
+
+## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
+func set_jaw(open: float) -> void:
+	if skeleton == null:
+		return
+	var b := _first("jaw")
+	if b < 0:
+		return
+	skeleton.set_bone_pose_rotation(b, _base_local[b])
+	if open > 0.01:
+		_rotate_global(b, Basis(Vector3(1, 0, 0), deg_to_rad(6.0) * clampf(open, 0.0, 1.0)))
 
 
 func apply_breath(breath: float, depth: float, accessory: float) -> void:

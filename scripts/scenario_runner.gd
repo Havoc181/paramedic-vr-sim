@@ -21,6 +21,8 @@ var _panel
 var _debrief
 ## Things in the room the learner has looked at (for the debrief).
 var seen := {}
+## Voice clip info (length, in-breaths, mouth envelope) by audio path.
+var voice_info := {}
 var link
 var _severity := 0.0
 var _paused := false
@@ -49,6 +51,12 @@ func _ready() -> void:
 	add_child(_debrief)
 	_panel.finished.connect(_on_finished)
 	_setup_link()
+	var man := "res://assets/audio/generated/voice/%s/manifest.json" % String(scenario.get("id", ""))
+	if FileAccess.file_exists(man):
+		var m = JSON.parse_string(FileAccess.get_file_as_string(man))
+		if m is Dictionary:
+			for k in m:
+				voice_info["res://" + String(k)] = m[k]
 
 
 func _on_finished(impression: String, urgency: String) -> void:
@@ -94,8 +102,10 @@ func _on_command(msg: Dictionary) -> void:
 			var lines: Array = ev.get("lines", [])
 			var who = characters.get(String(ev.get("by", "ken")))
 			if who and not lines.is_empty():
-				var line := String(lines.pick_random())
-				who.say(line)
+				var li := randi() % lines.size()
+				var line := String(lines[li])
+				var ap := "res://assets/audio/generated/voice/%s/event_ken_interrupt_%d.ogg" % [String(scenario.get("id", "")), li]
+				who.say(line, ap, voice_info.get(ap, {}))
 				link.log_event("instructor", "Event: Ken interrupts: \"" + line + "\"")
 		"phone_ring":
 			_ring_phone(events.get("phone_ring", {}))
@@ -189,7 +199,8 @@ func _ring_phone(ev: Dictionary) -> void:
 	var who = characters.get(String(after.get("by", "")))
 	if who:
 		await get_tree().create_timer(4.0).timeout
-		who.say(String(after.get("text", "")))
+		var ap2 := "res://assets/audio/generated/voice/%s/event_phone_ring_after.ogg" % String(scenario.get("id", ""))
+		who.say(String(after.get("text", "")), ap2, voice_info.get(ap2, {}))
 
 
 static func load_scenario(path: String) -> Dictionary:

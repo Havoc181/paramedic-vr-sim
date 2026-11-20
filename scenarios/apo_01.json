@@ -69,6 +69,14 @@
       "source": "Freesound CC0 (to find)"
      }
     }
+   },
+   "voice": {
+    "voice": "bf_lily",
+    "speed": 0.88,
+    "age": "old_woman",
+    "age_strength": 0.9,
+    "breathless": 0.6,
+    "breath_gain": 0.45
    }
   },
   "ken": {
@@ -100,6 +108,12 @@
       "max_distance_m": 3.0
      }
     }
+   },
+   "voice": {
+    "voice": "bm_lewis",
+    "speed": 0.9,
+    "age": "old_man",
+    "age_strength": 0.9
    }
   }
  },
@@ -158,12 +172,12 @@
     {
      "by": "joan",
      "text": "Woke up... couldn't breathe... like drowning.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/events_joan.ogg"
     },
     {
      "by": "ken",
      "text": "She woke me about three, gasping. Said it felt like she was drowning.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/events_ken.ogg"
     }
    ]
   },
@@ -174,12 +188,12 @@
     {
      "by": "joan",
      "text": "About... three. Woke up... had to... sit up.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/onset_joan.ogg"
     },
     {
      "by": "ken",
      "text": "About three. She sat bolt upright and came down to the sofa, said she couldn't lie down.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/onset_ken.ogg"
     }
    ]
   },
@@ -190,12 +204,12 @@
     {
      "by": "joan",
      "text": "Last winter... water on my lungs.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/previous_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Last winter, the same. They said fluid on her lungs. She was in for a week.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/previous_ken.ogg"
     }
    ]
   },
@@ -206,12 +220,12 @@
     {
      "by": "joan",
      "text": "Tight... not pain. Just... can't get air.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/chest_pain_joan.ogg"
     },
     {
      "by": "ken",
      "text": "She's not said pain. Says it feels tight.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/chest_pain_ken.ogg"
     }
    ]
   },
@@ -223,12 +237,12 @@
      "by": "joan",
      "text": "Bit of a cough... frothy stuff.",
      "action": "show_tissue",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/cough_joan.ogg"
     },
     {
      "by": "ken",
      "text": "She's been coughing up frothy stuff. Pinkish, some of it.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/cough_ken.ogg"
     }
    ]
   },
@@ -239,12 +253,12 @@
     {
      "by": "joan",
      "text": "No... no cold.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/infection_joan.ogg"
     },
     {
      "by": "ken",
      "text": "No temperature. She's not had a cold or anything.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/infection_ken.ogg"
     }
    ]
   },
@@ -255,12 +269,12 @@
     {
      "by": "joan",
      "text": "Ankles... always... puffy.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/legs_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Her ankles are always a bit puffy.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/legs_ken.ogg"
     }
    ]
   },
@@ -274,12 +288,12 @@
     {
      "by": "joan",
      "text": "Bit... worse... this week.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/legs_worse_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Well... yes, now you say it. Both of them, all week. She's not said they hurt.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/legs_worse_ken.ogg"
     }
    ]
   },
@@ -290,12 +304,12 @@
     {
      "by": "joan",
      "text": "Three pillows... can't... lie flat.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/sleep_joan.ogg"
     },
     {
      "by": "ken",
      "text": "On three pillows for about a week. She says she gets breathless lying flat.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/sleep_ken.ogg"
     }
    ]
   },
@@ -306,12 +320,12 @@
     {
      "by": "joan",
      "text": "Heart... failure. Blood pressure... sugar. Ken knows... the rest.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/pmh_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Heart failure, blood pressure, an irregular heartbeat, diabetes, high cholesterol, and arthritis in her knees.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/pmh_ken.ogg"
     }
    ]
   },
@@ -322,14 +336,14 @@
     {
      "by": "joan",
      "text": "Lots... in the box. Ken... get the box.",
-     "audio": "",
+     "audio": "res://assets/audio/generated/voice/apo_01/meds_joan.ogg",
      "action": "offer_medicines_box"
     },
     {
      "by": "ken",
      "text": "Oh, loads. The water tablet, the blood thinner, the heart ones... it's all in the box, here.",
      "action": "offer_medicines_box",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/meds_ken.ogg"
     }
    ]
   },
@@ -340,12 +354,12 @@
     {
      "by": "joan",
      "text": "Stopped... water tablet... up all night.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/med_changes_joan.ogg"
     },
     {
      "by": "ken",
      "text": "She stopped her water tablet a week or so ago. Said it had her up all night.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/med_changes_ken.ogg"
     }
    ]
   },
@@ -359,12 +373,12 @@
     {
      "by": "joan",
      "text": "Friday... I think.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/med_changes_when_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Friday. So... five days.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/med_changes_when_ken.ogg"
     }
    ]
   },
@@ -375,12 +389,12 @@
     {
      "by": "joan",
      "text": "Penicillin... rash.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/allergies_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Penicillin. Gives her a rash.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/allergies_ken.ogg"
     }
    ]
   },
@@ -391,12 +405,12 @@
     {
      "by": "joan",
      "text": "Fish and chips... about six.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/last_meal_joan.ogg"
     },
     {
      "by": "ken",
      "text": "Fish and chips for tea, about six.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/last_meal_ken.ogg"
     }
    ]
   },
@@ -407,12 +421,12 @@
     {
      "by": "joan",
      "text": "Shops... slowly. Not... this week.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/function_joan.ogg"
     },
     {
      "by": "ken",
      "text": "To the shops and back, slowly. Not this week though.",
-     "audio": ""
+     "audio": "res://assets/audio/generated/voice/apo_01/function_ken.ogg"
     }
    ]
   }
@@ -743,7 +757,8 @@
   "phone_ring": {
    "after_line": {
     "by": "ken",
-    "text": "Leave it, that'll be our Sarah. She can wait."
+    "text": "Leave it, that'll be our Sarah. She can wait.",
+    "audio": "res://assets/audio/generated/voice/apo_01/event_phone_ring_after.ogg"
    }
   },
   "obs_text": "Observations: RR 32, SpO2 87% on air, HR 112 irregular (AF), BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s."

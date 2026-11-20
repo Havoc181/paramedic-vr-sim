@@ -28,6 +28,11 @@ var _base_rate := 14.0
 var _base_depth := 0.35
 var _base_accessory := 0.0
 var _base_volume := 0.0
+# Speech (pre-generated voice clips)
+var _voice: AudioStreamPlayer3D
+var _speech := {}            # manifest entry for the line being spoken
+var _speech_t := -1.0        # seconds into the current line, -1 when silent
+var _speech_breath := 0.0    # chest value driven by in-breaths while talking
 
 
 func setup(character_id: String, character_data: Dictionary) -> void:
@@ -73,10 +78,30 @@ func _process(delta: float) -> void:
 	if _breath == null:
 		return
 	_breath.step(delta)
+	var b: float = _breath.value
+	var mouth := 0.0
+	if _speech_t >= 0.0:
+		_speech_t += delta
+		# Talking happens on the out-breath: the chest settles, then lifts on
+		# each audible in-breath in the clip.
+		var target := 0.15
+		for bt in _speech.get("breaths", []):
+			var d := _speech_t - float(bt)
+			if d >= 0.0 and d < 0.5:
+				target = maxf(target, sin(PI * d / 0.5))
+		_speech_breath = lerpf(_speech_breath, target, clampf(delta * 12.0, 0.0, 1.0))
+		b = _speech_breath
+		var env: Array = _speech.get("mouth", [])
+		var i := int(_speech_t * 20.0)
+		if i < env.size():
+			mouth = float(env[i])
+		if _speech_t > float(_speech.get("length", 0.0)) + 0.2:
+			_speech_t = -1.0
 	if _rig:
-		_rig.apply_breath(_breath.value, _depth, _accessory)
+		_rig.apply_breath(b, _depth, _accessory)
+		_rig.set_jaw(mouth)
 	elif _body:
-		_body.apply_breath(_breath.value, _depth, _accessory)
+		_body.apply_breath(b, _depth, _accessory)
 	if _subtitle_timer > 0.0:
 		_subtitle_timer -= delta
 		if _subtitle_timer <= 0.0:
@@ -94,11 +119,28 @@ func set_severity(v: float) -> void:
 		_breath_player.volume_db = _base_volume + 4.0 * v
 
 
-## Show a spoken line above the head for a time based on its length.
-func say(text: String) -> void:
+## Say a line: subtitle above the head and, if there's a voice clip, play it
+## from the mouth. Returns how long the line lasts (seconds).
+func say(text: String, audio_path := "", info := {}) -> float:
 	_subtitle.text = display_name.get_slice(" ", 0) + ": " + text
 	_subtitle.visible = true
-	_subtitle_timer = clampf(1.5 + text.length() * 0.07, 2.5, 9.0)
+	var length := clampf(1.5 + text.length() * 0.07, 2.5, 9.0)
+	if audio_path != "" and ResourceLoader.exists(audio_path):
+		if _voice == null:
+			_voice = AudioStreamPlayer3D.new()
+			_voice.attenuation_model = AudioStreamPlayer3D.ATTENUATION_INVERSE_SQUARE_DISTANCE
+			_voice.unit_size = 1.2
+			_voice.max_distance = 12.0
+			_voice.position = (_breath_player.position if _breath_player else Vector3(0, 1.62, 0.08))
+			add_child(_voice)
+		_voice.stream = load(audio_path)
+		_voice.play()
+		_speech = info
+		_speech_t = 0.0
+		_speech_breath = _breath.value
+		length = float(info.get("length", length)) + 0.3
+	_subtitle_timer = maxf(length + 1.0, 2.5)
+	return length
 
 
 func interact() -> void:
@@ -128,8 +170,8 @@ func _setup_breath_audio(cfg: Dictionary, seated: bool) -> void:
 
 
 func _on_breath_started() -> void:
-	if _breath_player == null:
-		return
+	if _breath_player == null or _speech_t >= 0.0:
+		return   # no separate breathing sound while they talk
 	_breath_player.stream = _breath_clips[randi() % _breath_clips.size()]
 	# Stretch the clip slightly to match this breath's length.
 	if _clip_period > 0.0:

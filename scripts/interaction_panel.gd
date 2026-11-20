@@ -273,11 +273,13 @@ func _speak(answers: Array) -> void:
 	for a in answers:
 		var who = runner.characters.get(String(a.get("by", "")))
 		var text := String(a.get("text", ""))
+		var audio := String(a.get("audio", ""))
+		var wait := clampf(1.2 + text.length() * 0.06, 2.0, 7.0)
 		if who:
-			who.say(text)
+			wait = who.say(text, audio, runner.voice_info.get(audio, {}))
 		_do_action(String(a.get("action", "")))
 		_result.text = String(a.get("by", "")).capitalize() + ": " + text
-		await get_tree().create_timer(clampf(1.2 + text.length() * 0.06, 2.0, 7.0)).timeout
+		await get_tree().create_timer(wait).timeout
 	_speaking = false
 
 

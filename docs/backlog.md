@@ -359,3 +359,10 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 ## Website (planned 20 Nov 2026, later today)
 - Havoc Education site in the same branded style as Tom's Havoc Aviation site (flyhavoc.com, made with ChatGPT). One page: what it is, in-headset screenshots, who it's for, contact; plus a privacy policy page (the app collects nothing; instructor logs stay on the laptop). Needed for the Meta store listing and for EEAST / universities.
 - Hosting: GitHub Pages (free), custom domain later. Draft for Tom's review before anything is public.
+
+## Voices v1 in the app (20 Nov 2026, v0.05-dev1)
+- Joan: Kokoro bf_lily, WORLD-vocoder ageing (old_woman, strength 0.9), breathless 0.6 (weakening + breathier through each phrase), in-breaths at the script's "..." marks, breath gain 0.45. Ken: bm_lewis, gentle ageing (no jitter/shimmer/tremor; Tom heard "voice breaking" and tone changes on long sounds).
+- `tools/voice/build_voices.py scenarios/apo_01.json` builds every line (37 clips, ~1.1 MB) into assets/audio/generated/voice/apo_01/ with manifest (length, in-breath times, mouth envelope); only changed lines rebuild.
+- In app: voice from the head (3D), subtitles timed to the clip, breathing sound pauses while speaking, chest lifts on in-breaths, jaw opens up to 6 degrees with loudness.
+- Tom's view: "good effort, not natural"; expect flak in testing. **Get wider input** (what specifically sounds wrong, not just "unnatural") before more tuning. Upgrade route: paid TTS with genuinely older voices, or recorded voices. Script lines should stay short (as the scenario already does).
+- Later: MakeHuman teeth/tongue and dark mouth interior (jaw opening shows pink inner lips).

@@ -24,7 +24,7 @@ FP = 5.0  # ms per frame
 PRESETS = {
     # f0 scale, jitter (fraction), shimmer (dB), tremor (fraction, Hz), breathy (0-1), formant scale
     "old_woman": dict(f0=0.86, jitter=0.008, shimmer=0.7, tremor=(0.0, 5.0), drift=0.008, breathy=0.30, formant=0.96),
-    "old_man":   dict(f0=0.97, jitter=0.006, shimmer=0.6, tremor=(0.0, 5.0), drift=0.0, breathy=0.15, formant=0.97),
+    "old_man":   dict(f0=0.97, jitter=0.0, shimmer=0.0, tremor=(0.0, 5.0), drift=0.0, breathy=0.08, formant=0.97),
 }
 
 
