@@ -15,4 +15,9 @@ fi
 R=https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0
 [ -f kokoro-v1.0.onnx ] || curl -sSL -o kokoro-v1.0.onnx $R/kokoro-v1.0.onnx
 [ -f voices-v1.0.bin ] || curl -sSL -o voices-v1.0.bin $R/voices-v1.0.bin
+# WORLD vocoder (modified BSD), built as a shared library for ageing.py
+if [ ! -f world/libworld.so ]; then
+  [ -d World ] || git clone -q --depth 1 https://github.com/mmorise/World.git
+  mkdir -p world && g++ -O2 -shared -fPIC -IWorld/src World/src/*.cpp -o world/libworld.so
+fi
 echo "Voice tools ready in $T"
