@@ -366,3 +366,8 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - In app: voice from the head (3D), subtitles timed to the clip, breathing sound pauses while speaking, chest lifts on in-breaths, jaw opens up to 6 degrees with loudness.
 - Tom's view: "good effort, not natural"; expect flak in testing. **Get wider input** (what specifically sounds wrong, not just "unnatural") before more tuning. Upgrade route: paid TTS with genuinely older voices, or recorded voices. Script lines should stay short (as the scenario already does).
 - Later: MakeHuman teeth/tongue and dark mouth interior (jaw opening shows pink inner lips).
+
+## To fix: tripod hands drift with breathing (Tom, 20 Nov)
+- In the tripod, the hands slide slightly sideways as the shoulders lift with each breath. The rest of the movement is right; the hands should stay planted on the knees/thighs.
+- Cause: `rig_driver.apply_breath()` lifts the clavicles every breath, and the whole arm chain hangs off them, so the wrists move.
+- Fix plan: after the clavicle lift each frame, re-run the two-joint arm IK to the stored wrist targets (cheap: two bones per arm), so the elbows absorb the movement and the hands stay fixed. Same for the sit-back hands on the seat.
