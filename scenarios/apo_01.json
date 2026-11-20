@@ -159,6 +159,11 @@
      "by": "joan",
      "text": "Woke up... couldn't breathe... like drowning.",
      "audio": ""
+    },
+    {
+     "by": "ken",
+     "text": "She woke me about three, gasping. Said it felt like she was drowning.",
+     "audio": ""
     }
    ]
   },
@@ -166,6 +171,11 @@
    "id": "onset",
    "label": "When did it start?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "About... three. Woke up... had to... sit up.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "About three. She sat bolt upright and came down to the sofa, said she couldn't lie down.",
@@ -181,6 +191,11 @@
      "by": "joan",
      "text": "Last winter... water on my lungs.",
      "audio": ""
+    },
+    {
+     "by": "ken",
+     "text": "Last winter, the same. They said fluid on her lungs. She was in for a week.",
+     "audio": ""
     }
    ]
   },
@@ -191,6 +206,11 @@
     {
      "by": "joan",
      "text": "Tight... not pain. Just... can't get air.",
+     "audio": ""
+    },
+    {
+     "by": "ken",
+     "text": "She's not said pain. Says it feels tight.",
      "audio": ""
     }
    ]
@@ -204,6 +224,11 @@
      "text": "Bit of a cough... frothy stuff.",
      "action": "show_tissue",
      "audio": ""
+    },
+    {
+     "by": "ken",
+     "text": "She's been coughing up frothy stuff. Pinkish, some of it.",
+     "audio": ""
     }
    ]
   },
@@ -211,6 +236,11 @@
    "id": "infection",
    "label": "Any fever, or been unwell recently?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "No... no cold.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "No temperature. She's not had a cold or anything.",
@@ -222,6 +252,11 @@
    "id": "legs",
    "label": "Any problems with your legs?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "Ankles... always... puffy.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "Her ankles are always a bit puffy.",
@@ -237,6 +272,11 @@
    ],
    "answers": [
     {
+     "by": "joan",
+     "text": "Bit... worse... this week.",
+     "audio": ""
+    },
+    {
      "by": "ken",
      "text": "Well... yes, now you say it. Both of them, all week. She's not said they hurt.",
      "audio": ""
@@ -247,6 +287,11 @@
    "id": "sleep",
    "label": "How have you been sleeping?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "Three pillows... can't... lie flat.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "On three pillows for about a week. She says she gets breathless lying flat.",
@@ -259,6 +304,11 @@
    "label": "Any medical history?",
    "answers": [
     {
+     "by": "joan",
+     "text": "Heart... failure. Blood pressure... sugar. Ken knows... the rest.",
+     "audio": ""
+    },
+    {
      "by": "ken",
      "text": "Heart failure, blood pressure, an irregular heartbeat, diabetes, high cholesterol, and arthritis in her knees.",
      "audio": ""
@@ -269,6 +319,12 @@
    "id": "meds",
    "label": "What medications do you take?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "Lots... in the box. Ken... get the box.",
+     "audio": "",
+     "action": "offer_medicines_box"
+    },
     {
      "by": "ken",
      "text": "Oh, loads. The water tablet, the blood thinner, the heart ones... it's all in the box, here.",
@@ -288,7 +344,7 @@
     },
     {
      "by": "ken",
-     "text": "A week or so ago.",
+     "text": "She stopped her water tablet a week or so ago. Said it had her up all night.",
      "audio": ""
     }
    ]
@@ -301,6 +357,11 @@
    ],
    "answers": [
     {
+     "by": "joan",
+     "text": "Friday... I think.",
+     "audio": ""
+    },
+    {
      "by": "ken",
      "text": "Friday. So... five days.",
      "audio": ""
@@ -311,6 +372,11 @@
    "id": "allergies",
    "label": "Any allergies?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "Penicillin... rash.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "Penicillin. Gives her a rash.",
@@ -323,6 +389,11 @@
    "label": "When did you last eat or drink?",
    "answers": [
     {
+     "by": "joan",
+     "text": "Fish and chips... about six.",
+     "audio": ""
+    },
+    {
      "by": "ken",
      "text": "Fish and chips for tea, about six.",
      "audio": ""
@@ -333,6 +404,11 @@
    "id": "function",
    "label": "How far can you usually walk?",
    "answers": [
+    {
+     "by": "joan",
+     "text": "Shops... slowly. Not... this week.",
+     "audio": ""
+    },
     {
      "by": "ken",
      "text": "To the shops and back, slowly. Not this week though.",

@@ -42,7 +42,7 @@ func _ready() -> void:
 	add_child(_panel)
 	_panel.setup(self, player)
 	for c in characters.values():
-		c.interacted.connect(func(_who): _panel.open())
+		c.interacted.connect(func(who): _panel.open(who))
 	_debrief = DEBRIEF.new()
 	_debrief.name = "Debrief"
 	_debrief.visible = false

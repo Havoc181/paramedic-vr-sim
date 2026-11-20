@@ -21,6 +21,8 @@ var _page := 0
 var _asked := {}
 var assessed := {}
 var _impression := ""
+var _talking_to := ""
+var _header: Label3D
 var _tab_buttons := {}
 var _item_buttons: Array = []
 var _prev
@@ -40,7 +42,13 @@ func setup(scenario_runner, xr_player) -> void:
 	_set_enabled(false)
 
 
-func open() -> void:
+## who: the character you pointed at; questions are put to them and they
+## answer for themselves (falls back to whoever can answer).
+func open(who = null) -> void:
+	if who != null:
+		_talking_to = String(who.id)
+		if _header:
+			_header.text = "Talking to: " + String(who.display_name).get_slice(" ", 0)
 	if visible:
 		return
 	var cam: Node3D = player.get_node("XRCamera3D")
@@ -69,7 +77,7 @@ func close() -> void:
 func _build() -> void:
 	var bg := MeshInstance3D.new()
 	var bg_mesh := BoxMesh.new()
-	bg_mesh.size = Vector3(0.62, 0.72, 0.005)
+	bg_mesh.size = Vector3(0.62, 0.78, 0.005)
 	bg.mesh = bg_mesh
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -77,8 +85,18 @@ func _build() -> void:
 	bg_mat.no_depth_test = true
 	bg_mat.render_priority = 9
 	bg.material_override = bg_mat
-	bg.position = Vector3(0, 0, -0.008)
+	bg.position = Vector3(0, 0.03, -0.008)
 	add_child(bg)
+
+	_header = Label3D.new()
+	_header.font_size = 26
+	_header.pixel_size = 0.0008
+	_header.position = Vector3(-0.29, 0.385, 0)
+	_header.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_header.modulate = Color(0.75, 0.85, 1.0)
+	_header.no_depth_test = true
+	_header.render_priority = 11
+	add_child(_header)
 
 	var tabs := [["ask", "Ask"], ["assess", "Look, listen, feel"], ["finish", "Finish"], ["close", "Close"]]
 	for i in tabs.size():
@@ -194,7 +212,7 @@ func _available_items() -> Array:
 				out.append(q)
 	elif _tab == "finish":
 		var deb: Dictionary = runner.scenario.get("debrief", {})
-		var opts: Array = deb.get("impression_options", []) if _impression == "" else deb.get("urgency_options", [])
+		var opts: Array = deb.get("impression_options", [])
 		for o in opts:
 			out.append(o)
 	else:
@@ -223,27 +241,31 @@ func _on_item(slot: int) -> void:
 		_refresh()
 		return
 	if _tab == "finish":
-		if _impression == "":
-			_impression = String(it.get("id", ""))
-			_result.text = "How urgent is she?"
-			_refresh()
-		else:
-			var urgency := String(it.get("id", ""))
-			logged.emit("finished", "Impression: %s. Urgency: %s." % [_option_label("impression_options", _impression), String(it.get("label", ""))])
-			close()
-			_tab = "ask"
-			finished.emit(_impression, urgency)
+		# Impression only for now (urgency comes back once treatment is in).
+		_impression = String(it.get("id", ""))
+		logged.emit("finished", "Impression: %s." % _option_label("impression_options", _impression))
+		close()
+		_tab = "ask"
+		finished.emit(_impression, "")
 		return
 	if _speaking:
 		return
 	_asked[it.get("id", "")] = true
+	var answers := _answers_for(it)
 	var reply := PackedStringArray()
-	for a in it.get("answers", []):
+	for a in answers:
 		reply.append(String(a.get("by", "")).capitalize() + ": " + String(a.get("text", "")))
 	logged.emit("asked", "\"" + String(it.get("label", "")) + "\"  " + " / ".join(reply))
 	_result.text = ""
 	_refresh()
-	_speak(it.get("answers", []))
+	_speak(answers)
+
+
+## Answers from the person you're talking to; if they have none, whoever can.
+func _answers_for(it: Dictionary) -> Array:
+	var all: Array = it.get("answers", [])
+	var mine := all.filter(func(a): return String(a.get("by", "")) == _talking_to)
+	return mine if not mine.is_empty() else all
 
 
 func _speak(answers: Array) -> void:

@@ -76,9 +76,9 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 	var ans: Dictionary = d.get("answer", {})
 
 	# 1. Your impression
-	var t := "You said: %s.\nUrgency: %s.\n\n" % [
-		_label_of(d.get("impression_options", []), impression),
-		_label_of(d.get("urgency_options", []), urgency).to_lower()]
+	var t := "You said: %s.\n\n" % _label_of(d.get("impression_options", []), impression)
+	if urgency != "":
+		t += "Urgency: %s.\n\n" % _label_of(d.get("urgency_options", []), urgency).to_lower()
 	t += "Most likely: " + String(ans.get("summary", "")) + "\n\n"
 	if impression == ans.get("impression", ""):
 		t += "Your impression matches the most likely cause. The next pages show the findings that support it and any that were not checked."
@@ -86,7 +86,7 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 		t += "No impression chosen. The next pages show the findings that point to the cause."
 	else:
 		t += "Your impression differs from the most likely cause. The next pages show the findings that point to pulmonary oedema and how it compares with what you chose."
-	if ans.has("urgency"):
+	if ans.has("urgency") and urgency != "":
 		t += "\n\nUrgency in this scenario: " + _label_of(d.get("urgency_options", []), String(ans.get("urgency"))).to_lower() + "."
 	out.append(["Your impression", t])
 

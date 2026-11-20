@@ -11,14 +11,12 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.04-dev1"
+const APP_VERSION := "v0.04-dev2"
 
-## Test options: NOT saved, so if one misbehaves on the headset (e.g. the
-## grey screen seen with foveation/90 Hz), quitting and reopening resets it.
-const FOVEATION_NAMES := ["Off", "Low", "Medium", "High"]
+## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
+## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.
 var _fps_label: Label3D
 var _link_label: Label3D
-var _foveation := 0
 var _refresh_rates: Array = []
 var _refresh_index := -1
 
@@ -63,7 +61,7 @@ func close() -> void:
 
 func _build() -> void:
 	var bg_mesh := BoxMesh.new()
-	bg_mesh.size = Vector3(0.42, 0.78, 0.005)
+	bg_mesh.size = Vector3(0.42, 0.71, 0.005)
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	bg_mat.albedo_color = Color(0.07, 0.08, 0.1)
@@ -72,7 +70,7 @@ func _build() -> void:
 	var bg := MeshInstance3D.new()
 	bg.mesh = bg_mesh
 	bg.material_override = bg_mat
-	bg.position = Vector3(0, -0.14, -0.008)
+	bg.position = Vector3(0, -0.105, -0.008)
 	bg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	add_child(bg)
 
@@ -88,13 +86,13 @@ func _build() -> void:
 	_link_label = Label3D.new()
 	_link_label.font_size = 20
 	_link_label.pixel_size = 0.0008
-	_link_label.position = Vector3(0, -0.505, 0)
+	_link_label.position = Vector3(0, -0.42, 0)
 	_link_label.modulate = Color(0.7, 0.8, 0.9)
 	_link_label.no_depth_test = true
 	_link_label.render_priority = 11
 	add_child(_link_label)
 
-	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "foveation", "refresh", "quit"]
+	var items := ["resume", "movement", "turning", "vignette", "seated", "fps", "refresh", "quit"]
 	for i in items.size():
 		var b = MENU_BUTTON.new()
 		b.name = "Button_" + items[i]
@@ -120,12 +118,6 @@ func _on_pressed(id: String) -> void:
 			player.set_seated(not player.seated)
 		"fps":
 			_toggle_fps()
-		"foveation":
-			_foveation = (_foveation + 1) % 4
-			var xr := _xr()
-			if xr:
-				xr.foveation_level = _foveation
-				xr.foveation_dynamic = _foveation > 0
 		"refresh":
 			var xr2 := _xr()
 			if xr2 and not _refresh_rates.is_empty():
@@ -146,14 +138,17 @@ func _refresh_labels() -> void:
 	_buttons.vignette.text = "Comfort vignette: " + ("On" if player.vignette_enabled else "Off")
 	_buttons.seated.text = "Seated mode: " + ("On" if player.seated else "Off")
 	_buttons.fps.text = "Test: frame rate shown: " + ("On" if _fps_label and _fps_label.visible else "Off")
-	_buttons.foveation.text = "Test: foveation: " + FOVEATION_NAMES[_foveation]
 	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
 	_buttons.quit.text = "Quit app"
 	var link = get_tree().get_first_node_in_group("session_link")
-	if link and _link_label:
-		var addr: PackedStringArray = link.local_addresses()
-		_link_label.text = "Instructor link: " + ("connected" if link.connected() else
-				("waiting on " + ", ".join(addr) if addr.size() > 0 else "no network"))
+	if _link_label:
+		if link == null:
+			_link_label.text = "Instructor link: not running"
+		else:
+			var addr: PackedStringArray = link.local_addresses()
+			var where := ", ".join(addr) if addr.size() > 0 else "no network address"
+			_link_label.text = "Instructor link: " + ("connected" if link.connected() else "waiting on " + where) \
+					+ ("" if link.status == "" else "  (" + link.status + ")")
 
 
 func _xr() -> OpenXRInterface:

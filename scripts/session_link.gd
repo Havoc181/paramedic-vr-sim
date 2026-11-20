@@ -26,14 +26,20 @@ var _start_ms := Time.get_ticks_msec()
 var _log: Array = []          # kept so a late-joining laptop gets the history
 var player: Node3D
 var state := {}
+## Problems shown in the headset menu (e.g. couldn't open the port).
+var status := ""
 
 
 func _ready() -> void:
 	add_to_group("session_link")
-	if _server.listen(TCP_PORT) != OK:
-		push_warning("Instructor link: could not listen on port %d" % TCP_PORT)
+	var err := _server.listen(TCP_PORT)
+	if err != OK:
+		status = "port %d error %d" % [TCP_PORT, err]
+		push_warning("Instructor link: could not listen on port %d (%s)" % [TCP_PORT, error_string(err)])
 	_beacon.set_broadcast_enabled(true)
-	_beacon.set_dest_address("255.255.255.255", BEACON_PORT)
+	err = _beacon.set_dest_address("255.255.255.255", BEACON_PORT)
+	if err != OK:
+		status += (" " if status != "" else "") + "broadcast error %d" % err
 
 
 ## This headset's addresses on the local network (shown in the menu so an
@@ -66,7 +72,9 @@ func _process(delta: float) -> void:
 		_beacon_timer = 1.0
 		var msg := {"app": APP_ID, "scenario": scenario_name, "port": TCP_PORT,
 			"addresses": local_addresses(), "busy": connected()}
-		_beacon.put_packet(JSON.stringify(msg).to_utf8_buffer())
+		var perr := _beacon.put_packet(JSON.stringify(msg).to_utf8_buffer())
+		if perr != OK and not status.contains("send"):
+			status += (" " if status != "" else "") + "send error %d" % perr
 
 	if _server.is_connection_available():
 		var incoming := _server.take_connection()

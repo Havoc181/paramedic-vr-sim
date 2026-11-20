@@ -343,3 +343,15 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - **Desktop accessibility version (after VR is functional):** same project, flat-screen camera and mouse/keyboard controls, reusing scenarios, characters, panel, debrief and instructor link. For people with VR sickness (Callum gets nausea in VR) or no headset; also demos, revision, lecture display.
 - Full overview, business model and licence check: claude.ai Project "Paramedic VR Sim", `claude/project-overview.md`.
 - **Brand (Tom, 2026-11-19):** sub-brand **Havoc Education**, alongside Havoc Aviation under the Havoc umbrella. Use this name on the store listing, licences, brief and company materials; trademark check to cover "Havoc Education".
+
+## Headset test 20 Nov 2026 (v0.04-dev1) - results in docs/test-results/2026-11-20_v0.04-dev1.md
+
+- Passed: start-up; characters (tripod pose, hands, sleeves, no skin through clothes, faces, breathing); crouch; medicines box readability; click-outside closes panel; debrief flow incl. Run again / Close; 72 fps throughout (2.7-6.0 ms, 160-400 draw calls); 90 Hz works.
+- **Foveation: every level reproduces the grey screen - removed from the menu.** (Stays off until a Godot/vendor-plugin update; 90 Hz is fine.)
+- Vignette still not noticed (fine).
+- Tom: Ken answering questions put to Joan felt "meh" -> fixed in dev2: panel shows "Talking to: <name>"; each person answers questions put to them (Joan short breathless answers; Ken fuller), falling back to whoever can answer.
+- Tom: panel is big; long-term move more of the assessment into other inputs (speech, gestures, hands-on) rather than menus.
+- Tom: Finish = impression only for now (no urgency: we aren't doing treatment yet) -> done in dev2.
+- Tom: debrief is readable but a lot of pages and text -> to discuss (options: summary page first with drill-down; fewer "why it matters" lines; let the instructor/course profile choose depth).
+- Instructor link: headset menu showed no link line and the PC found no headset -> dev2 shows link status/errors in the menu for diagnosis.
+- Pitch screenshots taken (in-headset).

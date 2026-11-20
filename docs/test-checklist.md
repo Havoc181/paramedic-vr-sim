@@ -1,59 +1,24 @@
 # Headset test checklist
 
 Run on the Quest (standalone build). Note the version shown in the menu title
-(this round: **v0.04-dev1**). Anything that fails: a photo or a few words.
+(this round: **v0.04-dev2**). Anything that fails: a photo or a few words.
+Previous results: `docs/test-results/`.
 
-## 1. Start-up (1 min)
-- [ ] App opens in VR, no long black or grey screen
-- [ ] Standing in the living room by the door, floor at the right height
+## 1. Fixes from the 20 Nov test (5 min)
+- [ ] Point at Joan: the panel says "Talking to: Joan" and Joan answers for herself (short, breathless answers)
+- [ ] Point at Ken: "Talking to: Ken" and Ken answers
+- [ ] Ask Joan about her medicines: she asks Ken to get the box, and you're handed it
+- [ ] Finish tab: choose your impression only (no urgency question), then the debrief opens
+- [ ] Menu: the foveation option has gone; the refresh rate option is still there
 
-## 2. Characters (3 min)
-- [ ] Joan on the sofa in the tripod position: leaning forward, elbows out, palms on her knees, head up
-- [ ] Her hands sit on her knees: no fingers or thumbs through her legs
-- [ ] Sleeves look smooth from shoulder to wrist (no twisted stripes at the elbow)
-- [ ] Blouse and jeans: no skin showing through anywhere, walk right round her
-- [ ] Ken standing by the window, arms down, shirt and jeans look right
-- [ ] Faces and eyes look normal close up (no see-through patches)
-- [ ] Joan's breathing: shoulders lift, chest moves
-
-## 3. Things fixed since the first test (3 min)
-- [ ] Comfort vignette: edges darken while you move with the stick
-- [ ] Right stick click: crouch / kneel, click again to stand
-- [ ] Ask Ken about her medicines: he hands you the box
-- [ ] Medicines box: says "get closer to read" from a distance, readable close up
-- [ ] Assessment panel size is comfortable to read
-- [ ] Pointing away from the panel and pulling the trigger closes it
-
-## 4. Debrief (5 min) - new
-- [ ] Do a quick assessment (a few questions, a few look/listen/feel), then the panel's **Finish** tab
-- [ ] Choose your impression, then how urgent: the debrief opens in front of you
-- [ ] Pages: your impression, first impression (found / not checked), history, the scene, causes compared, what next, observations for reference, references
-- [ ] Text readable at that distance? Too much on a page?
-- [ ] Clinical wording: anything wrong or not how you'd say it (a photo of the page is enough)
-- [ ] Last page: Run again restarts the scenario; Close returns you to the room
-
-## 5. Instructor link (10 min) - new
-Headset and PC on the same network (home Wi-Fi, or both on your phone hotspot). No internet needed.
-- [ ] On the PC: in Godot, open `scenes/instructor.tscn` and press F6 (Run Current Scene). If Windows asks about the firewall, tick Private (and Public if on a hotspot) and allow
-- [ ] Headset menu: bottom line shows "Instructor link: waiting on <address>"
-- [ ] PC: the headset appears under "Headsets found" (or type that address) - double-click it / Connect
-- [ ] Walk about: your dot moves on the room map; kneel: it says kneeling
-- [ ] Ask a question and look at something: both appear in the log with times
-- [ ] Try each control: Pause/Resume, Worse / Much worse (her breathing speeds up and gets louder), Better, Ken interrupts, Phone rings, Show observations, a typed hint, End scenario
+## 2. Instructor link (10 min) - retest
+Headset and PC on the same network (home Wi-Fi, or both on your phone hotspot).
+- [ ] Headset menu, bottom line: what does it say exactly? ("waiting on <address>", "not running", or an error in brackets) - a photo please
+- [ ] On the PC: in Godot, open `scenes/instructor.tscn` and press F6. Allow it through the Windows firewall if asked
+- [ ] PC: does the headset appear under "Headsets found"? If not, type the address from the headset menu and press Connect
+- [ ] If connected: walk about (dot moves), kneel (says kneeling), ask a question and check something (both in the log)
+- [ ] Try each control: Pause/Resume, Worse / Much worse, Better, Ken interrupts, Phone rings, Show observations, a typed hint, End scenario
 - [ ] Save log and notes, then Open saved logs
-- [ ] Optional: repeat with the headset and laptop both on your phone hotspot
-
-## 6. Performance tests (5 min) - menu items starting "Test:"
-These are not saved: if anything goes wrong, quit and reopen and it resets.
-- [ ] Test: frame rate shown: On. Note the fps standing by the door and kneeling by Joan
-      (72 is the default target; lower means it's struggling)
-- [ ] Test: refresh rate: step to 90 Hz. Still a normal picture? fps now?
-- [ ] Back to 72 Hz, then Test: foveation: Low, Medium, High in turn. Normal picture each time?
-      Edges of your view a little softer is expected; grey screen is the old bug
-- [ ] If one setting causes the grey screen: note which, then quit and reopen
-
-## 7. Pitch screenshots
-- [ ] A few from the doorway, kneeling in front of Joan, and side-on, with the menu closed
 
 ## Always
 - [ ] Both controllers track throughout; Quit app works
