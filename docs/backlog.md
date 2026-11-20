@@ -347,7 +347,7 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 ## Headset test 20 Nov 2026 (v0.04-dev1) - results in docs/test-results/2026-11-20_v0.04-dev1.md
 
 - Passed: start-up; characters (tripod pose, hands, sleeves, no skin through clothes, faces, breathing); crouch; medicines box readability; click-outside closes panel; debrief flow incl. Run again / Close; 72 fps throughout (2.7-6.0 ms, 160-400 draw calls); 90 Hz works.
-- **Foveation: every level reproduces the grey screen - removed from the menu.** (Stays off until a Godot/vendor-plugin update; 90 Hz is fine.)
+- **Foveation: gave the grey screen (tested at 72 Hz; not tried at 90 Hz) - removed from the menu.** Revisit after a Godot/vendor-plugin update; 90 Hz on its own is fine.
 - Vignette still not noticed (fine).
 - Tom: Ken answering questions put to Joan felt "meh" -> fixed in dev2: panel shows "Talking to: <name>"; each person answers questions put to them (Joan short breathless answers; Ken fuller), falling back to whoever can answer.
 - Tom: panel is big; long-term move more of the assessment into other inputs (speech, gestures, hands-on) rather than menus.
