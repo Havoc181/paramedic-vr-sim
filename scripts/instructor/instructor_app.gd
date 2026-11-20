@@ -30,6 +30,8 @@ var _log: RichTextLabel
 var _notes: TextEdit
 var _pause_btn: Button
 var _severity: HSlider
+const SIGN_LIB := preload("res://scripts/patient/sign_library.gd")
+var _sign_sliders := {}
 var _severity_label: Label
 var _hint: LineEdit
 var _controls: Array[Control] = []
@@ -129,6 +131,9 @@ func _on_message(msg: Dictionary) -> void:
 			_pause_btn.text = "Resume" if paused else "Pause"
 			_severity.set_value_no_signal(float(_state.get("severity", 0.0)))
 			_update_severity_label()
+			var sg: Dictionary = _state.get("signs", {})
+			for id in _sign_sliders:
+				_sign_sliders[id].set_value_no_signal(float(sg.get(id, 0.0)))
 
 
 func _send(cmd: Dictionary) -> void:
@@ -283,6 +288,35 @@ func _build_ui() -> void:
 	_map.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_map.custom_minimum_size = Vector2(360, 320)
 	mid.add_child(_map)
+	# Clinical signs: turn any sign up, down or off live.
+	mid.add_child(_heading("Clinical signs (live)"))
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 230
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	mid.add_child(scroll)
+	scroll.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var grid := GridContainer.new()
+	grid.columns = 2
+	grid.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	grid.custom_minimum_size.x = 430
+	scroll.add_child(grid)
+	for id in SIGN_LIB.ORDER:
+		var lab := _small(SIGN_LIB.SIGNS[id]["label"])
+		lab.custom_minimum_size.x = 250
+		lab.clip_text = true
+		lab.tooltip_text = SIGN_LIB.SIGNS[id].get("demo", "")
+		grid.add_child(lab)
+		var sl := HSlider.new()
+		sl.min_value = 0.0
+		sl.max_value = 1.0
+		sl.step = 0.05
+		sl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		sl.custom_minimum_size.x = 160
+		var sid: String = id
+		sl.drag_ended.connect(func(_c): _send({"c": "sign", "id": sid, "v": sl.value}))
+		grid.add_child(sl)
+		_controls.append(sl)
+		_sign_sliders[id] = sl
 
 	# Right: log and notes
 	var right := VBoxContainer.new()

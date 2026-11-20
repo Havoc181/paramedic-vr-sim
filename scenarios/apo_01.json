@@ -34,6 +34,18 @@
     "affect": "anxious",
     "peripheral_oedema": "mid_shin_bilateral_pitting",
     "neck_veins_visible": true,
+        "heart_rate": 118,
+        "pulse_rhythm": "irregular",
+        "pulse_volume": 0.8,
+        "capillary_refill_s": 3.5,
+        "signs": {
+          "_note": "Clinical signs 0..1 (scripts/patient/sign_library.gd). DRAFT values for clinical review.",
+          "pallor": 0.4,
+          "grey": 0.35,
+          "jvp": 0.55,
+          "oedema_ankle": 0.6,
+          "recession_suprasternal": 0.3
+        },
     "sounds": {
      "_note": "Empty = subtitle/visual only. External = through the air near the face; chest = stethoscope (later versions).",
      "breathing_external": {
@@ -479,9 +491,15 @@
    "method": "feel",
    "finding": "Fast, irregularly irregular, strong."
   },
+    {
+      "id": "capillary_refill",
+      "method": "feel",
+      "finding": "Press a fingertip: colour returns slowly, about 3-4 seconds."
+    },
   {
    "id": "ankles",
-   "method": "look_feel",
+   "requires_exposure": "legs",
+      "method": "look_feel",
    "finding": "Both ankles swollen; pressing leaves a dent; calves soft, not tender."
   },
   {

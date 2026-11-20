@@ -1,39 +1,29 @@
-# Test checklist — v0.05-dev7 (exposure fixes)
+# Test checklist — v0.05-dev8 (clinical signs system)
 
-Fixed from dev6 test: sleeves warped/hands out of sleeves when she sits back (lifted top);
-see-through lifted top from inside; belly moving through the jeans; belly movement now
-deeper (3.5 cm default, Maureen 4 cm).
+No new character files in this build (Maureen and the legs exposure need a Blender
+run on the PC, next build). Nothing to commit in GitHub Desktop first.
 
-## Retest
-- [ ] Lifted top: sleeves follow her arms down to the wrists
-- [ ] Lifted top: no see-through from the side/inside of the gathered fabric
-- [ ] Belly never pokes through the front of the jeans (normal or paradoxical)
-- [ ] Paradoxical movement now clearer
+## Demo mode (pause menu > "Demo sign")
+Each press shows one sign on Joan with a caption. For each, does it look right and
+is it about the right size? Note any that are too much / too little.
+- [ ] Pallor, grey, flushing, clammy
+- [ ] Drowsy (heavy lids, head drifting down and jerking up)
+- [ ] Lip cyanosis, tongue cyanosis (watch when she talks), fingertip cyanosis
+- [ ] Pursed lips (on the breath out), prolonged expiration
+- [ ] Suprasternal recession (dressed), intercostal / subcostal / Hoover's (top off)
+- [ ] Paradoxical abdominal movement (top lifted)
+- [ ] JVP (right side of the neck, pulsing)
+- [ ] Mottling / ankle oedema: says the model can't show legs yet (next build)
 
----
-(dev6 list below)
+## Hands-on
+- [ ] Grip near her wrist for 4 s: controller pulses with her heartbeat (Joan: fast, irregular), then the finding shows and counts as checked
+- [ ] Grip near a fingertip: it goes pale; let go: colour comes back in about 3-4 s; "Capillary refill" finding shows
 
-**Before exporting:** commit the rebuilt `assets/characters/joan.glb` (and `ken.glb`
-if it shows as changed) in GitHub Desktop.
+## Scenario switch (pause menu > "Scenario")
+- [ ] Switches to 02 (Maureen, draft; uses Joan's body until Maureen is built, no voices yet) and back
+- [ ] Scenario 02 props: pot, tissues, inhalers, rescue pack readable
 
-## Exposure (Joan, Look/listen/feel tab)
-- [ ] "Lift her top to look at her abdomen": blouse gathers up under her chest, she sits back
-      with her hands on the sofa beside her (smooth, about 1.5 s)
-- [ ] No gap of missing skin at the jeans waistband; no skin poking through anywhere
-- [ ] "Look at abdomen" appears only once exposed; finding shows
-- [ ] "Ask her to take her top off (bra on)": blouse gone, simple bra, arms and shoulders look right
-- [ ] "Cover her up again": blouse back, she returns to the tripod position
-- [ ] Debrief "The scene" says what you exposed and whether you covered her again
-- [ ] Instructor log shows the exposure entries
-
-## Belly breathing
-- [ ] Pause menu > "Test: patient skin" > "Belly paradoxical", then lift her top:
-      belly draws in as her chest rises (watch from the side as well)
-- [ ] "As scenario" (Joan, APO): belly moves out slightly on the in-breath, no paradox
-- [ ] No cracks or seams on the belly as it moves
-
-## Still to do (next builds)
-- Her line while sat back ("Can I... lean forward again?")
-- Lifted-top folds could look more bunched; bra is a plain bandeau for now
+## Instructor app
+- [ ] "Clinical signs (live)" sliders change the patient in the headset
 
 Notes:

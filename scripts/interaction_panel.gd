@@ -278,15 +278,32 @@ func _available_items() -> Array:
 			out.append({"id": "_expose_off", "label": "Ask her to take her top off (bra on)", "action": "off"})
 		if state == "lifted" or state == "off":
 			out.append({"id": "_expose_on", "label": "Cover her up again", "action": "on"})
+		var legs: String = pt.legs_exposure() if pt and pt.can_expose_legs() else ""
+		if legs == "on":
+			out.append({"id": "_legs_off", "label": "Roll up her trousers and take her shoes off", "action": "legs_off"})
+		elif legs == "off":
+			out.append({"id": "_legs_on", "label": "Cover her legs and put her shoes back on", "action": "legs_on"})
 		for f in runner.scenario.get("first_impression", []):
 			# Some findings can only be seen once that area is exposed.
 			var need := String(f.get("requires_exposure", ""))
-			if need == "abdomen" and state != "lifted" and state != "off":
+			# (Models that can't be exposed show everything, as before.)
+			if need == "abdomen" and state != "" and state != "lifted" and state != "off":
 				continue
-			if need == "chest" and state != "off":
+			if need == "chest" and state != "" and state != "off":
+				continue
+			if need == "legs" and legs != "" and legs != "off":
 				continue
 			out.append({"id": f.get("id", ""), "label": _assess_label(f), "finding": f.get("finding", "")})
 	return out
+
+
+## Something examined hands-on (pulse, capillary refill) counts as checked.
+func mark_examined(id: String, text: String) -> void:
+	assessed[id] = true
+	logged.emit("checked", text)
+	_result.text = text
+	if visible:
+		_refresh()
 
 
 func _patient():
@@ -310,11 +327,17 @@ func _on_item(slot: int) -> void:
 	var it: Dictionary = _items[idx]
 	if _tab == "assess" and it.has("action"):
 		var pt = _patient()
+		var act := String(it["action"])
 		if pt:
-			pt.set_exposure(String(it["action"]))
+			if act.begins_with("legs_"):
+				pt.set_legs("off" if act == "legs_off" else "on")
+			else:
+				pt.set_exposure(act)
 		var msg := {"lifted": "Lifted her top to look at her abdomen.",
 				"off": "Asked her to take her top off (bra on).",
-				"on": "Covered her up again."}
+				"on": "Covered her up again.",
+				"legs_off": "Rolled up her trousers and took her shoes off.",
+				"legs_on": "Covered her legs and put her shoes back on."}
 		logged.emit("exposed", String(msg.get(it["action"], "")))
 		exposure_log.append(String(it["action"]))
 		_result.text = String(msg.get(it["action"], ""))

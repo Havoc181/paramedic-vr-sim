@@ -14,8 +14,8 @@
       "name": "Maureen Hale",
       "age": 81,
       "sex": "female",
-      "model": "res://assets/characters/joan.glb",
-      "_model_note": "Placeholder: reuses Joan's model. A distinct character (different face, hair, cardigan) to be built with make_humans.py once the scenario is approved.",
+      "model": "res://assets/characters/maureen.glb",
+      "_model_note": "Her own model (make_humans.py MAUREEN spec): 81, Black British, plain top, dark jogging bottoms. Falls back to Joan until maureen.glb is built.",
       "seat": "Sofa/PatientSeat",
       "presentation": {
         "posture": "tripod",
@@ -49,7 +49,25 @@
         "calves": "soft_non_tender",
         "neck_veins_visible": false,
         "abdominal_movement_cm": 4.0,
-        "_abdominal_note": "Belly moves up to this far (cm). Paradoxical = drawn in on the in-breath. Bigger for a larger, frailer abdomen; mild ~2.5, marked ~4-5."
+        "_abdominal_note": "Belly moves up to this far (cm). Paradoxical = drawn in on the in-breath. Bigger for a larger, frailer abdomen; mild ~2.5, marked ~4-5.",
+        "heart_rate": 96,
+        "pulse_rhythm": "regular",
+        "pulse_volume": 0.6,
+        "capillary_refill_s": 2.5,
+        "signs": {
+          "_note": "Clinical signs 0..1 (scripts/patient/sign_library.gd). DRAFT values for clinical review.",
+          "pallor": 0.35,
+          "cyanosis_lips": 0.4,
+          "cyanosis_tongue": 0.4,
+          "cyanosis_peripheral": 0.25,
+          "clammy": 0.45,
+          "pursed_lips": 0.6,
+          "prolonged_expiration": 0.6,
+          "hoovers_sign": 0.5,
+          "recession_suprasternal": 0.4,
+          "recession_intercostal": 0.3,
+          "abdominal_paradox": 1.0
+        }
       },
       "voice": {
         "voice": "bf_lily",
@@ -59,6 +77,11 @@
         "breathless": 0.7,
         "breath_gain": 0.45,
         "_note": "Same voice as Joan for now; pick a different Kokoro voice when the new model is built so the two patients don't sound alike."
+      },
+      "model_fallback": "res://assets/characters/joan.glb",
+      "clothes_colour": {
+        "male_casualsuit02": "#7d6e86",
+        "female_sportsuit01": "#33363b"
       }
     }
   },
@@ -392,9 +415,15 @@
       "finding": "Regular, about 95."
     },
     {
+      "id": "capillary_refill",
+      "method": "feel",
+      "finding": "Press a fingertip: colour returns in about 2-3 seconds."
+    },
+    {
       "id": "calves",
       "method": "look_feel",
-      "finding": "Calves soft, not swollen or tender. No ankle swelling."
+      "finding": "Calves soft, not swollen or tender. No ankle swelling.",
+      "requires_exposure": "legs"
     }
   ],
   "later_versions": {
@@ -498,6 +527,10 @@
             {
               "id": "radial_pulse",
               "why": "Regular and not very fast. That does not rule out a PE."
+            },
+            {
+              "id": "capillary_refill",
+              "why": "Borderline: fits cool peripheries; recheck after treatment."
             }
           ]
         }

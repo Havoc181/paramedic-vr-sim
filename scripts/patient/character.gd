@@ -10,6 +10,7 @@ const MANNEQUIN := preload("res://scripts/patient/mannequin.gd")
 const BREATHING := preload("res://scripts/patient/breathing.gd")
 const RIG := preload("res://scripts/patient/rig_driver.gd")
 
+const SIGN_LIB := preload("res://scripts/patient/sign_library.gd")
 var id := ""
 var display_name := ""
 var data := {}
@@ -50,13 +51,20 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 	_base_accessory = _accessory
 
 	var model_path := String(data.get("model", ""))
+	if model_path != "" and not ResourceLoader.exists(model_path):
+		model_path = String(data.get("model_fallback", model_path))
 	if model_path != "" and ResourceLoader.exists(model_path):
 		_body = (load(model_path) as PackedScene).instantiate()
 		add_child(_body)
 		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
+		_rig.tint_clothes(data.get("clothes_colour", {}))
 		reset_skin_signs()
-		_rig.abdominal_paradox = bool(p.get("abdominal_paradox", false))
-		_rig.set_belly_depth(float(p.get("abdominal_movement_cm", 3.5)) / 100.0)
+		if _rig.signs:
+			_rig.signs.set_belly_depth(float(p.get("abdominal_movement_cm", 3.5)) / 100.0)
+			_rig.signs.heart_rate = float(p.get("heart_rate", 80.0))
+			_rig.signs.irregular = String(p.get("pulse_rhythm", "regular")) == "irregular"
+			if p.has("capillary_refill_s"):
+				_rig.signs.crt_seconds = float(p["capillary_refill_s"])
 	else:
 		var m = MANNEQUIN.new()
 		m.seated = is_patient
@@ -103,6 +111,10 @@ func _process(delta: float) -> void:
 	if _rig:
 		_rig.update(delta)
 		_rig.apply_breath(b, _depth, _accessory)
+		if _rig.signs:
+			_touch(delta)
+			_breath.inhale_fraction = _rig.signs.inhale_fraction()
+			_rig.signs.update(delta, b, _breath.inhaling if _speech_t < 0.0 else false)
 		_rig.set_jaw(mouth)
 	elif _body:
 		_body.apply_breath(b, _depth, _accessory)
@@ -132,13 +144,99 @@ func set_exposure(state: String) -> void:
 	_rig.set_posture("sit_back" if state != "on" else _rig.home_posture, 1.4)
 
 
+func can_expose_legs() -> bool:
+	return _rig != null and _rig.can_expose_legs()
+
+
+func legs_exposure() -> String:
+	return _rig.legs_state if _rig else "on"
+
+
+## Legs: "off" = trousers rolled above the knees and shoes off.
+func set_legs(state: String) -> void:
+	if can_expose_legs():
+		_rig.set_legs_state(state)
+
+
 ## Lip cyanosis and sweat sheen as the scenario describes them.
 func reset_skin_signs() -> void:
 	if _rig == null:
 		return
-	var skin: Dictionary = data.get("presentation", {}).get("skin", {})
-	_rig.set_cyanosis(float(skin.get("cyanosis", 0.0)))
-	_rig.set_clammy(float(skin.get("clammy_level", 0.6 if skin.get("clammy", false) else 0.0)))
+	if _rig.signs:
+		_rig.signs.set_all(SIGN_LIB.from_presentation(data.get("presentation", {})))
+
+
+# --- Hands-on: feel the pulse, press a fingertip for capillary refill -----------
+
+signal examined(id: String, text: String)
+
+var _controllers: Array = []
+var _pulse_t := 0.0
+var _pulse_done := false
+var _crt_pressed := false
+var _crt_wait := -1.0
+
+
+func _touch(delta: float) -> void:
+	if data.get("role", "") != "patient":
+		return
+	if _controllers.is_empty():
+		_controllers = get_tree().root.find_children("*", "XRController3D", true, false)
+	var sg = _rig.signs
+	var sk: Skeleton3D = _rig.skeleton
+	var feeling := false
+	var pressing := false
+	for c in _controllers:
+		var ctrl := c as XRController3D
+		if not ctrl.get_is_active():
+			continue
+		var grip := ctrl.get_float("grip") > 0.5 or ctrl.is_button_pressed("grip_click")
+		if not grip:
+			continue
+		var p := ctrl.global_position
+		for side in ["L", "R"]:
+			var w := sk.find_bone("wrist." + side)
+			var t := sk.find_bone("finger3-3." + side)
+			if w >= 0 and p.distance_to(sk.global_transform * sk.get_bone_global_pose(w).origin) < 0.07:
+				feeling = true
+				if sg.beat_started:
+					var vol := float(data.get("presentation", {}).get("pulse_volume", 0.6))
+					ctrl.trigger_haptic_pulse("haptic", 0.0, clampf(0.25 + 0.75 * vol, 0.1, 1.0), 0.06, 0.0)
+			if t >= 0 and p.distance_to(sk.global_transform * sk.get_bone_global_pose(t).origin) < 0.05:
+				pressing = true
+	# Pulse: after holding the wrist for 4 seconds, report what you felt.
+	_pulse_t = _pulse_t + delta if feeling else 0.0
+	if _pulse_t > 4.0 and not _pulse_done:
+		_pulse_done = true
+		examined.emit("radial_pulse", _finding("radial_pulse", "Pulse felt at the wrist."))
+	# Capillary refill: blanch while pressed, then time the return.
+	sg.press_nail(pressing)
+	if pressing:
+		_crt_pressed = true
+		_crt_wait = -1.0
+	elif _crt_pressed:
+		_crt_pressed = false
+		_crt_wait = 0.0
+	if _crt_wait >= 0.0:
+		_crt_wait += delta
+		if not sg.is_blanched():
+			examined.emit("capillary_refill", "Capillary refill: about %d seconds." % roundi(sg.crt_seconds))
+			_crt_wait = -1.0
+
+
+func _finding(id: String, fallback: String) -> String:
+	for f in get_tree().root.find_children("*", "", true, false):
+		if "scenario" in f and f.scenario is Dictionary:
+			for it in f.scenario.get("first_impression", []):
+				if it.get("id", "") == id:
+					return String(it.get("finding", fallback))
+	return fallback
+
+
+## Live change of one sign (instructor, demo mode).
+func set_sign(id: String, v: float) -> void:
+	if _rig and _rig.signs:
+		_rig.signs.set_sign(id, v)
 
 
 func set_severity(v: float) -> void:

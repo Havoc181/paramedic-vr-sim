@@ -66,6 +66,38 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 
 ---
 
+---
+
+# The signs system (v0.05-dev8, 20 Nov)
+
+- **Registry:** `scripts/patient/sign_library.gd` lists every sign (id, label, system, how it's seen, exposure needed, "mild" strength, demo caption). Scenarios set them in `presentation.signs` (0..1); old keys (`skin.cyanosis`, `clammy_level`, `abdominal_paradox`) still work.
+- **Controller:** `scripts/patient/signs.gd`, one per character. Landmarks come from the model's own bones (mouth from the oris bones, notch from the clavicles, fingertips from finger bones, knees/ankles from leg bones, JVP line from the right clavicle to the jaw) and sizes scale with the model's height (`_s`, 1 = Joan). Masks are baked once into vertex data (COLOR, CUSTOM0-2; layout at the top of signs.gd).
+- **Shader:** `shaders/skin_signs.gdshader`. Movement is along fixed model axes or a baked direction, never per-vertex normals (no seams). Where the mesh is too coarse to show a dip (notch, subcostal, intercostal ribs, JVP) a little shading is added.
+- **Live control:** instructor app "Clinical signs (live)" sliders (`cmd: sign`); headset state sends current strengths back.
+- **Demo mode:** pause menu "Demo sign" cycles through every sign on its own with a caption, exposing her as needed.
+- **Check:** `tests/sign_sheet.gd` renders every sign (moving ones breath-out | breath-in) to /tmp/signs; run it for every new character (`WHO=<id>`).
+
+| Sign | Settings that worked (Joan) | Notes |
+|---|---|---|
+| Pallor | mix to own luminance x (1.03,1,0.96)x1.06, up to 55% | relative to skin, so works on darker skin |
+| Grey / ashen | own luminance x (0.9,0.93,0.97)x0.9, up to 60% | |
+| Flushing | x(1.1,0.9,0.9) on face mask, up to 70% | first try (1.16,0.86,0.86, hard edge) looked orange |
+| Lip cyanosis | target darkens with strength (0.82-0.2s) | marked was pale lilac before |
+| Tongue cyanosis | tongue material towards (0.55,0.52,0.72) | seen when she talks |
+| Peripheral cyanosis | fingertip spheres 0.8-1.6 cm from tip | |
+| Capillary refill | pressed tip goes (0.93,0.88,0.80); colour back over `capillary_refill_s` | hands-on: grip near the fingertip |
+| Pulse | haptic per beat, amplitude from `pulse_volume`; irregular if `pulse_rhythm: irregular` | hands-on: grip near the wrist 4 s |
+| Pursed lips | oris07 (lower lip sides) 9.6 mm, oris03 (upper) 4.8 mm to midline; oris04/06 5 mm forward; on the out-breath only | >6 mm on oris03 creases the philtrum |
+| Drowsy | upper lids (orbicularis03) 24 deg x strength; head drifts 16 deg over ~6 s then jerks up | |
+| Prolonged expiration | inhale share 0.4 -> 0.22 | |
+| Suprasternal recession | 1.6 cm in, 3.8 cm radius, + shading | 2.4 cm radius only caught 6 vertices |
+| Intercostal | 4 mm in at the sides + rib-spaced shadow lines (2.4 cm) | mesh too coarse for real grooves |
+| Subcostal | 1 cm in, band just under the rib margin + shading | needs top off (lifted top covers it) |
+| Hoover's sign | lower lateral ribs 1.5 cm in on inspiration | torso only, arms excluded |
+| JVP | right neck line, shows up to `jvp` of its length; a and v waves per beat (no a wave in AF) | subtle by nature; check in headset |
+| Mottling, ankle oedema | knees / ankles; need legs exposure | waiting for the legs build |
+
+
 # Signs shopping list and roadmap (20 Nov, for Tom's review)
 
 Legend: **★ = early priority**. Seen by: L look, H hear, F feel (controller), I interactive.

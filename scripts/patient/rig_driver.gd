@@ -127,7 +127,7 @@ func _init(model_root: Node3D, posture: String) -> void:
 	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
 	_find_garments()
-	_setup_skin_signs()
+	signs = SIGNS.new(self)
 
 
 # --- Posture changes -----------------------------------------------------------
@@ -217,12 +217,20 @@ func _find_garments() -> void:
 			_wear["skin_abdomen"] = mi
 		elif n.contains("skin_upper"):
 			_wear["skin_upper"] = mi
-	if _wear.has("lifted"):
-		var base := String(_wear["lifted"].name).replace("_lifted", "_export")
-		for mi in model.find_children("*", "MeshInstance3D", true, false):
-			if String(mi.name) == base:
-				_wear["top"] = mi
+		elif n.contains("skin_legs"):
+			_wear["skin_legs"] = mi
+		elif n.ends_with("_rolled"):
+			_wear["rolled"] = mi
+		elif n.contains("shoes"):
+			_wear["shoes"] = mi
+	for pair in [["lifted", "_lifted", "top"], ["rolled", "_rolled", "trousers"]]:
+		if _wear.has(pair[0]):
+			var base := String(_wear[pair[0]].name).replace(pair[1], "_export")
+			for mi in model.find_children("*", "MeshInstance3D", true, false):
+				if String(mi.name) == base:
+					_wear[pair[2]] = mi
 	set_top_state("on")
+	set_legs_state("on")
 
 
 func can_expose() -> bool:
@@ -236,11 +244,46 @@ func set_top_state(state: String) -> void:
 		"lifted": ["lifted", "skin_abdomen"],
 		"off": ["bra", "skin_abdomen", "skin_upper"],
 	}.get(state, ["top"])
-	for k in _wear:
-		_wear[k].visible = k in show
+	for k in ["top", "lifted", "bra", "skin_abdomen", "skin_upper"]:
+		if _wear.has(k):
+			_wear[k].visible = k in show
 
 
-## Mouth opening while speaking## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
+var legs_state := "on"
+
+
+func can_expose_legs() -> bool:
+	return _wear.has("rolled") and _wear.has("skin_legs") and _wear.has("trousers")
+
+
+## "on" = trousers and shoes on; "off" = trousers rolled above the knees, shoes off.
+func set_legs_state(state: String) -> void:
+	legs_state = state
+	var off := state == "off"
+	for k in ["trousers", "shoes"]:
+		if _wear.has(k):
+			_wear[k].visible = not off
+	for k in ["rolled", "skin_legs"]:
+		if _wear.has(k):
+			_wear[k].visible = off
+
+
+## Plain colours for clothes (e.g. to hide a printed logo): {"name part": "#rrggbb"}.
+func tint_clothes(colours: Dictionary) -> void:
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		for key in colours:
+			if n.contains(String(key).to_lower()):
+				for s in mi.mesh.get_surface_count():
+					var m: Material = mi.get_active_material(s)
+					if m is BaseMaterial3D:
+						m = m.duplicate()
+						m.albedo_texture = null
+						m.albedo_color = Color(String(colours[key]))
+						mi.set_surface_override_material(s, m)
+
+
+## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
 func set_jaw(open: float) -> void:
 	if skeleton == null:
 		return
@@ -261,10 +304,6 @@ func apply_breath(breath: float, depth: float, accessory: float) -> void:
 	var lift := deg_to_rad(7.0) * breath * accessory
 	_lift_clavicle(_clav[0], lift)
 	_lift_clavicle(_clav[1], -lift)
-	if _skin_mat:
-		# Normal: belly out a little on the in-breath. Paradoxical: belly in.
-		var amount := clampf(depth * 1.4, 0.0, 1.0) * breath
-		_skin_mat.set_shader_parameter("belly", -amount if abdominal_paradox else amount * 0.35)
 
 
 # --- Bone lookup -------------------------------------------------------------
@@ -531,135 +570,10 @@ func _is_strands(n: String) -> bool:
 	return false
 
 
-# --- Clinical skin signs ------------------------------------------------------
+# --- Clinical signs (see signs.gd) ---------------------------------------------
 
-var _skin_mat: ShaderMaterial
-
-
-## Lip cyanosis, 0..1. Mild/subtle is about 0.4-0.5.
-func set_cyanosis(v: float) -> void:
-	if _skin_mat:
-		_skin_mat.set_shader_parameter("cyanosis", clampf(v, 0.0, 1.0))
-
-
-## Sweaty sheen, 0..1. Mild clamminess is about 0.35.
-func set_clammy(v: float) -> void:
-	if _skin_mat:
-		_skin_mat.set_shader_parameter("clammy", clampf(v, 0.0, 1.0))
-
-
-var abdominal_paradox := false
-
-
-## How far the belly moves at most, in metres (scenario: abdominal_movement_cm).
-func set_belly_depth(metres: float) -> void:
-	if _skin_mat:
-		_skin_mat.set_shader_parameter("belly_depth", metres)
-
-
-## Swap the skin material (body and the hidden skin patches under the top) for
-## one that can show cyanosis, clamminess and abdominal movement. The lips
-## aren't separate in MakeHuman, so find them by position: just in front of the
-## teeth, in an ellipse around the mouth. Masks are baked into vertex colours
-## (R lips, G face, B abdomen) so the shader stays cheap on Quest.
-func _setup_skin_signs() -> void:
-	var body: MeshInstance3D = null
-	var teeth: MeshInstance3D = null
-	var best := 0
-	for mi in model.find_children("*", "MeshInstance3D", true, false):
-		var n := String(mi.name).to_lower()
-		if n.contains("teeth"):
-			teeth = mi
-			continue
-		if _is_strands(n) or n.contains("suit") or n.contains("shoe") or n.contains("eye") \
-				or n.contains("poly") or n.contains("tongue") or n.contains("skin_") \
-				or n.ends_with("_bra") or n.ends_with("_lifted") or mi.mesh == null:
-			continue
-		var count: int = mi.mesh.surface_get_array_len(0)
-		if count > best:
-			best = count
-			body = mi
-	if body == null:
-		return
-	var src_mat := body.get_active_material(0) as BaseMaterial3D
-	if src_mat == null or src_mat.albedo_texture == null:
-		return
-	_skin_mat = ShaderMaterial.new()
-	_skin_mat.shader = load("res://shaders/skin_signs.gdshader")
-	_skin_mat.set_shader_parameter("albedo_texture", src_mat.albedo_texture)
-	var ta := teeth.mesh.get_aabb() if teeth else AABB()
-	var mouth := Vector3(ta.get_center().x, ta.position.y + ta.size.y * 0.6, ta.end.z)
-	var targets := [body]
-	for k in ["skin_abdomen", "skin_upper"]:
-		if _wear.has(k):
-			targets.append(_wear[k])
-	# Belly region, the same for every skin mesh so the body's lower belly and
-	# the abdomen patch move together (no seam opens): from just under the
-	# trousers' waistband up to the top of the abdomen patch.
-	_belly_box = AABB()
-	if _wear.has("skin_abdomen"):
-		var pb: AABB = _wear["skin_abdomen"].mesh.get_aabb()
-		var y0 := pb.position.y
-		for mi in model.find_children("*", "MeshInstance3D", true, false):
-			var n := String(mi.name).to_lower()
-			if n.contains("casualsuit") or n.contains("trouser") or n.contains("jeans"):
-				# Fade out at the front of the waistband (the highest point of
-				# the trousers' front), so the belly never moves through them.
-				var front_top := -INF
-				for v in (mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
-					if v.z > 0.04 and absf(v.x) < 0.08:
-						front_top = maxf(front_top, v.y)
-				if front_top > -INF:
-					y0 = front_top + 0.005
-		_belly_box = AABB(Vector3(pb.position.x, y0, pb.position.z), Vector3(pb.size.x, pb.end.y - y0, pb.size.z))
-	for mi in targets:
-		_bake_skin_masks(mi, mouth if teeth else Vector3.INF)
-
-
-var _belly_box := AABB()
-
-
-func _bake_skin_masks(mi: MeshInstance3D, mouth: Vector3) -> void:
-	var mesh: ArrayMesh = mi.mesh
-	var box := _belly_box
-	var abdomen := box.size != Vector3.ZERO
-	var out := ArrayMesh.new()
-	for s in mesh.get_surface_count():
-		var arrays := mesh.surface_get_arrays(s)
-		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
-		var cols := PackedColorArray()
-		cols.resize(verts.size())
-		for i in verts.size():
-			var v := verts[i]
-			var lip := 0.0
-			var face := 0.0
-			var belly := 0.0
-			if mouth != Vector3.INF:
-				if v.z > mouth.z - 0.012:
-					var d := Vector2((v.x - mouth.x) / 0.03, (v.y - mouth.y) / 0.014).length()
-					lip = 1.0 - smoothstep(0.55, 1.0, d)
-				var fy := v.y - mouth.y
-				if fy > -0.045 and fy < 0.13 and v.z > mouth.z - 0.06 and absf(v.x - mouth.x) < 0.075:
-					face = smoothstep(mouth.z - 0.06, mouth.z - 0.01, v.z)
-			if abdomen:
-				# Strongest in the middle of the front of the abdomen, fading to
-				# the edges so the patch's border never moves (no gaps at the top).
-				var u := (v.y - box.position.y) / maxf(box.size.y, 0.001)
-				if u < 0.0 or u > 1.0 or v.z < box.position.z:
-					u = -1.0
-				var w := 1.0 - absf(v.x - box.get_center().x) / maxf(box.size.x * 0.5, 0.001)
-				# By position, not normal, so vertices split at UV seams (same
-				# place, different normals) move together and no crack opens.
-				var front := smoothstep(0.35, 0.9, (v.z - box.position.z) / maxf(box.size.z, 0.001))
-				belly = sin(PI * clampf(u, 0.0, 1.0)) * smoothstep(0.0, 0.5, w) * front if u >= 0.0 else 0.0
-			cols[i] = Color(lip, face, belly, 1.0)
-		arrays[Mesh.ARRAY_COLOR] = cols
-		var fmt := mesh.surface_get_format(s) & Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
-		out.add_surface_from_arrays(mesh.surface_get_primitive_type(s), arrays, [], {}, fmt)
-		out.surface_set_material(s, _skin_mat)
-	mi.mesh = out
-	for s in out.get_surface_count():
-		mi.set_surface_override_material(s, null)
+const SIGNS := preload("res://scripts/patient/signs.gd")
+var signs  # signs.gd controller
 
 
 ## MakeHuman hair textures are coloured; grey them for older characters.

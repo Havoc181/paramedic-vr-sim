@@ -30,7 +30,13 @@ var _message: Label3D
 var _message_timer := 0.0
 
 
+## Set by the pause menu's scenario switch before reloading the scene.
+static var next_path := ""
+
+
 func _ready() -> void:
+	if next_path != "":
+		scenario_path = next_path
 	scenario = load_scenario(scenario_path)
 	if scenario.is_empty():
 		push_error("Could not load scenario: " + scenario_path)
@@ -77,11 +83,18 @@ func _setup_link() -> void:
 	add_child(link)
 	link.command.connect(_on_command)
 	_panel.logged.connect(func(kind, text): link.log_event(kind, text))
+	for c in characters.values():
+		if c.has_signal("examined"):
+			c.examined.connect(_panel.mark_examined)
 	_update_state()
 
 
 func _update_state() -> void:
-	link.state = {"paused": _paused, "severity": _severity}
+	var signs := {}
+	for c in characters.values():
+		if c.data.get("role", "") == "patient" and c._rig and c._rig.signs:
+			signs = c._rig.signs.strength.duplicate()
+	link.state = {"paused": _paused, "severity": _severity, "signs": signs}
 	link.send_state()
 
 
@@ -99,6 +112,15 @@ func _on_command(msg: Dictionary) -> void:
 					c.set_severity(_severity)
 			link.log_event("instructor", "Patient condition set to %+.1f (%s)" % [_severity,
 					"worse" if _severity > 0.05 else ("better" if _severity < -0.05 else "as written")])
+		"sign":
+			# Instructor: turn one clinical sign up/down/off live.
+			var id := String(msg.get("id", ""))
+			var v := clampf(float(msg.get("v", 0.0)), 0.0, 1.0)
+			for c in characters.values():
+				if c.data.get("role", "") == "patient" and c.has_method("set_sign"):
+					c.set_sign(id, v)
+			link.log_event("instructor", "Sign %s set to %.0f%%" % [id, v * 100.0])
+			_update_state()
 		"ken_interrupt":
 			var ev: Dictionary = events.get("ken_interrupt", {})
 			var lines: Array = ev.get("lines", [])
@@ -244,6 +266,20 @@ func _spawn_props() -> void:
 				t.global_position = Vector3(-1.25, 0.67, -1.4)
 			"medicines_box":
 				_spawn_medicines_box(p)
+			# Scenario 02 props: simple readable placeholders for now.
+			"sputum_pot":
+				_spawn_info(p, "Pot by her chair", Vector3(0.08, 0.07, 0.08), Color(0.95, 0.95, 0.93), Vector3(0.93, 0.635, -1.52))
+			"sputum_tissue":
+				_spawn_info(p, "Used tissues", Vector3(0.12, 0.04, 0.1), Color(0.97, 0.96, 0.95), Vector3(-0.15, 0.47, -1.35))
+			"inhalers":
+				_spawn_info(p, "Inhalers", Vector3(0.1, 0.06, 0.05), Color(0.35, 0.55, 0.85), Vector3(1.22, 0.63, -1.55))
+			"rescue_pack":
+				_spawn_info(p, "Rescue pack (from the GP)", Vector3(0.14, 0.05, 0.09), Color(0.9, 0.85, 0.7), Vector3(1.18, 0.635, -1.82))
+			"dog_things":
+				var bed := _prop_box(Vector3(0.6, 0.12, 0.45), Color(0.45, 0.32, 0.25))
+				bed.global_position = Vector3(1.6, 0.06, 0.4)
+				var bowl := _prop_box(Vector3(0.16, 0.06, 0.16), Color(0.8, 0.2, 0.2))
+				bowl.global_position = Vector3(1.25, 0.03, 0.55)
 
 
 func _spawn_medicines_box(p: Dictionary) -> void:
@@ -263,6 +299,26 @@ func _spawn_medicines_box(p: Dictionary) -> void:
 			link.log_event("checked", "Read the medicines box"))
 	box.global_position = Vector3(1.05, 0.625, -1.68)
 	box.rotation_degrees.y = 15.0
+
+
+## A readable prop: point at it to see what it is (description and contents).
+func _spawn_info(p: Dictionary, title: String, size: Vector3, colour: Color, pos: Vector3) -> void:
+	var box := preload("res://scripts/info_prop.gd").new()
+	var id := String(p.get("id", ""))
+	box.name = id
+	box.size = size
+	box.colour = colour
+	box.title = title
+	var lines := PackedStringArray([String(p.get("description", ""))])
+	for item in p.get("contents", []):
+		lines.append("- " + String(item))
+	box.details = "\n".join(lines)
+	add_child(box)
+	box.read.connect(func():
+		seen[id] = true
+		if link:
+			link.log_event("checked", "Looked at: " + title))
+	box.global_position = pos
 
 
 func _prop_box(size: Vector3, colour: Color) -> MeshInstance3D:
