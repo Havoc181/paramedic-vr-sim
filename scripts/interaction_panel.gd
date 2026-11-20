@@ -28,12 +28,12 @@ var _item_buttons: Array = []
 var _prev
 var _next
 var _page_label: Label3D
-var _track: MeshInstance3D
-var _thumb: MeshInstance3D
+var _segments: Array = []
+const BAR_WIDTH := 0.2
+const BAR_Y := -0.14
+const SEG_DIM := Color(0.24, 0.28, 0.34)
 const ACCENT := Color(0.12, 0.4, 0.68)
 const ACCENT_HOVER := Color(0.2, 0.55, 0.85)
-const LIST_TOP := 0.255
-const LIST_BOTTOM := -0.075
 var _result: Label3D
 var _items: Array = []
 var _speaking := false
@@ -84,7 +84,7 @@ func close() -> void:
 func _build() -> void:
 	var bg := MeshInstance3D.new()
 	var bg_mesh := BoxMesh.new()
-	bg_mesh.size = Vector3(0.66, 0.78, 0.005)
+	bg_mesh.size = Vector3(0.62, 0.78, 0.005)
 	bg.mesh = bg_mesh
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -113,7 +113,7 @@ func _build() -> void:
 		b.pressed.connect(_on_tab.bind(tabs[i][0]))
 		_tab_buttons[tabs[i][0]] = b
 	for i in PER_PAGE:
-		var b = _button(Vector2(0.57, 0.05), "", Vector3(-0.015, 0.23 - i * 0.06, 0))
+		var b = _button(Vector2(0.58, 0.05), "", Vector3(0, 0.23 - i * 0.06, 0))
 		b.pressed.connect(_on_item.bind(i))
 		_item_buttons.append(b)
 	_prev = _button(Vector2(0.16, 0.045), "< Back", Vector3(-0.2, -0.14, 0), true)
@@ -123,15 +123,12 @@ func _build() -> void:
 	_page_label = Label3D.new()
 	_page_label.font_size = 22
 	_page_label.pixel_size = 0.0008
-	_page_label.position = Vector3(0, -0.14, 0)
+	_page_label.position = Vector3(0, BAR_Y - 0.03, 0)
 	_page_label.modulate = Color(0.7, 0.78, 0.86)
 	_page_label.no_depth_test = true
 	_page_label.render_priority = 11
 	add_child(_page_label)
-	# Scroll bar: where you are in the list.
-	_track = _bar(Vector3(0.006, LIST_TOP - LIST_BOTTOM, 0.002), Color(0.18, 0.21, 0.26), 10)
-	_track.position = Vector3(0.305, (LIST_TOP + LIST_BOTTOM) / 2.0, 0)
-	_thumb = _bar(Vector3(0.008, 0.05, 0.002), ACCENT_HOVER, 11)
+
 
 	_result = Label3D.new()
 	_result.font_size = 24
@@ -144,22 +141,6 @@ func _build() -> void:
 	_result.no_depth_test = true
 	_result.render_priority = 11
 	add_child(_result)
-
-
-func _bar(size: Vector3, colour: Color, priority: int) -> MeshInstance3D:
-	var mi := MeshInstance3D.new()
-	var m := BoxMesh.new()
-	m.size = size
-	mi.mesh = m
-	var mat := StandardMaterial3D.new()
-	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mat.albedo_color = colour
-	mat.no_depth_test = true
-	mat.render_priority = priority
-	mi.material_override = mat
-	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	add_child(mi)
-	return mi
 
 
 func _button(size: Vector2, text: String, pos: Vector3, accent := false):
@@ -177,6 +158,37 @@ func _button(size: Vector2, text: String, pos: Vector3, accent := false):
 func _change_page(step: int) -> void:
 	_page += step
 	_refresh()
+
+
+func _go_to_page(p: int) -> void:
+	_page = p
+	_refresh()
+
+
+## Horizontal page bar between Back and More: one segment per page, the
+## current one lit. Each segment can be pointed at to jump to that page.
+func _update_page_bar(pages: int) -> void:
+	while _segments.size() < pages:
+		var seg = BUTTON.new()
+		seg.text = ""
+		seg.visual_height = 0.012
+		add_child(seg)
+		seg.pressed.connect(_go_to_page.bind(_segments.size()))
+		_segments.append(seg)
+	var gap := 0.008
+	var w := (BAR_WIDTH - gap * (pages - 1)) / pages
+	for i in _segments.size():
+		var seg = _segments[i]
+		var show := pages > 1 and i < pages
+		seg.visible = show
+		seg.collision_layer = 1 if show else 0
+		if not show:
+			continue
+		seg.size = Vector2(w, 0.045)
+		seg.position = Vector3(-BAR_WIDTH / 2.0 + w / 2.0 + i * (w + gap), BAR_Y, 0)
+		seg.idle_colour = ACCENT_HOVER if i == _page else SEG_DIM
+		seg.hover_colour = Color(0.35, 0.68, 0.95)
+		seg._resize()
 
 
 func _on_tab(tab: String) -> void:
@@ -218,12 +230,7 @@ func _refresh() -> void:
 	_next.visible = _page < pages - 1
 	_next.collision_layer = 1 if _next.visible else 0
 	_page_label.text = ("Page %d of %d" % [_page + 1, pages]) if pages > 1 else ""
-	_track.visible = pages > 1
-	_thumb.visible = pages > 1
-	if pages > 1:
-		var h := (LIST_TOP - LIST_BOTTOM) / pages
-		(_thumb.mesh as BoxMesh).size.y = h
-		_thumb.position = Vector3(0.305, LIST_TOP - h * (_page + 0.5), 0.001)
+	_update_page_bar(pages)
 	for t in _tab_buttons.values():
 		t.collision_layer = 1
 
