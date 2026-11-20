@@ -1,20 +1,21 @@
-# Headset test checklist
+# Test checklist — v0.05-dev2 (menu visibility)
 
-Run on the Quest (standalone build). Note the version shown in the menu title
-(this round: **v0.05-dev1**). Anything that fails: a photo or a few words.
-Previous results: `docs/test-results/`.
+Export to the Quest as usual, then check:
 
-## Voices (10 min) - new
-- [ ] Ask Joan a few questions: you hear her voice from her mouth, breathless, with in-breaths between phrases
-- [ ] Ask Ken a few: his voice comes from him
-- [ ] Subtitles still appear and stay up long enough
-- [ ] Next question can't be asked until the answer finishes (no talking over)
-- [ ] Mouths move while talking (small jaw movement)
-- [ ] Joan's chest/shoulders lift on her in-breaths while she talks
-- [ ] Her usual breathing sound stops while she speaks, and comes back after
-- [ ] Volume: voices vs breathing vs distance (walk away while she talks)
-- [ ] Instructor app: Ken interrupts and Phone rings now have Ken's voice
-- [ ] Overall: what feels most wrong? (for the wider-input discussion)
+## Pointer over menus
+- [ ] The laser beam stays visible in front of the menu panel (not hidden behind it)
+- [ ] Both controllers stay visible when held in front of / behind a panel
+- [ ] A small white dot shows exactly where you're pointing on a button
+- [ ] Same in the pause menu, debrief and info boxes
+- [ ] Nothing looks odd when pointing at the room (beam/dot drawing through walls is expected, say if it's distracting)
 
-## Always
-- [ ] Both controllers track throughout; Quit app works
+## Paging in the Ask / Look, listen, feel lists
+- [ ] Blue "More >" and "< Back" buttons are obvious
+- [ ] "Page 1 of 3" shows between them
+- [ ] Scroll bar on the right shows where you are in the list and moves when you page
+- [ ] Scroll bar and page text are hidden when the list fits on one page
+
+## Debrief
+- [ ] Next / Back buttons are blue and easy to spot
+
+Notes:

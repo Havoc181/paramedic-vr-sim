@@ -10,16 +10,18 @@ signal pressed
 		if _label:
 			_label.text = value
 
+## Colour when not pointed at (accent buttons such as Next use a brighter one).
+@export var idle_colour := Color(0.16, 0.2, 0.26)
+@export var hover_colour := Color(0.22, 0.42, 0.62)
+
 var _label: Label3D
 var _material: StandardMaterial3D
-const IDLE := Color(0.16, 0.2, 0.26)
-const HOVER := Color(0.22, 0.42, 0.62)
 
 
 func _ready() -> void:
 	_material = StandardMaterial3D.new()
 	_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	_material.albedo_color = IDLE
+	_material.albedo_color = idle_colour
 	# Menus draw on top of the world so furniture or people never hide them.
 	_material.no_depth_test = true
 	_material.render_priority = 10
@@ -54,8 +56,8 @@ func interact() -> void:
 
 
 func hover_enter() -> void:
-	_material.albedo_color = HOVER
+	_material.albedo_color = hover_colour
 
 
 func hover_exit() -> void:
-	_material.albedo_color = IDLE
+	_material.albedo_color = idle_colour

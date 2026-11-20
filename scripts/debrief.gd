@@ -236,6 +236,9 @@ func _label(size: int, pos: Vector3, colour: Color) -> Label3D:
 func _button(text: String, pos: Vector3):
 	var b = BUTTON.new()
 	b.size = Vector2(0.14, 0.05)
+	if text.begins_with("Next") or text.begins_with("< Back"):
+		b.idle_colour = Color(0.12, 0.4, 0.68)
+		b.hover_colour = Color(0.2, 0.55, 0.85)
 	b.text = text
 	b.position = pos
 	add_child(b)

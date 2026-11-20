@@ -27,6 +27,13 @@ var _tab_buttons := {}
 var _item_buttons: Array = []
 var _prev
 var _next
+var _page_label: Label3D
+var _track: MeshInstance3D
+var _thumb: MeshInstance3D
+const ACCENT := Color(0.12, 0.4, 0.68)
+const ACCENT_HOVER := Color(0.2, 0.55, 0.85)
+const LIST_TOP := 0.255
+const LIST_BOTTOM := -0.075
 var _result: Label3D
 var _items: Array = []
 var _speaking := false
@@ -77,7 +84,7 @@ func close() -> void:
 func _build() -> void:
 	var bg := MeshInstance3D.new()
 	var bg_mesh := BoxMesh.new()
-	bg_mesh.size = Vector3(0.62, 0.78, 0.005)
+	bg_mesh.size = Vector3(0.66, 0.78, 0.005)
 	bg.mesh = bg_mesh
 	var bg_mat := StandardMaterial3D.new()
 	bg_mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
@@ -106,13 +113,25 @@ func _build() -> void:
 		b.pressed.connect(_on_tab.bind(tabs[i][0]))
 		_tab_buttons[tabs[i][0]] = b
 	for i in PER_PAGE:
-		var b = _button(Vector2(0.58, 0.05), "", Vector3(0, 0.23 - i * 0.06, 0))
+		var b = _button(Vector2(0.57, 0.05), "", Vector3(-0.015, 0.23 - i * 0.06, 0))
 		b.pressed.connect(_on_item.bind(i))
 		_item_buttons.append(b)
-	_prev = _button(Vector2(0.14, 0.045), "< Prev", Vector3(-0.21, -0.14, 0))
+	_prev = _button(Vector2(0.16, 0.045), "< Back", Vector3(-0.2, -0.14, 0), true)
 	_prev.pressed.connect(_change_page.bind(-1))
-	_next = _button(Vector2(0.14, 0.045), "Next >", Vector3(0.21, -0.14, 0))
+	_next = _button(Vector2(0.16, 0.045), "More >", Vector3(0.2, -0.14, 0), true)
 	_next.pressed.connect(_change_page.bind(1))
+	_page_label = Label3D.new()
+	_page_label.font_size = 22
+	_page_label.pixel_size = 0.0008
+	_page_label.position = Vector3(0, -0.14, 0)
+	_page_label.modulate = Color(0.7, 0.78, 0.86)
+	_page_label.no_depth_test = true
+	_page_label.render_priority = 11
+	add_child(_page_label)
+	# Scroll bar: where you are in the list.
+	_track = _bar(Vector3(0.006, LIST_TOP - LIST_BOTTOM, 0.002), Color(0.18, 0.21, 0.26), 10)
+	_track.position = Vector3(0.305, (LIST_TOP + LIST_BOTTOM) / 2.0, 0)
+	_thumb = _bar(Vector3(0.008, 0.05, 0.002), ACCENT_HOVER, 11)
 
 	_result = Label3D.new()
 	_result.font_size = 24
@@ -127,11 +146,30 @@ func _build() -> void:
 	add_child(_result)
 
 
-func _button(size: Vector2, text: String, pos: Vector3):
+func _bar(size: Vector3, colour: Color, priority: int) -> MeshInstance3D:
+	var mi := MeshInstance3D.new()
+	var m := BoxMesh.new()
+	m.size = size
+	mi.mesh = m
+	var mat := StandardMaterial3D.new()
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.albedo_color = colour
+	mat.no_depth_test = true
+	mat.render_priority = priority
+	mi.material_override = mat
+	mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	add_child(mi)
+	return mi
+
+
+func _button(size: Vector2, text: String, pos: Vector3, accent := false):
 	var b = BUTTON.new()
 	b.size = size
 	b.text = text
 	b.position = pos
+	if accent:
+		b.idle_colour = ACCENT
+		b.hover_colour = ACCENT_HOVER
 	add_child(b)
 	return b
 
@@ -179,6 +217,13 @@ func _refresh() -> void:
 	_prev.collision_layer = 1 if _prev.visible else 0
 	_next.visible = _page < pages - 1
 	_next.collision_layer = 1 if _next.visible else 0
+	_page_label.text = ("Page %d of %d" % [_page + 1, pages]) if pages > 1 else ""
+	_track.visible = pages > 1
+	_thumb.visible = pages > 1
+	if pages > 1:
+		var h := (LIST_TOP - LIST_BOTTOM) / pages
+		(_thumb.mesh as BoxMesh).size.y = h
+		_thumb.position = Vector3(0.305, LIST_TOP - h * (_page + 0.5), 0.001)
 	for t in _tab_buttons.values():
 		t.collision_layer = 1
 
