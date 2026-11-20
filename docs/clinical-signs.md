@@ -13,7 +13,8 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 | Mouth moving with speech, teeth and tongue | done | automatic from voice clips |
 | Lip cyanosis | done | `skin.cyanosis` 0..1 |
 | Clammy / sweaty skin | done | `skin.clammy_level` 0..1 (or `clammy: true` = 0.6) |
-| Paradoxical abdominal movement | planned | `abdominal_paradox: true` |
+| Paradoxical abdominal movement | done (needs exposure) | `abdominal_paradox: true` |
+| Exposure: top lifted / top off (bra) | done (Joan) | `make_humans.py` spec `exposure` |
 | Wince and hold side on coughing | planned | `cough_wince: true` |
 
 ---
@@ -49,5 +50,15 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 - **Settings:** **mild = 0.45**, moderate = 0.6 (Joan, APO), marked = 0.8+; 1.0 looks plastic.
 - **Check:** `tests/skin_signs_shot.gd`; headset: pause menu "Test: patient skin".
 
-## Paradoxical abdominal movement (planned)
-- Only obvious when the abdomen is exposed (top lifted, or off with bra on). Plan: abdomen region of the body skin moves in as the chest rises (vertex displacement along the normal in the skin shader, masked to the abdomen, in phase with the breath). Normal breathing for other characters moves it out a little. Needs the exposure work first.
+## Exposure: top on / lifted / off (bra on)
+- **Why:** some signs (paradoxical abdominal movement, later chest signs) are only obvious when exposed, as in real practice.
+- **Blender (`SourceAssets/make_humans.py`, `expose_layers`):** the body keeps its clothing mask (skin under the top stays hidden when dressed). The skin under the top is *copied* into two hidden patches, `<name>_skin_abdomen` (front two-thirds, below the underbust) and `<name>_skin_upper` (chest, back, arms), each grown by one face ring so they also cover the faces the body's mask removed along the edge, with the clothing masks removed from the copies. Also taken: the top 3.5 cm of skin the trousers' mask removes, because sitting pulls the waistband down and otherwise leaves a gap. Landmarks: bust apex = most forward point of the upper torso, underbust = 6 cm below. `<top>_lifted` = a copy of the top with the front below the underbust gathered up (to 14% of its depth) into soft folds; sides lift less, the back stays down. `<name>_bra` = a bandeau made from the body skin in the band underbust−1.5 cm to bust+5.5 cm, edges snapped straight, pushed out 4.5 mm, muted grey-mauve.
+- **Godot (`rig_driver`):** `set_top_state("on"|"lifted"|"off")` swaps which meshes are visible; `character.set_exposure()` also moves her to the `sit_back` posture (hands on the seat beside her hips, smooth 1.4 s blend) and back to her own posture when covered. Panel: "Lift her top…", "Ask her to take her top off (bra on)", "Cover her up again"; findings with `requires_exposure: "abdomen"|"chest"` only appear once exposed. Debrief "The scene" reports what was exposed and whether she was covered again.
+- **Lessons:** MPFB MASK modifiers delete any vertex with weight > 0 (use > 0.0001 when testing group membership, not 0.5). `bpy.ops.mesh.separate` loses the faces along the cut, so copy with a grown selection instead. Some nipple verts aren't in the top's mask, so build the bra from all skin in the band.
+- **Check:** `tests/exposure_shot.gd` (front and side, each state, belly in/out).
+
+## Paradoxical abdominal movement
+- **Code:** `skin_signs.gdshader` (`belly`, `belly_depth` 2.2 cm), `rig_driver.apply_breath()`, scenario `abdominal_paradox: true`.
+- **How:** the belly region (from 5 cm under the trousers' waistband to the top of the abdomen patch) is baked into vertex colour B on *all* skin meshes with the same function of position, so the body's lower belly and the patch move together. It moves straight forward/back (+Z), not along each normal, so nothing cracks. Paradoxical: drawn in on the in-breath, in time with the chest rising. Normal: out a little (35%).
+- **Didn't work:** weighting by normal opened cracks at UV seams; only moving the patch opened a seam against the body's lower belly.
+- **Preview:** pause menu "Test: patient skin" > "Belly paradoxical", then lift her top.

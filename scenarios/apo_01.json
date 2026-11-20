@@ -433,6 +433,12 @@
   }
  ],
  "first_impression": [
+    {
+      "id": "abdomen",
+      "method": "look",
+      "requires_exposure": "abdomen",
+      "finding": "Belly rises gently as she breathes in: no paradoxical movement."
+    },
   {
    "id": "position",
    "method": "look",

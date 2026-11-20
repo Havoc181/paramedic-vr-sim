@@ -60,7 +60,9 @@ func _ready() -> void:
 
 
 func _on_finished(impression: String, urgency: String) -> void:
-	_debrief.show_debrief(scenario, _panel.asked_ids(), _panel.assessed, seen, impression, urgency, player)
+	var seen_all := seen.duplicate()
+	seen_all["_exposure"] = _panel.exposure_log.duplicate()
+	_debrief.show_debrief(scenario, _panel.asked_ids(), _panel.assessed, seen_all, impression, urgency, player)
 	if link:
 		link.log_event("debrief", "Debrief opened")
 

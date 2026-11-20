@@ -55,6 +55,7 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 		add_child(_body)
 		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
 		reset_skin_signs()
+		_rig.abdominal_paradox = bool(p.get("abdominal_paradox", false))
 	else:
 		var m = MANNEQUIN.new()
 		m.seated = is_patient
@@ -99,6 +100,7 @@ func _process(delta: float) -> void:
 		if _speech_t > float(_speech.get("length", 0.0)) + 0.2:
 			_speech_t = -1.0
 	if _rig:
+		_rig.update(delta)
 		_rig.apply_breath(b, _depth, _accessory)
 		_rig.set_jaw(mouth)
 	elif _body:
@@ -111,6 +113,24 @@ func _process(delta: float) -> void:
 
 ## Instructor control: -1 = much better, 0 = as written, +1 = much worse.
 ## Changes breathing rate, depth, shoulder use and how loud the breathing is.
+## Exposure: "on", "lifted" (top lifted at the front) or "off" (bra on).
+## While exposed she sits back with her hands beside her so the abdomen can be
+## seen, then goes back to her own posture when covered up again.
+func can_expose() -> bool:
+	return _rig != null and _rig.can_expose()
+
+
+func exposure() -> String:
+	return _rig.top_state if _rig else "on"
+
+
+func set_exposure(state: String) -> void:
+	if not can_expose():
+		return
+	_rig.set_top_state(state)
+	_rig.set_posture("sit_back" if state != "on" else _rig.home_posture, 1.4)
+
+
 ## Lip cyanosis and sweat sheen as the scenario describes them.
 func reset_skin_signs() -> void:
 	if _rig == null:

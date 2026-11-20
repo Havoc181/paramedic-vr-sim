@@ -22,6 +22,8 @@ var _asked := {}
 var assessed := {}
 var _impression := ""
 var _talking_to := ""
+## Exposure actions in order ("lifted", "off", "on"), for the debrief.
+var exposure_log: Array = []
 var _header: Label3D
 var _tab_buttons := {}
 var _item_buttons: Array = []
@@ -268,9 +270,30 @@ func _available_items() -> Array:
 		for o in opts:
 			out.append(o)
 	else:
+		var pt = _patient()
+		var state: String = pt.exposure() if pt and pt.can_expose() else ""
+		if state == "on":
+			out.append({"id": "_expose_lifted", "label": "Lift her top to look at her abdomen", "action": "lifted"})
+		if state == "on" or state == "lifted":
+			out.append({"id": "_expose_off", "label": "Ask her to take her top off (bra on)", "action": "off"})
+		if state == "lifted" or state == "off":
+			out.append({"id": "_expose_on", "label": "Cover her up again", "action": "on"})
 		for f in runner.scenario.get("first_impression", []):
+			# Some findings can only be seen once that area is exposed.
+			var need := String(f.get("requires_exposure", ""))
+			if need == "abdomen" and state != "lifted" and state != "off":
+				continue
+			if need == "chest" and state != "off":
+				continue
 			out.append({"id": f.get("id", ""), "label": _assess_label(f), "finding": f.get("finding", "")})
 	return out
+
+
+func _patient():
+	for c in runner.characters.values():
+		if c.data.get("role", "") == "patient":
+			return c
+	return null
 
 
 func _assess_label(f: Dictionary) -> String:
@@ -285,6 +308,18 @@ func _on_item(slot: int) -> void:
 	if idx >= _items.size():
 		return
 	var it: Dictionary = _items[idx]
+	if _tab == "assess" and it.has("action"):
+		var pt = _patient()
+		if pt:
+			pt.set_exposure(String(it["action"]))
+		var msg := {"lifted": "Lifted her top to look at her abdomen.",
+				"off": "Asked her to take her top off (bra on).",
+				"on": "Covered her up again."}
+		logged.emit("exposed", String(msg.get(it["action"], "")))
+		exposure_log.append(String(it["action"]))
+		_result.text = String(msg.get(it["action"], ""))
+		_refresh()
+		return
 	if _tab == "assess":
 		if not assessed.has(it.get("id", "")):
 			logged.emit("checked", String(it.get("label", "")) + ": " + String(it.get("finding", "")))

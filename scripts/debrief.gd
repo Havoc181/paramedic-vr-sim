@@ -134,6 +134,15 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 		var id := String(it.get("id", ""))
 		var prefix := "[Checked]  " if seen.has(id) else ("[Available, not checked]  " if id == "medicines_box" else "[In the room]  ")
 		st += prefix + String(it.get("why", "")) + "\n\n"
+	var ex: Array = seen.get("_exposure", [])
+	if not ex.is_empty():
+		var words := {"lifted": "lifted her top", "off": "asked her to take her top off", "on": "covered her up again"}
+		var parts := PackedStringArray()
+		for e in ex:
+			parts.append(String(words.get(e, e)))
+		var ending := "She was covered up again before you finished." if ex[-1] == "on" \
+				else "She was still exposed when you finished."
+		st += "[Exposure]  You " + ", then ".join(parts) + ". " + ending + "\n\n"
 	out.append(["The scene", st.strip_edges()])
 
 	# 5. Differentials

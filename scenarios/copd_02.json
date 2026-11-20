@@ -346,7 +346,8 @@
     {
       "id": "abdomen",
       "method": "look",
-      "finding": "Her belly moves in as her chest rises: paradoxical abdominal movement."
+      "finding": "With her top lifted: her belly moves in as her chest rises (paradoxical abdominal movement).",
+      "requires_exposure": "abdomen"
     },
     {
       "id": "speech",

@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.05-dev5"
+const APP_VERSION := "v0.05-dev6"
 
 ## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
 ## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.
@@ -21,7 +21,8 @@ var _refresh_rates: Array = []
 var _refresh_index := -1
 ## Test only: preview the skin signs on the patient (lips / sheen levels).
 const SIGNS := [["As scenario", -1.0, -1.0], ["Lips mild", 0.4, 0.0], ["Lips marked", 0.75, 0.0],
-		["Clammy mild", 0.0, 0.45], ["Clammy marked", 0.0, 0.8], ["Normal", 0.0, 0.0]]
+		["Clammy mild", 0.0, 0.45], ["Clammy marked", 0.0, 0.8],
+		["Belly paradoxical", -2.0, 0.0], ["Normal", 0.0, 0.0]]
 var _signs_index := 0
 
 
@@ -210,7 +211,11 @@ func _apply_signs() -> void:
 	for c in get_tree().root.find_children("*", "", true, false):
 		if c.has_method("reset_skin_signs") and c.data.get("role", "") == "patient":
 			var p = SIGNS[_signs_index]
-			if p[1] < 0.0:
+			c._rig.abdominal_paradox = p[1] == -2.0
+			if p[1] == -1.0:
+				c.reset_skin_signs()
+				c._rig.abdominal_paradox = bool(c.data.get("presentation", {}).get("abdominal_paradox", false))
+			elif p[1] == -2.0:
 				c.reset_skin_signs()
 			elif c._rig:
 				c._rig.set_cyanosis(p[1])

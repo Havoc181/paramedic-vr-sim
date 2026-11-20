@@ -1,21 +1,26 @@
-# Test checklist — v0.05-dev5 (skin signs: lip cyanosis, clamminess)
+# Test checklist — v0.05-dev6 (exposure and belly breathing)
 
-If you haven't yet: commit the rebuilt `joan.glb` and `ken.glb` in GitHub Desktop
-(teeth and tongue, from dev4) before exporting.
+**Before exporting:** commit the rebuilt `assets/characters/joan.glb` (and `ken.glb`
+if it shows as changed) in GitHub Desktop.
 
-Joan (scenario 01) now has a moderate clammy sheen (clammy_level 0.6), no cyanosis.
-Scenario 02's patient will use: lips 0.4 (mild), clammy 0.45 (mild).
+## Exposure (Joan, Look/listen/feel tab)
+- [ ] "Lift her top to look at her abdomen": blouse gathers up under her chest, she sits back
+      with her hands on the sofa beside her (smooth, about 1.5 s)
+- [ ] No gap of missing skin at the jeans waistband; no skin poking through anywhere
+- [ ] "Look at abdomen" appears only once exposed; finding shows
+- [ ] "Ask her to take her top off (bra on)": blouse gone, simple bra, arms and shoulders look right
+- [ ] "Cover her up again": blouse back, she returns to the tripod position
+- [ ] Debrief "The scene" says what you exposed and whether you covered her again
+- [ ] Instructor log shows the exposure entries
 
-## Preview in the headset
-Pause menu > "Test: patient skin" cycles: As scenario / Lips mild / Lips marked /
-Clammy mild / Clammy marked / Normal. Kneel close to Joan and compare.
+## Belly breathing
+- [ ] Pause menu > "Test: patient skin" > "Belly paradoxical", then lift her top:
+      belly draws in as her chest rises (watch from the side as well)
+- [ ] "As scenario" (Joan, APO): belly moves out slightly on the in-breath, no paradox
+- [ ] No cracks or seams on the belly as it moves
 
-- [ ] Lips mild: you'd notice it if you looked at her mouth, but it isn't cartoonish
-- [ ] Lips marked: clearly dusky/blue-grey, still looks like lips (texture kept)
-- [ ] No blue tint spreading under the nose or onto the chin
-- [ ] Clammy mild: a faint sheen on nose, cheeks, upper lip as you move your head
-- [ ] Clammy marked: obviously sweaty, but not plastic
-- [ ] Joan's default (moderate sheen) looks right for APO
-- [ ] Frame rate unchanged
+## Still to do (next builds)
+- Her line while sat back ("Can I... lean forward again?")
+- Lifted-top folds could look more bunched; bra is a plain bandeau for now
 
 Notes:

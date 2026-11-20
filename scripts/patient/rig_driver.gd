@@ -34,6 +34,20 @@ const POSTURES := {
 		# Model origin relative to the seat marker (seat surface).
 		"offset": Vector3(0.0, -0.67, 0.02),
 	},
+	# Sitting back briefly with hands on the seat beside the hips, so the
+	# abdomen can be seen (only while it's being exposed). Still breathless:
+	# shoulders stay up and she leans a little forward.
+	"sit_back": {
+		"limbs": {
+			"thigh": Vector3(0.2, -0.06, 1.0),
+			"calf": Vector3(0.05, -1.0, 0.1),
+			"foot": Vector3(0.1, -0.45, 0.9),
+		},
+		"lean_deg": 10.0,
+		"shrug_deg": 10.0,
+		"hands_beside": true,
+		"offset": Vector3(0.0, -0.67, 0.02),
+	},
 	"seated": {
 		"limbs": {
 			"thigh": Vector3(0.1, -0.05, 1.0),
@@ -99,30 +113,134 @@ func _init(model_root: Node3D, posture: String) -> void:
 		push_warning("Character model has no Skeleton3D; posture and breathing disabled.")
 		return
 	_map = RIGS["default"] if skeleton.find_bone("upperarm01.L") >= 0 else RIGS["game_engine"]
-	var p: Dictionary = POSTURES.get(posture, POSTURES["standing"])
-	model.position = p.get("offset", Vector3.ZERO)
 	_reset_to_rest()
 	for side in 2:
 		_hinge[side] = _rest_hinge(side)
-	_apply_limbs(p["limbs"])
-	if p.has("lean_deg"):
-		_lean(deg_to_rad(p["lean_deg"]))
-	if p.has("shrug_deg"):
-		_shrug(deg_to_rad(p["shrug_deg"]))
-	if p.get("hands_on_knees", false):
-		for side in 2:
-			_hand_on_knee(side)
 	var chest := _chain("chest")
 	_chest = chest[0] if chest.size() > 0 else -1
 	for side in 2:
 		var c := _chain("clavicle", side)
 		_clav[side] = c[0] if c.size() > 0 else -1
+	home_posture = posture if POSTURES.has(posture) else "standing"
+	_apply_pose(_pose(home_posture))
+	posture_name = home_posture
 	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
+	_find_garments()
 	_setup_skin_signs()
 
 
-## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
+# --- Posture changes -----------------------------------------------------------
+
+var home_posture := "standing"
+var posture_name := ""
+var _pose_cache := {}
+var _blend_from: Dictionary = {}
+var _blend_to: Dictionary = {}
+var _blend_t := 1.0
+var _blend_dur := 1.0
+
+
+## Bone rotations and model offset for a posture, built from the rest pose.
+func _pose(name: String) -> Dictionary:
+	if _pose_cache.has(name):
+		return _pose_cache[name]
+	var p: Dictionary = POSTURES.get(name, POSTURES["standing"])
+	_reset_to_rest()
+	_apply_limbs(p["limbs"])
+	if p.has("lean_deg"):
+		_lean(deg_to_rad(p["lean_deg"]))
+	if p.has("shrug_deg"):
+		_shrug(deg_to_rad(p["shrug_deg"]))
+	_hand_mode = "knee" if p.get("hands_on_knees", false) else ("beside" if p.get("hands_beside", false) else "")
+	if _hand_mode != "":
+		for side in 2:
+			_hand_on_knee(side)
+	var rots := []
+	for b in skeleton.get_bone_count():
+		rots.append(skeleton.get_bone_pose_rotation(b))
+	var out := {"rot": rots, "offset": p.get("offset", Vector3.ZERO)}
+	_pose_cache[name] = out
+	return out
+
+
+func _apply_pose(pose: Dictionary) -> void:
+	for b in skeleton.get_bone_count():
+		skeleton.set_bone_pose_rotation(b, pose["rot"][b])
+		_base_local[b] = pose["rot"][b]
+	model.position = pose["offset"]
+
+
+## Move smoothly to another posture over `seconds`.
+func set_posture(name: String, seconds := 1.2) -> void:
+	if skeleton == null or name == posture_name:
+		return
+	var rots := []
+	for b in skeleton.get_bone_count():
+		rots.append(_base_local[b])
+	_blend_from = {"rot": rots, "offset": model.position}
+	_blend_to = _pose(name)
+	# _pose() rebuilt the skeleton from rest; put the current pose back.
+	_apply_pose(_blend_from)
+	posture_name = name
+	_blend_t = 0.0
+	_blend_dur = maxf(seconds, 0.05)
+
+
+## Call every frame before apply_breath().
+func update(delta: float) -> void:
+	if skeleton == null or _blend_t >= 1.0:
+		return
+	_blend_t = minf(_blend_t + delta / _blend_dur, 1.0)
+	var k := _blend_t * _blend_t * (3.0 - 2.0 * _blend_t)
+	for b in skeleton.get_bone_count():
+		var q: Quaternion = (_blend_from["rot"][b] as Quaternion).slerp(_blend_to["rot"][b], k)
+		skeleton.set_bone_pose_rotation(b, q)
+		_base_local[b] = q
+	model.position = (_blend_from["offset"] as Vector3).lerp(_blend_to["offset"], k)
+
+
+# --- Exposure (top on / lifted / off with bra) ------------------------------------
+
+var top_state := "on"
+var _wear := {}
+
+
+func _find_garments() -> void:
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		if n.ends_with("_lifted"):
+			_wear["lifted"] = mi
+		elif n.ends_with("_bra"):
+			_wear["bra"] = mi
+		elif n.contains("skin_abdomen"):
+			_wear["skin_abdomen"] = mi
+		elif n.contains("skin_upper"):
+			_wear["skin_upper"] = mi
+	if _wear.has("lifted"):
+		var base := String(_wear["lifted"].name).replace("_lifted", "_export")
+		for mi in model.find_children("*", "MeshInstance3D", true, false):
+			if String(mi.name) == base:
+				_wear["top"] = mi
+	set_top_state("on")
+
+
+func can_expose() -> bool:
+	return _wear.has("top") and _wear.has("lifted") and _wear.has("skin_abdomen")
+
+
+func set_top_state(state: String) -> void:
+	top_state = state
+	var show: Array = {
+		"on": ["top"],
+		"lifted": ["lifted", "skin_abdomen"],
+		"off": ["bra", "skin_abdomen", "skin_upper"],
+	}.get(state, ["top"])
+	for k in _wear:
+		_wear[k].visible = k in show
+
+
+## Mouth opening while speaking## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
 func set_jaw(open: float) -> void:
 	if skeleton == null:
 		return
@@ -143,6 +261,10 @@ func apply_breath(breath: float, depth: float, accessory: float) -> void:
 	var lift := deg_to_rad(7.0) * breath * accessory
 	_lift_clavicle(_clav[0], lift)
 	_lift_clavicle(_clav[1], -lift)
+	if _skin_mat:
+		# Normal: belly out a little on the in-breath. Paradoxical: belly in.
+		var amount := clampf(depth * 1.4, 0.0, 1.0) * breath
+		_skin_mat.set_shader_parameter("belly", -amount if abdominal_paradox else amount * 0.35)
 
 
 # --- Bone lookup -------------------------------------------------------------
@@ -224,10 +346,17 @@ func _shrug(angle: float) -> void:
 		_base_local[b] = skeleton.get_bone_pose_rotation(b)
 
 
-## Where the wrist goes: on top of the lower thigh, just above the knee.
+var _hand_mode := "knee"
+
+
+## Where the wrist goes: on top of the lower thigh just above the knee, or on
+## the seat beside the hip ("beside").
 func _wrist_target(side: int) -> Vector3:
 	var knee := _gpose(_first("calf", side)).origin
 	var hip := _gpose(_first("thigh", side)).origin
+	if _hand_mode == "beside":
+		var sgn := 1.0 if side == 0 else -1.0
+		return hip + Vector3(sgn * 0.21, -0.03, 0.06)
 	var along := (knee - hip).normalized()
 	return knee - along * 0.09 + Vector3(0, 0.115, 0)
 
@@ -417,10 +546,14 @@ func set_clammy(v: float) -> void:
 		_skin_mat.set_shader_parameter("clammy", clampf(v, 0.0, 1.0))
 
 
-## Swap the body's skin material for one that can show cyanosis and clamminess.
-## The lips aren't separate in MakeHuman, so find them by position: just in
-## front of the teeth, in an ellipse around the mouth. The mask is baked into
-## vertex colours so the shader stays cheap on Quest.
+var abdominal_paradox := false
+
+
+## Swap the skin material (body and the hidden skin patches under the top) for
+## one that can show cyanosis, clamminess and abdominal movement. The lips
+## aren't separate in MakeHuman, so find them by position: just in front of the
+## teeth, in an ellipse around the mouth. Masks are baked into vertex colours
+## (R lips, G face, B abdomen) so the shader stays cheap on Quest.
 func _setup_skin_signs() -> void:
 	var body: MeshInstance3D = null
 	var teeth: MeshInstance3D = null
@@ -431,7 +564,8 @@ func _setup_skin_signs() -> void:
 			teeth = mi
 			continue
 		if _is_strands(n) or n.contains("suit") or n.contains("shoe") or n.contains("eye") \
-				or n.contains("poly") or n.contains("tongue") or mi.mesh == null:
+				or n.contains("poly") or n.contains("tongue") or n.contains("skin_") \
+				or n.ends_with("_bra") or n.ends_with("_lifted") or mi.mesh == null:
 			continue
 		var count: int = mi.mesh.surface_get_array_len(0)
 		if count > best:
@@ -442,11 +576,38 @@ func _setup_skin_signs() -> void:
 	var src_mat := body.get_active_material(0) as BaseMaterial3D
 	if src_mat == null or src_mat.albedo_texture == null:
 		return
-	# Mouth centre from the teeth (or a fallback from the head height).
+	_skin_mat = ShaderMaterial.new()
+	_skin_mat.shader = load("res://shaders/skin_signs.gdshader")
+	_skin_mat.set_shader_parameter("albedo_texture", src_mat.albedo_texture)
 	var ta := teeth.mesh.get_aabb() if teeth else AABB()
-	var centre := Vector3(ta.get_center().x, ta.position.y + ta.size.y * 0.6, ta.end.z) if teeth \
-			else Vector3.ZERO
-	var mesh: ArrayMesh = body.mesh
+	var mouth := Vector3(ta.get_center().x, ta.position.y + ta.size.y * 0.6, ta.end.z)
+	var targets := [body]
+	for k in ["skin_abdomen", "skin_upper"]:
+		if _wear.has(k):
+			targets.append(_wear[k])
+	# Belly region, the same for every skin mesh so the body's lower belly and
+	# the abdomen patch move together (no seam opens): from just under the
+	# trousers' waistband up to the top of the abdomen patch.
+	_belly_box = AABB()
+	if _wear.has("skin_abdomen"):
+		var pb: AABB = _wear["skin_abdomen"].mesh.get_aabb()
+		var y0 := pb.position.y
+		for mi in model.find_children("*", "MeshInstance3D", true, false):
+			var n := String(mi.name).to_lower()
+			if n.contains("casualsuit") or n.contains("trouser") or n.contains("jeans"):
+				y0 = minf(y0, mi.mesh.get_aabb().end.y - 0.05)
+		_belly_box = AABB(Vector3(pb.position.x, y0, pb.position.z), Vector3(pb.size.x, pb.end.y - y0, pb.size.z))
+	for mi in targets:
+		_bake_skin_masks(mi, mouth if teeth else Vector3.INF)
+
+
+var _belly_box := AABB()
+
+
+func _bake_skin_masks(mi: MeshInstance3D, mouth: Vector3) -> void:
+	var mesh: ArrayMesh = mi.mesh
+	var box := _belly_box
+	var abdomen := box.size != Vector3.ZERO
 	var out := ArrayMesh.new()
 	for s in mesh.get_surface_count():
 		var arrays := mesh.surface_get_arrays(s)
@@ -457,25 +618,33 @@ func _setup_skin_signs() -> void:
 			var v := verts[i]
 			var lip := 0.0
 			var face := 0.0
-			if teeth:
-				var dz := v.z - (centre.z - 0.012)
-				if dz > 0.0:
-					var d := Vector2((v.x - centre.x) / 0.03, (v.y - centre.y) / 0.014).length()
+			var belly := 0.0
+			if mouth != Vector3.INF:
+				if v.z > mouth.z - 0.012:
+					var d := Vector2((v.x - mouth.x) / 0.03, (v.y - mouth.y) / 0.014).length()
 					lip = 1.0 - smoothstep(0.55, 1.0, d)
-				var fy := v.y - centre.y
-				if fy > -0.045 and fy < 0.13 and v.z > centre.z - 0.06 and absf(v.x - centre.x) < 0.075:
-					face = smoothstep(centre.z - 0.06, centre.z - 0.01, v.z)
-			cols[i] = Color(lip, face, 0.0, 1.0)
+				var fy := v.y - mouth.y
+				if fy > -0.045 and fy < 0.13 and v.z > mouth.z - 0.06 and absf(v.x - mouth.x) < 0.075:
+					face = smoothstep(mouth.z - 0.06, mouth.z - 0.01, v.z)
+			if abdomen:
+				# Strongest in the middle of the front of the abdomen, fading to
+				# the edges so the patch's border never moves (no gaps at the top).
+				var u := (v.y - box.position.y) / maxf(box.size.y, 0.001)
+				if u < 0.0 or u > 1.0 or v.z < box.position.z:
+					u = -1.0
+				var w := 1.0 - absf(v.x - box.get_center().x) / maxf(box.size.x * 0.5, 0.001)
+				# By position, not normal, so vertices split at UV seams (same
+				# place, different normals) move together and no crack opens.
+				var front := smoothstep(0.35, 0.9, (v.z - box.position.z) / maxf(box.size.z, 0.001))
+				belly = sin(PI * clampf(u, 0.0, 1.0)) * smoothstep(0.0, 0.5, w) * front if u >= 0.0 else 0.0
+			cols[i] = Color(lip, face, belly, 1.0)
 		arrays[Mesh.ARRAY_COLOR] = cols
-		var fmt := mesh.surface_get_format(s) & ~Mesh.ARRAY_FORMAT_VERTEX & Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
+		var fmt := mesh.surface_get_format(s) & Mesh.ARRAY_FLAG_USE_8_BONE_WEIGHTS
 		out.add_surface_from_arrays(mesh.surface_get_primitive_type(s), arrays, [], {}, fmt)
-		_skin_mat = ShaderMaterial.new()
-		_skin_mat.shader = load("res://shaders/skin_signs.gdshader")
-		_skin_mat.set_shader_parameter("albedo_texture", src_mat.albedo_texture)
 		out.surface_set_material(s, _skin_mat)
-	body.mesh = out
+	mi.mesh = out
 	for s in out.get_surface_count():
-		body.set_surface_override_material(s, null)
+		mi.set_surface_override_material(s, null)
 
 
 ## MakeHuman hair textures are coloured; grey them for older characters.
