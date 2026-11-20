@@ -63,3 +63,79 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 - **Didn't work:** weighting by normal opened cracks at UV seams; only moving the patch opened a seam against the body's lower belly.
 - **Tom (20 Nov):** first version (2.2 cm) good but mild for a real one; it varies with belly size, age and frailty, so it's per scenario: mild ~2.5 cm, marked 4–5 cm (Maureen 4).
 - **Preview:** pause menu "Test: patient skin" > "Belly paradoxical", then lift her top.
+
+---
+
+# Signs shopping list and roadmap (20 Nov, for Tom's review)
+
+Legend: **★ = early priority**. Seen by: L look, H hear, F feel (controller), I interactive.
+X = needs exposure. Effort: E easy (reuses existing shader/rig work), M medium, H hard.
+
+## General appearance
+| Sign | Seen | Effort | Notes |
+|---|---|---|---|
+| ★ Pallor / grey, ashen skin | L | E | whole-skin tone in skin shader; strength 0..1 |
+| Flushing (sepsis, CO2 retention) | L | E | face/neck mask |
+| Jaundice (skin and sclera) | L | E | sclera tint is the reliable one |
+| ★ Peripheral cyanosis (nail beds, fingertips) | L | E | position mask from hand bones |
+| ★ Central cyanosis of tongue | L | E | tongue tint (visible when talking) |
+| Mottling (knees, legs) | L X | M | needs legs exposure; noise pattern masked to knees |
+| Rigors / shivering | L | M | fast low-amplitude whole-body tremor |
+| Distress / anxiety, frightened face | L | M | brow and eye shape (face bones) |
+| ★ Drowsy / exhausted (eyelids heavy, head nodding) | L | M | eyelid bones; ties to CO2 retention |
+| Dehydration (dry cracked lips, sunken eyes) | L | M | |
+| Body build: cachexia, obesity, barrel chest | L | E–M | MakeHuman targets at build time |
+
+## Respiratory
+| Sign | Seen | Effort | Notes |
+|---|---|---|---|
+| Rate, depth, tripod, accessory muscles, speech | L H | done | |
+| Paradoxical abdominal movement | L X | done | |
+| ★ Hoover's sign (lower lateral ribs in on inspiration) | L X | E | same technique as belly, sides of costal margin |
+| ★ Recession: suprasternal / tracheal tug, intercostal, subcostal | L (X) | E–M | suprasternal visible dressed |
+| ★ Pursed-lip breathing, prolonged expiration | L H | E | lip shape + breath timing |
+| Asymmetrical chest movement / splinting one side | L X | E | per-side chest movement |
+| Nasal flaring | L | M | mainly paeds, still useful |
+| Neck muscles standing out (SCM) | L | M | |
+| Abnormal patterns: Kussmaul, Cheyne-Stokes, agonal, gasping | L H | E | breath timing presets |
+| Cough types (dry, wet, productive, with wince) | L H | M | animation + sound |
+| Sputum / haemoptysis / pink frothy sputum (props) | L | E | props |
+| Sounds from the room: wheeze, stridor, grunting, gurgling | H | E–M | audio |
+| Finger clubbing, nicotine staining | L | M | fingertip shape / tint |
+| Tracheal deviation | L | M | late sign; subtle |
+| Home oxygen, nebuliser, inhalers, rescue pack (props) | L | E | |
+
+## Cardiovascular
+| Sign | Seen | Effort | Notes |
+|---|---|---|---|
+| ★ Capillary refill (press nail: blanch, refill time) | I | M | high training value |
+| ★ Pulse: rate, rhythm, volume (haptic) | F | M | irregular for AF |
+| ★ Raised JVP (visible neck pulsation) | L | M | APO / right heart failure |
+| ★ Peripheral oedema, pitting (press and dent stays) | L I X | M–H | needs legs exposure |
+| Cool / warm peripheries | F | E | feel result by temperature |
+| Clutching chest (Levine's sign), guarding | L | E | posture/hand pose |
+| Orthopnoea (won't lie back) | L H | E | behaviour + line |
+| Unilateral calf swelling (DVT) | L X | M | |
+| Scars: sternotomy, pacemaker / ICD bulge | L X | E | texture decal |
+| Sacral oedema | L X | H | needs repositioning |
+| Splinter haemorrhages, xanthelasma, corneal arcus | L | E | close-up only |
+| Varicose veins, leg ulcers | L X | M | |
+| GTN spray, anticoagulant card (props) | L | E | |
+
+## Early priority (proposed build order)
+1. Foundation: sign registry, landmark-based regions, sign sheet test (see below).
+2. Pallor/grey, peripheral + tongue cyanosis (cheap, reuse skin shader).
+3. Recession + Hoover's sign (reuse belly technique).
+4. Pursed lips + prolonged expiration.
+5. Drowsy/CO2 retention look.
+6. Capillary refill and pulse (first interactive "feel" signs).
+7. JVP.
+8. Legs exposure, then oedema and mottling.
+
+## Reproducibility across human models
+- **Signs are data:** a scenario lists sign ids with a strength 0..1. Nothing about a sign is tied to Joan.
+- **Regions from landmarks, not fixed numbers:** lips from the teeth; belly from the trousers and the abdomen patch; neck, hands and chest from skeleton bones; distances scaled by the model's own measurements (e.g. head height, shoulder width). Audit needed: current hard-coded sizes (lip ellipse 3 x 1.4 cm, Blender torso |x| < 0.18 m, bra band) to be made proportional.
+- **One build pipeline:** every character goes through `make_humans.py` and gets the same parts (teeth, tongue, exposure layers, later legs exposure) so new patients get every sign automatically. Ken still needs his own exposure version (top off, no bra).
+- **Sign sheet test:** one automated render of every sign, at mild and marked, on every character, producing a contact sheet. Validates a new model in one run and doubles as demo-mode material.
+- **Skin tone awareness:** pallor, cyanosis and jaundice look different on darker skin (check tongue, inner lips, conjunctivae, nail beds); build signs relative to the base skin, and include a darker-skinned patient early.
+- **Each sign entry records:** clinical description, reference, Tom's sign-off, implementation, settings that worked, and per-model notes.
