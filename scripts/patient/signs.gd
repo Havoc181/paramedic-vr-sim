@@ -248,7 +248,9 @@ func _landmarks() -> void:
 			if f3 != Vector3.ZERO:
 				tips.append(f3 + (f3 - f2).normalized() * 0.012 * _s)
 	_lm["tips"] = tips
-	_lm["knees"] = [_bone("lowerleg01.L"), _bone("lowerleg01.R")]
+	# Mottling area: the exposed lower legs (trousers roll to mid-calf; rolling
+	# over the knee distorted the cloth). Knees need shorts/nightie patients.
+	_lm["knees"] = [_bone("lowerleg01.L") + Vector3(0, -0.24 * _s, 0), _bone("lowerleg01.R") + Vector3(0, -0.24 * _s, 0)]
 	_lm["ankles"] = [_bone("foot.L"), _bone("foot.R")]
 	# Patient's right = the .R side; which way that is in x comes from the rig.
 	_lm["right_sign"] = signf(_bone("clavicle.R").x - _bone("clavicle.L").x)
@@ -393,8 +395,8 @@ func _bake(mi: MeshInstance3D) -> void:
 			# Knees (mottling) and ankles (oedema).
 			var knee := 0.0
 			for k in _lm["knees"]:
-				if v.z > k.z - 0.01 * s:
-					knee = maxf(knee, 1.0 - smoothstep(0.03 * s, 0.08 * s, v.distance_to(k)))
+				if v.z > k.z - 0.02 * s:
+					knee = maxf(knee, 1.0 - smoothstep(0.04 * s, 0.10 * s, v.distance_to(k)))
 			var ank := 0.0
 			var dir := Vector3.ZERO
 			for a in _lm["ankles"]:

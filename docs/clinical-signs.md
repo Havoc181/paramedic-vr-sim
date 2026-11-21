@@ -50,12 +50,18 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 - **Settings:** **mild = 0.45**, moderate = 0.6 (Joan, APO), marked = 0.8+; 1.0 looks plastic.
 - **Check:** `tests/skin_signs_shot.gd`; headset: pause menu "Test: patient skin".
 
+## Hands on the thighs, clothing fit (21 Nov)
+- Wrist height above the thigh is measured per model (front of thigh or trousers 9 cm above the knee, in the build pose) + 2.2 cm; the fixed 11.5 cm suited Joan but fingers sank into Maureen's fuller thighs.
+- `tests/clip_check.gd`: six views of the patient in her scenario posture (standing, kneeling, each side, close on the hand, above), dressed or legs exposed. Run for every new character/outfit.
+- Maureen's long top hung into a point between her thighs when seated: `top_trim` in make_humans.py cuts it 7 cm above the hip joint and unmasks the body below. Leggings read as tights: dark trousers instead (jeans with a `*#5a5e66` tint keeping the fabric texture).
+
 ## Tripod hands planted while breathing (21 Nov)
 - `rig_driver._keep_hands()`: after the clavicles lift each breath, a two-joint IK (keeping the current bend plane) bends the elbows so the wrists stay where the posture put them. Wrist drift per breath 35 mm -> 0.7 mm. Also holds the hands on the seat in the sit-back posture.
 - `_gpose()` now includes bone scale (the chest scales with breathing, which moves the shoulders).
 
 ## Legs exposure (21 Nov)
-- Blender `expose_legs()`: copy of the skin under trousers and shoes below just above the knee (`<name>_skin_legs`), trousers copy with the legs gathered into a cuff 8 cm above the knee (`_rolled`). The gathered cloth takes its bone weights from pure-thigh cloth higher up, otherwise it swings out like flaps when the knee bends. A small hoop at the outer knee remains (to tidy).
+- Blender `expose_legs()`: copy of the skin under trousers and shoes below mid-calf (`<name>_skin_legs`); trousers copy cut cleanly at **mid-calf (knee - 15 cm)** with a turned-up cuff (copy of the band above the cut, 7 mm out, 8 mm down) (`_rolled`).
+- **Didn't work:** gathering the cloth up above the knee (ragged shorts, cuff swung out as flaps when the knee bent, even with thigh weights copied); cutting just below the knee (cloth there blends thigh/shin weights, so it stretched into sheets). Mid-calf is clear of the knee joint and is where you look for ankle oedema anyway. Mottling therefore shows on the lower legs; knees need patients in shorts or a nightie.
 - Godot: `set_legs_state("on"|"off")` swaps trousers/shoes for the rolled trousers and leg skin. Panel: "Roll up her trousers and take her shoes off" / "Cover her legs and put her shoes back on"; findings with `requires_exposure: "legs"`.
 
 ## Exposure: top on / lifted / off (bra on)

@@ -46,7 +46,7 @@ const SIGNS := {
 	"capillary_refill": {"label": "Capillary refill (slow)", "system": "cardiovascular", "seen": "I", "exposure": "", "mild": 0.5,
 		"demo": "Press a fingertip: it blanches, and colour comes back slowly."},
 	"mottling": {"label": "Mottling", "system": "cardiovascular", "seen": "L", "exposure": "legs", "mild": 0.4,
-		"demo": "Lacy purple pattern over the knees."},
+		"demo": "Lacy purple pattern on the exposed lower legs (knees need a patient in shorts or a nightie)."},
 	"oedema_ankle": {"label": "Ankle oedema", "system": "cardiovascular", "seen": "L", "exposure": "legs", "mild": 0.4,
 		"demo": "Swollen ankles."},
 }

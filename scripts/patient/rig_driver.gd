@@ -113,6 +113,7 @@ func _init(model_root: Node3D, posture: String) -> void:
 		push_warning("Character model has no Skeleton3D; posture and breathing disabled.")
 		return
 	_map = RIGS["default"] if skeleton.find_bone("upperarm01.L") >= 0 else RIGS["game_engine"]
+	_measure_thigh()
 	_reset_to_rest()
 	for side in 2:
 		_hinge[side] = _rest_hinge(side)
@@ -279,12 +280,18 @@ func tint_clothes(colours: Dictionary) -> void:
 		var n := String(mi.name).to_lower()
 		for key in colours:
 			if n.contains(String(key).to_lower()):
+				# "#rrggbb" = plain colour (hides prints/logos); "*#rrggbb" = tint
+				# that keeps the fabric texture.
+				var spec := String(colours[key])
 				for s in mi.mesh.get_surface_count():
 					var m: Material = mi.get_active_material(s)
 					if m is BaseMaterial3D:
 						m = m.duplicate()
-						m.albedo_texture = null
-						m.albedo_color = Color(String(colours[key]))
+						if spec.begins_with("*"):
+							m.albedo_color = Color(spec.substr(1))
+						else:
+							m.albedo_texture = null
+							m.albedo_color = Color(spec)
 						mi.set_surface_override_material(s, m)
 
 
@@ -456,7 +463,33 @@ func _wrist_target(side: int) -> Vector3:
 		var sgn := 1.0 if side == 0 else -1.0
 		return hip + Vector3(sgn * 0.21, -0.03, 0.06)
 	var along := (knee - hip).normalized()
-	return knee - along * 0.09 + Vector3(0, 0.115, 0)
+	return knee - along * 0.09 + Vector3(0, _hand_lift, 0)
+
+
+## How high the wrist sits above the thigh bone: the front of the thigh (or
+## trousers) measured on this model in its build pose, plus palm thickness.
+## Fixed 0.115 m suited Joan but sank into fuller thighs (Maureen, 21 Nov).
+var _hand_lift := 0.123
+
+
+func _measure_thigh() -> void:
+	var ki := skeleton.find_bone("lowerleg01.L")
+	var hi := skeleton.find_bone("upperleg01.L")
+	if ki < 0 or hi < 0:
+		return
+	var knee := skeleton.get_bone_global_rest(ki).origin
+	var hip := skeleton.get_bone_global_rest(hi).origin
+	var p := knee - (knee - hip).normalized() * 0.09
+	var front := -1.0
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		if mi.mesh == null or n.ends_with("_rolled") or n.contains("skin_"):
+			continue
+		for v in (mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
+			if absf(v.y - p.y) < 0.03 and absf(v.x - p.x) < 0.08:
+				front = maxf(front, v.z - p.z)
+	if front > 0.0:
+		_hand_lift = front + 0.022
 
 
 ## Hand on knee, like a real arm:

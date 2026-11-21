@@ -1,4 +1,8 @@
-# Test checklist — v0.05-dev9 (Maureen, legs, planted hands) + dev8 signs
+# Test checklist — v0.05-dev10 (Maureen, legs, planted hands, clothing fit) + dev8 signs
+
+Fixed after screenshot review: fingers sinking into thighs (hand height now measured per
+patient); Maureen's top trimmed to the hips; dark trousers instead of leggings; trousers
+now roll to mid-calf with a neat cuff (rolling over the knee distorted badly).
 
 **Before exporting:** in GitHub Desktop commit `assets/characters/joan.glb` and the new
 `assets/characters/maureen.glb` (and any new `.uid` files Godot creates).
@@ -10,9 +14,9 @@
 - [ ] Props readable: pot, tissues, inhalers, rescue pack
 
 ## Legs (both patients)
-- [ ] "Roll up her trousers and take her shoes off": trousers gathered above the knees, bare lower legs and feet; "Cover her legs" puts them back
+- [ ] "Roll up her trousers and take her shoes off": trousers rolled to mid-calf with a neat cuff, bare lower legs and feet; "Cover her legs" puts them back
 - [ ] Joan: ankle oedema visible; "Look at ankles" only appears once legs are exposed
-- [ ] Note: small hoop of cuff at the outer knee (known, to tidy)
+- [ ] Fingers rest on the thighs without sinking in (both patients, close up and from the side)
 
 ## Tripod hands
 - [ ] Hands stay planted on her knees while her shoulders rise with each breath (elbows bend slightly)

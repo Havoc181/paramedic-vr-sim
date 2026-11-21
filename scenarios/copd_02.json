@@ -15,7 +15,7 @@
       "age": 81,
       "sex": "female",
       "model": "res://assets/characters/maureen.glb",
-      "_model_note": "Her own model (make_humans.py MAUREEN spec): 81, Black British, plain top, dark jogging bottoms. Falls back to Joan until maureen.glb is built.",
+      "_model_note": "Her own model (make_humans.py MAUREEN spec): 81, Black British, plain top trimmed to the hips, dark trousers (jeans tinted), shoes04.",
       "seat": "Sofa/PatientSeat",
       "presentation": {
         "posture": "tripod",
@@ -81,7 +81,7 @@
       "model_fallback": "res://assets/characters/joan.glb",
       "clothes_colour": {
         "male_casualsuit02": "#7d6e86",
-        "female_sportsuit01": "#33363b"
+        "female_casualsuit01": "*#5a5e66"
       }
     }
   },
