@@ -1,4 +1,24 @@
-# Character pipeline: the plan (agreed 21 Nov, to build)
+# Character pipeline (agreed 21 Nov; built for Joan and Maureen 21 Nov, v0.06-dev1)
+
+## As built (21 Nov)
+- **make_humans.py** (`layers=` in a character spec): clothing masks are removed so the body
+  keeps all its skin; plain grey bra and briefs are copied from the body's own skin
+  (`<name>_bra`, `<name>_briefs`); a second UV map **"cover"** (Godot UV2) on every mesh:
+  body `u` = bits 1 top, 2 trousers, 4 shoes, 8 torso; all meshes `v` = 1 - rest height.
+  Skin counts as covered only if a ray along its normal hits the garment within 9 cm, at
+  least 1.5 cm from any garment edge and 7 cm from the top's bottom hem / 5 cm from the
+  trousers' waistband (the edges that move when she sits; otherwise you'd see through her).
+- **Godot**: `rig_driver._setup_layers()` finds top (higher suit), trousers, shoes, underwear;
+  garments use `shaders/garment.gdshader` (cut below a height: lifted top = torso only,
+  just under the bust; rolled trousers = mid-calf; inside of fabric drawn darker);
+  `skin_signs.gdshader` discards covered skin while that garment is worn and not cut there.
+  Briefs are hidden while trousers are worn (trousers only roll up).
+- Checks: `tests/layer_shots.gd` (every exposure state, front/side/close) and the sign sheet.
+- Not yet: Ken (still the old build), automatic penetration report, garment weight transfer
+  (not needed so far: MakeHuman's own clothes follow the body well once we stopped cutting
+  and gathering copies of them).
+- Replaces: lifted/bra/rolled garment copies and skin patches (old code path kept for Ken).
+
 
 This replaces the approach of cutting clothes and skin apart for each exposure.
 

@@ -281,7 +281,7 @@ func _setup_skin() -> void:
 			continue
 		if n.contains("teeth") or rig._is_strands(n) or n.contains("suit") or n.contains("shoe") \
 				or n.contains("eye") or n.contains("poly") or n.contains("skin_") \
-				or n.ends_with("_bra") or n.ends_with("_lifted") or mi.mesh == null:
+				or n.ends_with("_bra") or n.ends_with("_briefs") or n.ends_with("_lifted") or mi.mesh == null:
 			continue
 		var count: int = mi.mesh.surface_get_array_len(0)
 		if count > best:
@@ -314,8 +314,45 @@ func _setup_skin() -> void:
 				if front_top > -INF:
 					y0 = front_top + 0.005
 		_belly_box = AABB(Vector3(pb.position.x, y0, pb.position.z), Vector3(pb.size.x, pb.end.y - y0, pb.size.z))
+	if _belly_box.size == Vector3.ZERO and rig.layered:
+		_belly_box = _layered_belly_box(body)
 	for mi in targets:
 		_bake(mi)
+	rig._apply_layers()
+
+
+## Layered characters have no separate abdomen patch: the belly region is the
+## front of the torso skin the top covers, from the trousers' waistband up to
+## just under the bust.
+func _layered_belly_box(body: MeshInstance3D) -> AABB:
+	var a: Array = body.mesh.surface_get_arrays(0)
+	var verts: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+	var uv2 = a[Mesh.ARRAY_TEX_UV2]
+	if uv2 == null:
+		return AABB()
+	var y_top: float = rig._lift_z
+	var y0 := INF
+	var box := AABB()
+	var first := true
+	for i in verts.size():
+		var b := int(round(uv2[i].x))
+		var v := verts[i]
+		if b & 8 and v.y < y_top + 0.02 and v.y > y_top - 0.35 and absf(v.x) < 0.17:
+			if first:
+				box = AABB(v, Vector3.ZERO); first = false
+			else:
+				box = box.expand(v)
+	var trousers = rig._wear.get("trousers")
+	if trousers:
+		var front_top := -INF
+		for v in (trousers.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
+			if v.z > 0.04 * _s and absf(v.x) < 0.08 * _s:
+				front_top = maxf(front_top, v.y)
+		if front_top > -INF:
+			y0 = front_top + 0.005
+	if first or y0 == INF:
+		return AABB()
+	return AABB(Vector3(box.position.x, y0, box.position.z), Vector3(box.size.x, y_top - y0, box.size.z))
 
 
 func _bake(mi: MeshInstance3D) -> void:

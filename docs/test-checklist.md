@@ -1,15 +1,17 @@
-# Test checklist — v0.05-dev15
+# Test checklist — v0.06-dev1 (character rebuild: underwear base, clothes as layers)
 
-Your dev13/14 notes are saved in `docs/test-results/2026-11-21_v0.05-dev14.md`.
+**Before exporting:** commit `assets/characters/joan.glb` and `maureen.glb` (rebuilt today).
 
-## Demo mode
-- [ ] Signs now add and remove: select several (e.g. grey + clammy + central cyanosis); select again to remove
-- [ ] Skin colours replace each other (pallor / grey / flushing), so no odd mixes
-- [ ] Caption lists every sign shown
+## Both patients, every exposure option
+- [ ] Dressed: looks as before; hands on thighs; nothing poking through
+- [ ] Lift her top: top cut cleanly just under the bust, belly visible, no folds or warping
+- [ ] Top off: grey bra, full skin, no gaps; cover up puts the top straight back
+- [ ] Roll up trousers / shoes off: trousers end cleanly at mid-calf (dark inside edge), bare lower legs and feet
+- [ ] Everything at once, and back again in any order
+- [ ] Sitting back (exposed) and leaning forward: if the top rides up you see skin, never a hole
+- [ ] Close up at the waist and the fly: no grey slivers
 
-## Tongue
-- [ ] Maureen's tongue (and the demo tongue sign) reads clearly blue-grey now
-
-## Known, being fixed in the character rebuild
-- Gap at the waist when she sits upright or back (top rides up, skin patch shows)
-- Rolled trousers' cuff; sat-back hands hover above the seat
+## Signs on the new bodies
+- [ ] Belly movement, Hoover's sign, intercostal recession with the top lifted/off
+- [ ] Ankle oedema and mottling with trousers rolled
+- [ ] Demo mode still works for every sign

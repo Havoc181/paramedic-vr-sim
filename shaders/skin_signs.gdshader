@@ -31,6 +31,18 @@ uniform float jvp_height = 0.0;     // 0..1 up the neck
 uniform float jvp_pulse = 0.0;      // 0..1 within each heartbeat
 uniform float oedema = 0.0;
 
+// Layered characters (21 Nov): skin under a worn garment is hidden, and shows
+// again when the garment comes off or is cut away (lifted top, rolled trousers).
+// UV2.x = bits 1 top, 2 lower, 4 shoes, 8 torso; UV2.y = 1 - rest height.
+// Modes: 0 off (skin shows), 1 worn, 2 cut below the cut height.
+uniform int top_mode = 0;
+uniform float top_cut = -10.0;
+uniform int lower_mode = 0;
+uniform float lower_cut = -10.0;
+uniform bool shoes_on = false;
+varying flat float cover_bits;
+varying float rest_z;
+
 varying vec4 mask;      // r lips, g face, b belly, a fingertips
 varying vec2 legs;      // x knees, y ankles
 varying vec3 mpos;      // model-space position (for the mottling pattern)
@@ -39,6 +51,8 @@ varying float ss_dip;   // suprasternal dip, already scaled by the breath
 varying float jvp_vis;  // visible JVP column, already scaled by the pulse
 
 void vertex() {
+	cover_bits = UV2.x;
+	rest_z = 1.0 - UV2.y;
 	mask = COLOR;
 	legs = CUSTOM1.yz;
 	float s = model_scale;
@@ -80,6 +94,16 @@ float vnoise(vec3 x) {
 }
 
 void fragment() {
+	int cb = int(cover_bits + 0.5);
+	if ((cb & 1) != 0 && top_mode > 0 && !(top_mode == 2 && (cb & 8) != 0 && rest_z < top_cut)) {
+		discard;
+	}
+	if ((cb & 2) != 0 && lower_mode > 0 && !(lower_mode == 2 && rest_z < lower_cut)) {
+		discard;
+	}
+	if ((cb & 4) != 0 && shoes_on) {
+		discard;
+	}
 	vec3 a = texture(albedo_texture, UV).rgb;
 	float l = dot(a, vec3(0.299, 0.587, 0.114));
 	vec3 lum_dusky = l * dusky / dot(dusky, vec3(0.299, 0.587, 0.114));

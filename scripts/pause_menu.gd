@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.05-dev15"
+const APP_VERSION := "v0.06-dev1"
 
 ## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
 ## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.

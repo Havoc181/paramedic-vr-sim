@@ -242,6 +242,12 @@ var _wear := {}
 
 func _find_garments() -> void:
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		if String(mi.name).to_lower().ends_with("_briefs"):
+			layered = true
+	if layered:
+		_setup_layers()
+		return
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		var n := String(mi.name).to_lower()
 		if n.ends_with("_lifted"):
 			_wear["lifted"] = mi
@@ -268,11 +274,16 @@ func _find_garments() -> void:
 
 
 func can_expose() -> bool:
+	if layered:
+		return _wear.has("top")
 	return _wear.has("top") and _wear.has("lifted") and _wear.has("skin_abdomen")
 
 
 func set_top_state(state: String) -> void:
 	top_state = state
+	if layered:
+		_apply_layers()
+		return
 	var show: Array = {
 		"on": ["top"],
 		"lifted": ["lifted", "skin_abdomen"],
@@ -287,12 +298,17 @@ var legs_state := "on"
 
 
 func can_expose_legs() -> bool:
+	if layered:
+		return _wear.has("trousers")
 	return _wear.has("rolled") and _wear.has("skin_legs") and _wear.has("trousers")
 
 
-## "on" = trousers and shoes on; "off" = trousers rolled above the knees, shoes off.
+## "on" = trousers and shoes on; "off" = trousers rolled to mid-calf, shoes off.
 func set_legs_state(state: String) -> void:
 	legs_state = state
+	if layered:
+		_apply_layers()
+		return
 	var off := state == "off"
 	for k in ["trousers", "shoes"]:
 		if _wear.has(k):
@@ -300,6 +316,125 @@ func set_legs_state(state: String) -> void:
 	for k in ["rolled", "skin_legs"]:
 		if _wear.has(k):
 			_wear[k].visible = off
+
+
+# --- Layered characters (21 Nov rebuild) --------------------------------------
+# A complete body in underwear with clothes as separate layers. Skin under a
+# worn garment is hidden in the skin shader; taking a garment off just hides
+# it; lifting the top or rolling the trousers cuts the garment away below a
+# height (garment.gdshader). See docs/character-pipeline.md.
+
+var layered := false
+var _gmats := {}        # "top"/"trousers"/"shoes" -> [ShaderMaterial]
+var _lift_z := 0.0      # rest height the top is lifted to (just under the bust)
+var _roll_z := 0.0      # rest height the trousers are rolled to (mid-calf)
+const GARMENT_SHADER := preload("res://shaders/garment.gdshader")
+
+
+static func _rest_height(mi: MeshInstance3D) -> float:
+	var uv2 = mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_TEX_UV2]
+	if uv2 == null or (uv2 as PackedVector2Array).is_empty():
+		return 0.0
+	var t := 0.0
+	for u in uv2:
+		t += 1.0 - u.y
+	return t / uv2.size()
+
+
+func _setup_layers() -> void:
+	var suits := []
+	var body: MeshInstance3D = null
+	for mi in model.find_children("*", "MeshInstance3D", true, false):
+		var n := String(mi.name).to_lower()
+		if n.contains("suit"):
+			suits.append(mi)
+		elif n.contains("shoes"):
+			_wear["shoes"] = mi
+		elif n.ends_with("_bra"):
+			_wear["bra"] = mi
+		elif n.ends_with("_briefs"):
+			_wear["briefs"] = mi
+		elif n.ends_with("_export") and not (n.contains("eye") or n.contains("teeth") or n.contains("tongue")
+				or n.contains("poly") or _is_strands(n)):
+			if body == null or mi.mesh.surface_get_array_len(0) > body.mesh.surface_get_array_len(0):
+				body = mi
+	suits.sort_custom(func(a, b): return _rest_height(a) > _rest_height(b))
+	if suits.size() > 0:
+		_wear["top"] = suits[0]
+	if suits.size() > 1:
+		_wear["trousers"] = suits[1]
+	for k in ["top", "trousers", "shoes"]:
+		if not _wear.has(k):
+			continue
+		var mi: MeshInstance3D = _wear[k]
+		var list := []
+		for si in mi.mesh.get_surface_count():
+			var src := mi.get_active_material(si) as BaseMaterial3D
+			var m := ShaderMaterial.new()
+			m.shader = GARMENT_SHADER
+			if src:
+				m.set_shader_parameter("albedo_color", src.albedo_color)
+				m.set_shader_parameter("use_texture", src.albedo_texture != null)
+				if src.albedo_texture:
+					m.set_shader_parameter("albedo_texture", src.albedo_texture)
+				if src.normal_enabled and src.normal_texture:
+					m.set_shader_parameter("normal_texture", src.normal_texture)
+					m.set_shader_parameter("use_normal", true)
+			m.set_shader_parameter("torso_only", k == "top")
+			mi.set_surface_override_material(si, m)
+			list.append(m)
+		_gmats[k] = list
+	# Lift line: just under the bust, found on the skin the top covers.
+	_lift_z = 1.0
+	if body:
+		var a: Array = body.mesh.surface_get_arrays(0)
+		var verts: PackedVector3Array = a[Mesh.ARRAY_VERTEX]
+		var uv2 = a[Mesh.ARRAY_TEX_UV2]
+		if uv2 != null and not (uv2 as PackedVector2Array).is_empty():
+			var lo := INF
+			var hi := -INF
+			for i in verts.size():
+				var b := int(round(uv2[i].x))
+				if b & 1 and b & 8:
+					lo = minf(lo, verts[i].y); hi = maxf(hi, verts[i].y)
+			var apex := Vector3(0, 0, -INF)
+			for i in verts.size():
+				var b := int(round(uv2[i].x))
+				if b & 1 and b & 8 and verts[i].y > (lo + hi) / 2.0 and verts[i].z > apex.z:
+					apex = verts[i]
+			if apex.z > -INF:
+				_lift_z = apex.y - 0.07
+	var ki := skeleton.find_bone("lowerleg01.L")
+	_roll_z = (skeleton.get_bone_global_rest(ki).origin.y - 0.15) if ki >= 0 else 0.3
+	_apply_layers()
+
+
+## Push the current top/legs state to the garments and the skin shader.
+func _apply_layers() -> void:
+	if not layered:
+		return
+	var top_mode: int = {"on": 1, "lifted": 2, "off": 0}.get(top_state, 1)
+	var lower_mode := 2 if legs_state == "off" else 1
+	if _wear.has("top"):
+		_wear["top"].visible = top_mode != 0
+	for m in _gmats.get("top", []):
+		m.set_shader_parameter("mode", top_mode)
+		m.set_shader_parameter("cut_z", _lift_z)
+	for m in _gmats.get("trousers", []):
+		m.set_shader_parameter("mode", lower_mode)
+		m.set_shader_parameter("cut_z", _roll_z)
+	if _wear.has("shoes"):
+		_wear["shoes"].visible = legs_state != "off"
+	# Trousers only ever roll up (never come off), so the briefs would only
+	# show as slivers through the fly: hide them while trousers are worn.
+	if _wear.has("briefs"):
+		_wear["briefs"].visible = not _wear.has("trousers")
+	if signs and signs.mat:
+		signs.mat.set_shader_parameter("top_mode", top_mode)
+		signs.mat.set_shader_parameter("top_cut", _lift_z)
+		signs.mat.set_shader_parameter("lower_mode", lower_mode)
+		signs.mat.set_shader_parameter("lower_cut", _roll_z)
+		signs.mat.set_shader_parameter("shoes_on", legs_state != "off")
 
 
 ## Plain colours for clothes (e.g. to hide a printed logo): {"name part": "#rrggbb"}.
@@ -313,7 +448,13 @@ func tint_clothes(colours: Dictionary) -> void:
 				var spec := String(colours[key])
 				for s in mi.mesh.get_surface_count():
 					var m: Material = mi.get_active_material(s)
-					if m is BaseMaterial3D:
+					if m is ShaderMaterial:
+						if spec.begins_with("*"):
+							m.set_shader_parameter("albedo_color", Color(spec.substr(1)))
+						else:
+							m.set_shader_parameter("use_texture", false)
+							m.set_shader_parameter("albedo_color", Color(spec))
+					elif m is BaseMaterial3D:
 						m = m.duplicate()
 						if spec.begins_with("*"):
 							m.albedo_color = Color(spec.substr(1))
@@ -529,7 +670,7 @@ func _thigh_front(from_knee: float) -> float:
 	var front := -1.0
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		var n := String(mi.name).to_lower()
-		if mi.mesh == null or n.ends_with("_rolled") or n.contains("skin_"):
+		if mi.mesh == null or n.ends_with("_rolled") or n.contains("skin_") or n.ends_with("_briefs") or n.ends_with("_bra"):
 			continue
 		for v in (mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
 			if absf(v.y - p.y) < 0.03 and absf(v.x - p.x) < 0.08:
