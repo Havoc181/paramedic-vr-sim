@@ -66,7 +66,10 @@ func set_sign(id: String, v: float) -> void:
 			# ambient occlusion in the mouth) and tint it dusky blue-purple.
 			for i in _tongue_mats.size():
 				var m: BaseMaterial3D = _tongue_mats[i]
-				m.albedo_color = (_tongue_base[i] as Color) * Color(1, 1, 1).lerp(Color(0.5, 0.48, 0.8), strength[id])
+				# Stronger and earlier than the lips: the inside of the mouth is
+				# dim in the headset, so a subtle tint read as pink (21 Nov).
+				var k := sqrt(strength[id])
+				m.albedo_color = (_tongue_base[i] as Color) * Color(1, 1, 1).lerp(Color(0.38, 0.4, 0.85), k)
 		"oedema_ankle":
 			mat.set_shader_parameter("oedema", strength[id])
 		"capillary_refill":

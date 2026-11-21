@@ -27,6 +27,9 @@ func _initialize() -> void:
 	cam.look_at(demo.global_position + Vector3(0, -0.25, 0))
 	await _shot("/tmp/demo_panel.png")
 	demo._pick("cyanosis_tongue")
+	demo._pick("grey")
+	demo._pick("clammy")
+	demo._pick("cyanosis_lips")
 	await create_timer(1.2).timeout
 	var head: Vector3 = pt._rig.skeleton.to_global(pt._rig.skeleton.get_bone_global_pose(pt._rig.skeleton.find_bone("head")).origin)
 	var fwd: Vector3 = pt.global_basis.z

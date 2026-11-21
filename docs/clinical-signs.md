@@ -187,3 +187,7 @@ X = needs exposure. Effort: E easy (reuses existing shader/rig work), M medium, 
 - **Sign sheet test:** one automated render of every sign, at mild and marked, on every character, producing a contact sheet. Validates a new model in one run and doubles as demo-mode material.
 - **Skin tone awareness:** pallor, cyanosis and jaundice look different on darker skin (check tongue, inner lips, conjunctivae, nail beds); build signs relative to the base skin, and include a darker-skinned patient early.
 - **Each sign entry records:** clinical description, reference, Tom's sign-off, implementation, settings that worked, and per-model notes.
+
+## Combining signs, tongue (21 Nov)
+- Demo mode now combines signs (select to add/remove). Skin colours are exclusive: pallor, grey and flushing replace each other.
+- Tongue cyanosis: tint applied with sqrt(strength) towards (0.38, 0.40, 0.85) on top of the darkened mouth colour; the earlier linear tint read as pink in the headset at 0.4.

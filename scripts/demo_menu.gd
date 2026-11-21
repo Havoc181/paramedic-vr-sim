@@ -17,7 +17,10 @@ var player: Node3D
 var _sign_buttons := {}
 var _strength_buttons := {}
 var _tripod_buttons := {}
-var _sign := ""
+## Signs shown together. Selecting toggles a sign on or off. Skin colours
+## replace each other (she can't be pale and flushed at once).
+var _on: Array = []
+const EXCLUSIVE := [["pallor", "grey", "flushing"]]
 var _mild := false
 var _caption: Label3D
 var _open := false
@@ -82,7 +85,7 @@ func _build() -> void:
 	bg.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	bg.position = Vector3(0, top + 0.06 - h / 2.0, -0.008)
 	add_child(bg)
-	_label("Demo mode: clinical signs", 34, Vector3(0, top + 0.03, 0))
+	_label("Demo mode: clinical signs (select to add or remove)", 28, Vector3(0, top + 0.03, 0))
 
 	var y0 := top - 0.03
 	for i in SIGN_LIB.ORDER.size():
@@ -158,7 +161,16 @@ func _label(text: String, size: int, pos: Vector3) -> Label3D:
 
 
 func _pick(id: String) -> void:
-	_sign = id
+	if id == "":
+		_on.clear()
+	elif _on.has(id):
+		_on.erase(id)
+	else:
+		for group in EXCLUSIVE:
+			if group.has(id):
+				for other in group:
+					_on.erase(other)
+		_on.append(id)
 	_apply()
 	_refresh()
 
@@ -177,35 +189,45 @@ func _apply() -> void:
 		_caption.outline_size = 8
 		c.add_child(_caption)
 		_caption.position = Vector3(0, 1.45, 0)
-	if _sign == "":
+	if _on.is_empty():
 		c.reset_skin_signs()
 		if c.can_expose():
 			c.set_exposure("on")
 		c.set_legs("on")
 		_caption.visible = false
 		return
-	var info: Dictionary = SIGN_LIB.SIGNS[_sign]
 	var all := {}
-	all[_sign] = float(info.get("mild", 0.4)) if _mild else 0.85
+	var chest := false
+	var abdomen := false
+	var legs := false
+	var lines := PackedStringArray()
+	var notes := PackedStringArray()
+	for id in _on:
+		var info: Dictionary = SIGN_LIB.SIGNS[id]
+		all[id] = float(info.get("mild", 0.4)) if _mild else 0.85
+		var need: String = info.get("exposure", "")
+		chest = chest or need == "chest"
+		abdomen = abdomen or need == "abdomen"
+		legs = legs or need == "legs"
+		lines.append(info["label"] + ((": " + String(info.get("demo", ""))) if _on.size() == 1 else ""))
+		if need == "legs" and not c.can_expose_legs():
+			notes.append("(This patient's model can't show the legs yet.)")
+		elif info.get("seen", "") == "I":
+			notes.append("(Try it: hold a fingertip with grip, then let go.)")
 	c._rig.signs.set_all(all)
-	var need: String = info.get("exposure", "")
 	if c.can_expose():
-		c.set_exposure({"abdomen": "lifted", "chest": "off"}.get(need, "on"))
-	c.set_legs("off" if need == "legs" else "on")
-	if _sign == "cyanosis_tongue":
+		c.set_exposure("off" if chest else ("lifted" if abdomen else "on"))
+	c.set_legs("off" if legs else "on")
+	if _on.has("cyanosis_tongue"):
 		c.open_mouth(6.0)
-	var note := ""
-	if need == "legs" and not c.can_expose_legs():
-		note = "\n(This patient's model can't show the legs yet.)"
-	elif info.get("seen", "") == "I":
-		note = "\n(Try it: hold a fingertip with grip, then let go.)"
-	_caption.text = "%s (%s)\n%s%s" % [info["label"], "mild" if _mild else "full", String(info.get("demo", "")), note]
+	_caption.text = "%s (%s)\n%s" % ["Signs shown" if _on.size() > 1 else "Sign shown", "mild" if _mild else "full",
+			"\n".join(lines)] + ("\n" + "\n".join(notes) if not notes.is_empty() else "")
 	_caption.visible = true
 
 
 func _refresh() -> void:
 	for id in _sign_buttons:
-		_sign_buttons[id].idle_colour = ACCENT if id == _sign else IDLE
+		_sign_buttons[id].idle_colour = ACCENT if _on.has(id) else IDLE
 	_strength_buttons["mild"].idle_colour = ACCENT if _mild else IDLE
 	_strength_buttons["full"].idle_colour = IDLE if _mild else ACCENT
 	var p = _patient()
