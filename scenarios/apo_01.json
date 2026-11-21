@@ -28,24 +28,24 @@
     "skin": {
      "colour": "pale_grey",
      "clammy": true,
-        "clammy_level": 0.6,
+     "clammy_level": 0.6,
      "temperature": "cool_peripheries"
     },
     "affect": "anxious",
     "peripheral_oedema": "mid_shin_bilateral_pitting",
     "neck_veins_visible": true,
-        "heart_rate": 118,
-        "pulse_rhythm": "irregular",
-        "pulse_volume": 0.8,
-        "capillary_refill_s": 3.5,
-        "signs": {
-          "_note": "Clinical signs 0..1 (scripts/patient/sign_library.gd). DRAFT values for clinical review.",
-          "pallor": 0.4,
-          "grey": 0.35,
-          "jvp": 0.55,
-          "oedema_ankle": 0.6,
-          "recession_suprasternal": 0.3
-        },
+    "heart_rate": 118,
+    "pulse_rhythm": "irregular",
+    "pulse_volume": 0.8,
+    "capillary_refill_s": 3.5,
+    "signs": {
+     "_note": "Clinical signs 0..1 (scripts/patient/sign_library.gd). DRAFT values for clinical review.",
+     "pallor": 0.4,
+     "grey": 0.35,
+     "jvp": 0.55,
+     "oedema_ankle": 0.6,
+     "recession_suprasternal": 0.3
+    },
     "sounds": {
      "_note": "Empty = subtitle/visual only. External = through the air near the face; chest = stethoscope (later versions).",
      "breathing_external": {
@@ -90,6 +90,32 @@
     "age_strength": 0.9,
     "breathless": 0.6,
     "breath_gain": 0.45
+   },
+   "reactions": {
+    "lifted": {
+     "text": "Go on... be quick... can't lean back... for long."
+    },
+    "off": {
+     "text": "Help me... get it off... I'm so... breathless."
+    },
+    "on": {
+     "text": "Thank you... love."
+    },
+    "legs_off": {
+     "text": "Go on... if you need to."
+    },
+    "legs_on": {
+     "text": "Thanks."
+    },
+    "sit_forward": [
+     {
+      "text": "Can I... sit forward?... I can't breathe... like this."
+     },
+     {
+      "text": "Please... let me lean... forward... I need to."
+     }
+    ],
+    "_note": "Draft lines for clinical review. sit_forward: said if she's left sat back (exposed) for 12 s, then every 25 s."
    }
   },
   "ken": {
@@ -445,12 +471,12 @@
   }
  ],
  "first_impression": [
-    {
-      "id": "abdomen",
-      "method": "look",
-      "requires_exposure": "abdomen",
-      "finding": "Belly rises gently as she breathes in: no paradoxical movement."
-    },
+  {
+   "id": "abdomen",
+   "method": "look",
+   "requires_exposure": "abdomen",
+   "finding": "Belly rises gently as she breathes in: no paradoxical movement."
+  },
   {
    "id": "position",
    "method": "look",
@@ -491,15 +517,15 @@
    "method": "feel",
    "finding": "Fast, irregularly irregular, strong."
   },
-    {
-      "id": "capillary_refill",
-      "method": "feel",
-      "finding": "Press a fingertip: colour returns slowly, about 3-4 seconds."
-    },
+  {
+   "id": "capillary_refill",
+   "method": "feel",
+   "finding": "Press a fingertip: colour returns slowly, about 3-4 seconds."
+  },
   {
    "id": "ankles",
    "requires_exposure": "legs",
-      "method": "look_feel",
+   "method": "look_feel",
    "finding": "Both ankles swollen; pressing leaves a dent; calves soft, not tender."
   },
   {
@@ -787,5 +813,9 @@
    }
   },
   "obs_text": "Observations: RR 32, SpO2 87% on air, HR 112 irregular (AF), BP 176/98, temp 36.8, GCS 15, BM 9.4, CRT 3 s."
+ },
+ "menu": {
+  "label": "01  Breathless, woke from sleep",
+  "draft": false
  }
 }

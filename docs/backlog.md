@@ -387,3 +387,23 @@ Do these next time Claude has the PC (Tom not gaming; approve Blender when asked
 ## Decision: production app and future split (Tom, 20 Nov)
 - What exists now is the **production app** (Quest app + instructor laptop app from one Godot project).
 - We'll later split development across separate applications (for example: production headset app, a development/sandbox build for trying signs and characters, the instructor app, and the character/asset pipeline). Not yet: choose the right opportunity, e.g. a natural break such as the v0.05 milestone, before scenario authoring by others, or before a first external pilot.
+
+## Main menu, exposure replies, random patients (2026-11-21)
+- **Main menu** (dev11): the headset opens on a call list showing dispatch text only. Scenarios
+  are listed in `scenario_runner.gd` `SCENARIOS`; each scenario has a `menu` block (label, draft).
+  Desktop runs/tests skip it unless `MENU=1`.
+- **Exposure replies:** each patient has `reactions` in the scenario (lifted, off, on, legs_off,
+  legs_on, sit_forward list). A tripod patient left sat back asks to sit forward after 12 s, then
+  every 25 s; logged for the instructor and mentioned in the debrief (not as a fault).
+- **Voices:** Maureen set to `bf_emma` (Joan is `bf_lily`). Lines to generate: Maureen's 20 answers
+  plus 7 replies each for Joan and Maureen. `build_voices.py` now includes the replies. Blocked:
+  the voice tools (espeak-ng, Kokoro model, WORLD) come from GitHub, which neither the cloud nor
+  the PC workspace can reach. Fix: allow GitHub/package installs in network settings (new chat),
+  or download the files into C:\ClaudeDevP1\tts and I build from there.
+- **Scenario 02 clinical set-up:** reviewed and approved by Tom, 21 Nov.
+- **Random patients (later, Tom's idea):** scenario sets limits (sex, age range, build, height,
+  demographic where relevant); app picks a patient matching them; signs added on top. Realistic
+  route on Quest: a **pool of pre-built bodies** (MakeHuman can't build at run time on the
+  headset), all on the underwear base so clothing layers and signs fit any of them. Cost to
+  plan for: each voice needs its own lines per scenario, so the pool has a few voices per
+  sex/age band. Depends on the character pipeline (docs/character-pipeline.md) being in place.

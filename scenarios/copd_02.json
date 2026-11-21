@@ -70,18 +70,44 @@
         }
       },
       "voice": {
-        "voice": "bf_lily",
-        "speed": 0.86,
+        "voice": "bf_emma",
+        "speed": 0.84,
         "age": "old_woman",
         "age_strength": 1.0,
-        "breathless": 0.7,
+        "breathless": 0.8,
         "breath_gain": 0.45,
-        "_note": "Same voice as Joan for now; pick a different Kokoro voice when the new model is built so the two patients don't sound alike."
+        "_note": "bf_emma so she doesn't sound like Joan (bf_lily). More breathless than Joan: shorter phrases. Listen and adjust."
       },
       "model_fallback": "res://assets/characters/joan.glb",
       "clothes_colour": {
         "male_casualsuit02": "#7d6e86",
         "female_casualsuit01": "*#5a5e66"
+      },
+      "reactions": {
+        "lifted": {
+          "text": "Go on... you'll have... seen worse."
+        },
+        "off": {
+          "text": "Alright... give me... a minute... with my arms."
+        },
+        "on": {
+          "text": "That's better... ta."
+        },
+        "legs_off": {
+          "text": "My legs are... fine... but go on."
+        },
+        "legs_on": {
+          "text": "Ta, love."
+        },
+        "sit_forward": [
+          {
+            "text": "Can I sit... forward again?... I need to... lean on my knees."
+          },
+          {
+            "text": "I can't... breathe... sat back... let me... lean."
+          }
+        ],
+        "_note": "Draft lines for clinical review."
       }
     }
   },
@@ -701,5 +727,9 @@
       }
     },
     "obs_text": "Observations: RR 30, SpO2 86% on air, HR 96 regular, BP 138/80, temp 35.6, GCS 15, BM 5.6, PEFR ~90 L/min."
+  },
+  "menu": {
+    "label": "02  Known COPD, coughing up blood",
+    "draft": true
   }
 }

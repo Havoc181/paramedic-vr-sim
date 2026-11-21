@@ -30,11 +30,27 @@ var _message: Label3D
 var _message_timer := 0.0
 
 
-## Set by the pause menu's scenario switch before reloading the scene.
+## Set by the main menu (or a test) before reloading the scene.
 static var next_path := ""
+## True when the app should open on the main menu instead of a scenario.
+static var show_menu := true
+## Every scenario the main menu offers, in order.
+const SCENARIOS := ["res://scenarios/apo_01.json", "res://scenarios/copd_02.json"]
+const START_MENU := preload("res://scripts/start_menu.gd")
+var sit_forward_asks := 0
 
 
 func _ready() -> void:
+	# In the headset the app opens on the main menu. Desktop runs and tests go
+	# straight to a scenario unless MENU=1 is set.
+	var xr := XRServer.find_interface("OpenXR")
+	var in_headset: bool = xr != null and xr.is_initialized()
+	if show_menu and (in_headset or OS.get_environment("MENU") == "1"):
+		var menu = START_MENU.new()
+		menu.name = "StartMenu"
+		add_child(menu)
+		menu.setup(player)
+		return
 	if next_path != "":
 		scenario_path = next_path
 	scenario = load_scenario(scenario_path)
@@ -51,6 +67,7 @@ func _ready() -> void:
 	_panel.setup(self, player)
 	for c in characters.values():
 		c.interacted.connect(func(who): _panel.open(who))
+		c.wants_to_sit_forward.connect(_on_sit_forward)
 	_debrief = DEBRIEF.new()
 	_debrief.name = "Debrief"
 	_debrief.visible = false
@@ -68,9 +85,36 @@ func _ready() -> void:
 func _on_finished(impression: String, urgency: String) -> void:
 	var seen_all := seen.duplicate()
 	seen_all["_exposure"] = _panel.exposure_log.duplicate()
+	seen_all["_sit_forward"] = sit_forward_asks
 	_debrief.show_debrief(scenario, _panel.asked_ids(), _panel.assessed, seen_all, impression, urgency, player)
 	if link:
 		link.log_event("debrief", "Debrief opened")
+
+
+## The patient has been sat back for a while and asks to lean forward again.
+func _on_sit_forward(who, index: int) -> void:
+	var lines: Array = who.data.get("reactions", {}).get("sit_forward", [])
+	if lines.is_empty() or _panel._speaking:
+		return
+	var l: Dictionary = lines[index % lines.size()]
+	var ap := String(l.get("audio", ""))
+	who.say(String(l.get("text", "")), ap, voice_info.get(ap, {}))
+	sit_forward_asks += 1
+	_panel.logged.emit("patient", "%s asked to sit forward again: \"%s\"" % [who.display_name.get_slice(" ", 0), String(l.get("text", ""))])
+
+
+## Main menu chose a scenario: restart the room with it.
+static func start(path: String, tree: SceneTree) -> void:
+	next_path = path
+	show_menu = false
+	tree.paused = false
+	tree.reload_current_scene()
+
+
+static func back_to_menu(tree: SceneTree) -> void:
+	show_menu = true
+	tree.paused = false
+	tree.reload_current_scene()
 
 
 # --- Instructor link -----------------------------------------------------------

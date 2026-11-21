@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.05-dev10"
+const APP_VERSION := "v0.05-dev11"
 
 ## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
 ## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.
@@ -19,8 +19,6 @@ var _fps_label: Label3D
 var _link_label: Label3D
 var _refresh_rates: Array = []
 var _refresh_index := -1
-const SCENARIOS := [["01 Breathless (APO), Joan", "res://scenarios/apo_01.json"],
-		["02 COPD + haemoptysis, Maureen (draft)", "res://scenarios/copd_02.json"]]
 
 ## Demo mode: show each clinical sign on its own on the patient, with a caption.
 const SIGN_LIB := preload("res://scripts/patient/sign_library.gd")
@@ -131,16 +129,7 @@ func _on_pressed(id: String) -> void:
 				_refresh_index = (_refresh_index + 1) % _refresh_rates.size()
 				xr2.display_refresh_rate = _refresh_rates[_refresh_index]
 		"scenario":
-			# Load the next scenario (restarts the room).
-			var runner_script := load("res://scripts/scenario_runner.gd")
-			var cur: String = runner_script.next_path if runner_script.next_path != "" else SCENARIOS[0][1]
-			var idx := 0
-			for k in SCENARIOS.size():
-				if SCENARIOS[k][1] == cur:
-					idx = k
-			runner_script.next_path = SCENARIOS[(idx + 1) % SCENARIOS.size()][1]
-			get_tree().paused = false
-			get_tree().reload_current_scene()
+			load("res://scripts/scenario_runner.gd").back_to_menu(get_tree())
 			return
 		"signs":
 			_signs_index = (_signs_index + 1) % (SIGN_LIB.ORDER.size() + 1)
@@ -162,13 +151,7 @@ func _refresh_labels() -> void:
 	_buttons.fps.text = "Test: frame rate shown: " + ("On" if _fps_label and _fps_label.visible else "Off")
 	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
 	_buttons.signs.text = "Demo sign: " + _demo_name()
-	var rs := load("res://scripts/scenario_runner.gd")
-	var cur: String = rs.next_path if rs.next_path != "" else SCENARIOS[0][1]
-	var title := cur
-	for sc in SCENARIOS:
-		if sc[1] == cur:
-			title = sc[0]
-	_buttons.scenario.text = "Scenario: " + title + "  (change)"
+	_buttons.scenario.text = "Main menu (choose a scenario)"
 	_buttons.quit.text = "Quit app"
 	var link = get_tree().get_first_node_in_group("session_link")
 	if _link_label:

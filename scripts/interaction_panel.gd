@@ -342,6 +342,10 @@ func _on_item(slot: int) -> void:
 		exposure_log.append(String(it["action"]))
 		_result.text = String(msg.get(it["action"], ""))
 		_refresh()
+		# Her reply (e.g. "Go on... quick...").
+		var r: Dictionary = pt.data.get("reactions", {}).get(act, {}) if pt else {}
+		if not r.is_empty() and not _speaking:
+			_speak([{"by": pt.id, "text": r.get("text", ""), "audio": r.get("audio", "")}])
 		return
 	if _tab == "assess":
 		if not assessed.has(it.get("id", "")):

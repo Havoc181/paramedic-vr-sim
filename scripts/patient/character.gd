@@ -5,6 +5,9 @@ extends StaticBody3D
 ## lines as subtitles, and opens the interaction panel when pointed at.
 
 signal interacted(character)
+## A tripod patient who has been sat back for exposure asks to sit forward
+## again (index counts the asks since she sat back).
+signal wants_to_sit_forward(character, index: int)
 
 const MANNEQUIN := preload("res://scripts/patient/mannequin.gd")
 const BREATHING := preload("res://scripts/patient/breathing.gd")
@@ -34,6 +37,12 @@ var _voice: AudioStreamPlayer3D
 var _speech := {}            # manifest entry for the line being spoken
 var _speech_t := -1.0        # seconds into the current line, -1 when silent
 var _speech_breath := 0.0    # chest value driven by in-breaths while talking
+# Sat back for exposure (tripod patients can't tolerate it for long)
+const SIT_FORWARD_FIRST := 12.0
+const SIT_FORWARD_REPEAT := 25.0
+var _sat_back_t := 0.0
+var _next_ask := SIT_FORWARD_FIRST
+var _asks := 0
 
 
 func setup(character_id: String, character_data: Dictionary) -> void:
@@ -122,6 +131,24 @@ func _process(delta: float) -> void:
 		_subtitle_timer -= delta
 		if _subtitle_timer <= 0.0:
 			_subtitle.visible = false
+	_check_sat_back(delta)
+
+
+func _check_sat_back(delta: float) -> void:
+	if _rig == null or _rig.home_posture != "tripod" or exposure() == "on":
+		_sat_back_t = 0.0
+		_next_ask = SIT_FORWARD_FIRST
+		_asks = 0
+		return
+	_sat_back_t += delta
+	if _sat_back_t < _next_ask:
+		return
+	if _speech_t >= 0.0 or _subtitle_timer > 0.0:
+		_next_ask = _sat_back_t + 2.0   # she's mid-sentence: ask once she stops
+		return
+	wants_to_sit_forward.emit(self, _asks)
+	_asks += 1
+	_next_ask = _sat_back_t + SIT_FORWARD_REPEAT
 
 
 ## Instructor control: -1 = much better, 0 = as written, +1 = much worse.
@@ -152,7 +179,7 @@ func legs_exposure() -> String:
 	return _rig.legs_state if _rig else "on"
 
 
-## Legs: "off" = trousers rolled above the knees and shoes off.
+## Legs: "off" = trousers rolled to mid-calf and shoes off.
 func set_legs(state: String) -> void:
 	if can_expose_legs():
 		_rig.set_legs_state(state)

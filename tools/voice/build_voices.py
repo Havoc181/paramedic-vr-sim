@@ -81,6 +81,14 @@ def main(path):
             lines.append((f"event_{key}_{i}", {"by": l.get("by", ""), "text": text}))
         if "after_line" in l:
             lines.append((f"event_{key}_after", l["after_line"]))
+    # Replies to exposure ("Go on... be quick...") and the sit-forward requests.
+    for cid, c in sc["characters"].items():
+        for key, r in c.get("reactions", {}).items():
+            if key.startswith("_"):
+                continue
+            for i, item in enumerate(r if isinstance(r, list) else [r]):
+                item["by"] = cid
+                lines.append((f"react_{key}{i if isinstance(r, list) else ''}_{cid}", item))
     for name, a in lines:
         v = voices.get(a.get("by", ""))
         if not v:

@@ -136,13 +136,18 @@ func _sections(d: Dictionary, scenario: Dictionary, asked: Dictionary, assessed:
 		st += prefix + String(it.get("why", "")) + "\n\n"
 	var ex: Array = seen.get("_exposure", [])
 	if not ex.is_empty():
-		var words := {"lifted": "lifted her top", "off": "asked her to take her top off", "on": "covered her up again"}
+		var words := {"lifted": "lifted her top", "off": "asked her to take her top off", "on": "covered her up again",
+				"legs_off": "rolled up her trousers and took her shoes off", "legs_on": "covered her legs again"}
 		var parts := PackedStringArray()
 		for e in ex:
 			parts.append(String(words.get(e, e)))
 		var ending := "She was covered up again before you finished." if ex[-1] == "on" \
 				else "She was still exposed when you finished."
 		st += "[Exposure]  You " + ", then ".join(parts) + ". " + ending + "\n\n"
+	var asks := int(seen.get("_sit_forward", 0))
+	if asks > 0:
+		st += "[Exposure]  While she was sat back she asked to lean forward again%s. Someone this breathless often can't tolerate leaning back: look quickly, then let her return to her own position.\n\n" \
+				% ("" if asks == 1 else " (%d times)" % asks)
 	out.append(["The scene", st.strip_edges()])
 
 	# 5. Differentials
