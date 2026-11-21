@@ -1,17 +1,10 @@
-# Test checklist — v0.06-dev1 (character rebuild: underwear base, clothes as layers)
+# Test checklist — v0.06-dev2 (tucked skin, creases, Ken rebuilt)
 
-**Before exporting:** commit `assets/characters/joan.glb` and `maureen.glb` (rebuilt today).
+**Before exporting:** commit `joan.glb`, `maureen.glb` and `ken.glb` (all rebuilt).
 
-## Both patients, every exposure option
-- [ ] Dressed: looks as before; hands on thighs; nothing poking through
-- [ ] Lift her top: top cut cleanly just under the bust, belly visible, no folds or warping
-- [ ] Top off: grey bra, full skin, no gaps; cover up puts the top straight back
-- [ ] Roll up trousers / shoes off: trousers end cleanly at mid-calf (dark inside edge), bare lower legs and feet
-- [ ] Everything at once, and back again in any order
-- [ ] Sitting back (exposed) and leaning forward: if the top rides up you see skin, never a hole
-- [ ] Close up at the waist and the fly: no grey slivers
-
-## Signs on the new bodies
-- [ ] Belly movement, Hoover's sign, intercostal recession with the top lifted/off
-- [ ] Ankle oedema and mottling with trousers rolled
-- [ ] Demo mode still works for every sign
+- [ ] Backs/insides of the knees, both patients, from standing beside her: no skin through the jeans
+- [ ] Joan's neckline from a front-side angle: skin behind the opening, no see-through
+- [ ] Lifted top: no bra or bust showing through the blouse
+- [ ] Skin looks normal everywhere it's meant to be seen (neckline, belly when lifted, top off, legs rolled)
+- [ ] Ken: no socks or feet through his shoes, no skin through his trouser hems
+- [ ] Everything from the dev1 list still fine (states, signs, demo)

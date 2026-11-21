@@ -31,15 +31,19 @@ uniform float jvp_height = 0.0;     // 0..1 up the neck
 uniform float jvp_pulse = 0.0;      // 0..1 within each heartbeat
 uniform float oedema = 0.0;
 
-// Layered characters (21 Nov): skin under a worn garment is hidden, and shows
-// again when the garment comes off or is cut away (lifted top, rolled trousers).
-// UV2.x = bits 1 top, 2 lower, 4 shoes, 8 torso; UV2.y = 1 - rest height.
+// Layered characters (21 Nov): skin under a worn top or trousers is tucked in
+// (inset) so it can't poke through, but never removed, so a lapel or hem that
+// lifts away shows skin rather than a hole. Skin inside shoes (rigid) is hidden.
+// It comes back out when the garment comes off or is cut away there.
+// UV2.x = bits 1 top, 2 lower, 4 shoes, 8 torso, 16 knee crease, 32 elbow crease;
+// UV2.y = 1 - rest height.
 // Modes: 0 off (skin shows), 1 worn, 2 cut below the cut height.
 uniform int top_mode = 0;
 uniform float top_cut = -10.0;
 uniform int lower_mode = 0;
 uniform float lower_cut = -10.0;
 uniform bool shoes_on = false;
+uniform float tuck_depth = 0.012;
 varying flat float cover_bits;
 varying float rest_z;
 
@@ -53,6 +57,12 @@ varying float jvp_vis;  // visible JVP column, already scaled by the pulse
 void vertex() {
 	cover_bits = UV2.x;
 	rest_z = 1.0 - UV2.y;
+	int vb = int(UV2.x + 0.5);
+	bool tuck = ((vb & 1) != 0 && top_mode > 0 && !(top_mode == 2 && (vb & 8) != 0 && rest_z < top_cut))
+			|| ((vb & 2) != 0 && lower_mode > 0 && !(lower_mode == 2 && rest_z < lower_cut));
+	if (tuck) {
+		VERTEX -= NORMAL * tuck_depth * model_scale;
+	}
 	mask = COLOR;
 	legs = CUSTOM1.yz;
 	float s = model_scale;
@@ -95,13 +105,15 @@ float vnoise(vec3 x) {
 
 void fragment() {
 	int cb = int(cover_bits + 0.5);
-	if ((cb & 1) != 0 && top_mode > 0 && !(top_mode == 2 && (cb & 8) != 0 && rest_z < top_cut)) {
-		discard;
-	}
-	if ((cb & 2) != 0 && lower_mode > 0 && !(lower_mode == 2 && rest_z < lower_cut)) {
-		discard;
-	}
 	if ((cb & 4) != 0 && shoes_on) {
+		discard;
+	}
+	// Joint creases (16 behind the knee, 32 inside the elbow): the cloth folds
+	// into the limb when it bends, so covered skin there is hidden completely.
+	if ((cb & 16) != 0 && lower_mode > 0 && !(lower_mode == 2 && rest_z < lower_cut)) {
+		discard;
+	}
+	if ((cb & 32) != 0 && top_mode > 0) {
 		discard;
 	}
 	vec3 a = texture(albedo_texture, UV).rgb;

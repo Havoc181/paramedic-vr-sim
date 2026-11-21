@@ -1,10 +1,24 @@
 # Character pipeline (agreed 21 Nov; built for Joan and Maureen 21 Nov, v0.06-dev1)
 
+## Update 21 Nov afternoon (v0.06-dev2, after headset test)
+- Covered skin is now **tucked 1.2 cm in** behind worn clothes rather than removed: it can't
+  poke through, and where a lapel or hem lifts away you see skin, never a hole (seen at Joan's
+  neckline). Only seen through openings; untucked as soon as that garment comes off or is cut.
+- Hidden completely (discard), where cloth is rigid or folds into the limb: feet in shoes
+  (everything below the ankle), knee creases (bit 16, all but the kneecap side, 14 cm) and
+  elbow creases (bit 32, inside, 8 cm).
+- Coverage test also counts cloth within 3 cm on the outside (cloth bunched at an angle).
+- Bra only shown with the top off; briefs hidden while trousers are worn.
+- Ken rebuilt layered (one suit mesh = shirt and trousers; briefs only).
+- Bug fixed: the skin shader didn't get the clothing state on load (only after the first
+  exposure change), so nothing was tucked or hidden in the starting state.
+- Check renders now include the awkward headset angles: `tests/angle_shots.gd`.
+
 ## As built (21 Nov)
 - **make_humans.py** (`layers=` in a character spec): clothing masks are removed so the body
   keeps all its skin; plain grey bra and briefs are copied from the body's own skin
   (`<name>_bra`, `<name>_briefs`); a second UV map **"cover"** (Godot UV2) on every mesh:
-  body `u` = bits 1 top, 2 trousers, 4 shoes, 8 torso; all meshes `v` = 1 - rest height.
+  body `u` = bits 1 top, 2 trousers, 4 shoes, 8 torso, 16 knee crease, 32 elbow crease; all meshes `v` = 1 - rest height.
   Skin counts as covered only if a ray along its normal hits the garment within 9 cm, at
   least 1.5 cm from any garment edge and 7 cm from the top's bottom hem / 5 cm from the
   trousers' waistband (the edges that move when she sits; otherwise you'd see through her).

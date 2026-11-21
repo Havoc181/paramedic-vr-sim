@@ -130,6 +130,9 @@ func _init(model_root: Node3D, posture: String) -> void:
 	_tint_hair(Color(0.78, 0.76, 0.74))
 	_find_garments()
 	signs = SIGNS.new(self)
+	# The skin shader exists only now: give it the clothing state (otherwise
+	# nothing is tucked or hidden until the first exposure change).
+	_apply_layers()
 
 
 # --- Posture changes -----------------------------------------------------------
@@ -242,8 +245,10 @@ var _wear := {}
 
 func _find_garments() -> void:
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
-		if String(mi.name).to_lower().ends_with("_briefs"):
-			layered = true
+		if String(mi.name).to_lower().contains("suit") and mi.mesh:
+			var uv2 = mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_TEX_UV2]
+			if uv2 != null and not (uv2 as PackedVector2Array).is_empty():
+				layered = true
 	if layered:
 		_setup_layers()
 		return
@@ -429,6 +434,9 @@ func _apply_layers() -> void:
 	# show as slivers through the fly: hide them while trousers are worn.
 	if _wear.has("briefs"):
 		_wear["briefs"].visible = not _wear.has("trousers")
+	# Bra only with the top off (otherwise it shows through the blouse).
+	if _wear.has("bra"):
+		_wear["bra"].visible = top_mode == 0
 	if signs and signs.mat:
 		signs.mat.set_shader_parameter("top_mode", top_mode)
 		signs.mat.set_shader_parameter("top_cut", _lift_z)
