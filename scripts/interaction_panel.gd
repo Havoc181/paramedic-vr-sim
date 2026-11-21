@@ -283,9 +283,13 @@ func _available_items() -> Array:
 			out.append({"id": "_legs_off", "label": "Roll up her trousers and take her shoes off", "action": "legs_off"})
 		elif legs == "off":
 			out.append({"id": "_legs_on", "label": "Cover her legs and put her shoes back on", "action": "legs_on"})
+		if pt and pt._rig:
+			out.append({"id": "_mouth", "label": "Ask her to open her mouth (look at her tongue)", "action": "mouth"})
 		for f in runner.scenario.get("first_impression", []):
 			# Some findings can only be seen once that area is exposed.
 			var need := String(f.get("requires_exposure", ""))
+			if need == "mouth" and pt and pt._rig and not pt.mouth_looked:
+				continue
 			# (Models that can't be exposed show everything, as before.)
 			if need == "abdomen" and state != "" and state != "lifted" and state != "off":
 				continue
@@ -328,6 +332,13 @@ func _on_item(slot: int) -> void:
 	if _tab == "assess" and it.has("action"):
 		var pt = _patient()
 		var act := String(it["action"])
+		if act == "mouth":
+			if pt:
+				pt.open_mouth()
+			logged.emit("checked", "Asked her to open her mouth to look at her tongue.")
+			_result.text = "She opens her mouth for you."
+			_refresh()
+			return
 		if pt:
 			if act.begins_with("legs_"):
 				pt.set_legs("off" if act == "legs_off" else "on")

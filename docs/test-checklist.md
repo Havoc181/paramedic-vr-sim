@@ -1,39 +1,26 @@
-# Test checklist — v0.05-dev11 (main menu, exposure replies, sit-forward) + dev10 fit + dev8 signs
+# Test checklist — v0.05-dev13 (after your dev11 notes)
 
-## Main menu (new in dev11)
-- [ ] The app opens on the Havoc Education menu in front of you, not straight into Joan
-- [ ] Two calls listed by dispatch only (no diagnosis); 02 marked DRAFT; pointing and pulling the trigger starts it
-- [ ] "Recentre menu" brings it in front of you; left menu button still opens comfort settings
-- [ ] Pause menu "Main menu (choose a scenario)" goes back to it
+Your dev11 notes are saved in `docs/test-results/2026-11-21_v0.05-dev11.md`.
 
-## Exposure replies (new in dev11; subtitles only until the voice lines are generated)
-- [ ] Each exposure option gets a short reply from the patient (e.g. Joan: "Go on... be quick...")
-- [ ] Leave Joan sat back with her top up/off: after about 12 s she asks to sit forward, then again about every 25 s; covering her up stops it
-- [ ] The debrief mentions that she asked to lean forward again
+## Looking in the mouth (new)
+- [ ] Look, listen, feel: "Ask her to open her mouth (look at her tongue)"; she opens wide for about 5 s
+- [ ] "Look at tongue" then appears. Maureen: dusky blue-grey tongue (central cyanosis). Joan: pink (draft wording, please review both)
 
-Fixed after screenshot review: fingers sinking into thighs (hand height now measured per
-patient); Maureen's top trimmed to the hips; dark trousers instead of leggings; trousers
-now roll to mid-calf with a neat cuff (rolling over the knee distorted badly).
+## Prop cards
+- [ ] Only one card open at a time (opening another closes the last), so they no longer overlap
+- [ ] Cards wrap and grow upwards from just above the object; all text readable leaning in
+- [ ] Wall instructions all visible on the wall
 
-**Before exporting:** in GitHub Desktop commit `assets/characters/joan.glb` and the new
-`assets/characters/maureen.glb` (and any new `.uid` files Godot creates).
+## Demo mode (new panel)
+- [ ] Pause menu > "Demo mode: show clinical signs" opens a panel to the right of where you're looking; you can still move
+- [ ] Pick any sign; Mild / Full; the selected sign is highlighted; caption above the patient
+- [ ] Central cyanosis (tongue) opens her mouth so you can see it
+- [ ] Tripod: Upright / Mild / Full: she moves smoothly, hands stay on her thighs at each level
+- [ ] "Back to scenario signs" returns her to the scenario's own signs; Close
 
-## Maureen (main menu > 02)
-- [ ] She loads as her own person (81, darker skin, grey hair, plain top, dark bottoms); no voice yet (subtitles)
-- [ ] Her signs as set: dusky lips/tongue, pursed lips on the breath out, prolonged expiration, mild clamminess, suprasternal recession; lift her top: paradoxical belly; top off: Hoover's sign, intercostal
-- [ ] Lift top / top off / cover up work on her clothes too
-- [ ] Props readable: pot, tissues, inhalers, rescue pack
+## Tripod level in scenarios
+- [ ] Both scenarios are still full tripod. Tell me if either should be Mild (set per patient as `tripod_level` in the scenario, 0 to 1)
 
-## Legs (both patients)
-- [ ] "Roll up her trousers and take her shoes off": trousers rolled to mid-calf with a neat cuff, bare lower legs and feet; "Cover her legs" puts them back
-- [ ] Joan: ankle oedema visible; "Look at ankles" only appears once legs are exposed
-- [ ] Fingers rest on the thighs without sinking in (both patients, close up and from the side)
-
-## Tripod hands
-- [ ] Hands stay planted on her knees while her shoulders rise with each breath (elbows bend slightly)
-- [ ] Sit-back posture: hands stay on the seat
-
-## dev8 items (if not yet tested)
-- [ ] Demo mode signs, hands-on pulse and capillary refill, instructor sign sliders
-
-Notes:
+## Known, left for the character rebuild
+- Rolled trousers' cuff looks rough close up
+- Sat-back hands hover slightly above the seat

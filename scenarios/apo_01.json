@@ -508,6 +508,13 @@
    "finding": "Pale and grey, sweaty forehead and upper lip."
   },
   {
+   "id": "tongue",
+   "requires_exposure": "mouth",
+   "finding": "Tongue pink, a little dry from mouth-breathing. No obvious central cyanosis.",
+   "_note": "Draft for clinical review.",
+   "method": "look"
+  },
+  {
    "id": "skin",
    "method": "feel",
    "finding": "Hands cool and clammy."

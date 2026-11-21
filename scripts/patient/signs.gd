@@ -25,6 +25,7 @@ var _s := 1.0               # model scale (1 = Joan's height)
 var _lm := {}               # landmarks in mesh space
 var _belly_box := AABB()
 var _tongue_mats: Array = []
+var _tongue_base: Array = []
 var _face := {}             # bone name -> index for face bones we move
 var _beat_t := 0.0
 var _beat_len := 0.75
@@ -61,8 +62,11 @@ func set_sign(id: String, v: float) -> void:
 		"cyanosis_peripheral":
 			mat.set_shader_parameter("nail_cyanosis", strength[id])
 		"cyanosis_tongue":
-			for m in _tongue_mats:
-				m.albedo_color = Color(1, 1, 1).lerp(Color(0.55, 0.52, 0.72), strength[id] * 0.85)
+			# Keep the shaded base colour (rig_driver darkens the tongue: no
+			# ambient occlusion in the mouth) and tint it dusky blue-purple.
+			for i in _tongue_mats.size():
+				var m: BaseMaterial3D = _tongue_mats[i]
+				m.albedo_color = (_tongue_base[i] as Color) * Color(1, 1, 1).lerp(Color(0.5, 0.48, 0.8), strength[id])
 		"oedema_ankle":
 			mat.set_shader_parameter("oedema", strength[id])
 		"capillary_refill":
@@ -270,6 +274,7 @@ func _setup_skin() -> void:
 					m = m.duplicate()
 					mi.set_surface_override_material(s, m)
 					_tongue_mats.append(m)
+					_tongue_base.append((m as BaseMaterial3D).albedo_color)
 			continue
 		if n.contains("teeth") or rig._is_strands(n) or n.contains("suit") or n.contains("shoe") \
 				or n.contains("eye") or n.contains("poly") or n.contains("skin_") \

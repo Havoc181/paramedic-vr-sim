@@ -145,15 +145,24 @@ var _blend_dur := 1.0
 
 ## Bone rotations and model offset for a posture, built from the rest pose.
 func _pose(name: String) -> Dictionary:
-	if _pose_cache.has(name):
-		return _pose_cache[name]
+	var key := name if name != "tripod" else "tripod@%.2f" % tripod_level
+	if _pose_cache.has(key):
+		return _pose_cache[key]
 	var p: Dictionary = POSTURES.get(name, POSTURES["standing"])
 	_reset_to_rest()
 	_apply_limbs(p["limbs"])
-	if p.has("lean_deg"):
-		_lean(deg_to_rad(p["lean_deg"]))
-	if p.has("shrug_deg"):
-		_shrug(deg_to_rad(p["shrug_deg"]))
+	var lean: float = p.get("lean_deg", 0.0)
+	var shrug: float = p.get("shrug_deg", 0.0)
+	_hand_back = 0.0
+	if name == "tripod":
+		# 0 = sitting upright with hands resting on the thighs, 1 = full tripod.
+		lean = lerpf(TRIPOD_MIN_LEAN, lean, tripod_level)
+		shrug *= tripod_level
+		_hand_back = (1.0 - tripod_level) * 0.07
+	if lean != 0.0:
+		_lean(deg_to_rad(lean))
+	if shrug != 0.0:
+		_shrug(deg_to_rad(shrug))
 	_hand_mode = "knee" if p.get("hands_on_knees", false) else ("beside" if p.get("hands_beside", false) else "")
 	if _hand_mode != "":
 		for side in 2:
@@ -162,7 +171,7 @@ func _pose(name: String) -> Dictionary:
 	for b in skeleton.get_bone_count():
 		rots.append(skeleton.get_bone_pose_rotation(b))
 	var out := {"rot": rots, "offset": p.get("offset", Vector3.ZERO)}
-	_pose_cache[name] = out
+	_pose_cache[key] = out
 	return out
 
 
@@ -171,6 +180,24 @@ func _apply_pose(pose: Dictionary) -> void:
 		skeleton.set_bone_pose_rotation(b, pose["rot"][b])
 		_base_local[b] = pose["rot"][b]
 	model.position = pose["offset"]
+
+
+## How far into the tripod position she is (0 upright, hands on thighs;
+## 0.5 mild; 1 full). Changing it moves her smoothly if she's in tripod.
+var tripod_level := 1.0
+const TRIPOD_MIN_LEAN := 8.0
+var _hand_back := 0.0   # wrist further back up the thigh when more upright
+
+
+func set_tripod_level(level: float, seconds := 1.5) -> void:
+	tripod_level = clampf(level, 0.0, 1.0)
+	if skeleton == null:
+		return
+	if posture_name == "tripod":
+		posture_name = ""   # force the blend to the new tripod pose
+		set_posture("tripod", seconds)
+		if seconds <= 0.0:
+			update(1.0)
 
 
 ## Move smoothly to another posture over `seconds`.
@@ -201,6 +228,7 @@ func update(delta: float) -> void:
 		_base_local[b] = q
 	model.position = (_blend_from["offset"] as Vector3).lerp(_blend_to["offset"], k)
 	if _blend_t >= 1.0:
+		_hand_back = (1.0 - tripod_level) * 0.07 if posture_name == "tripod" else 0.0
 		_hand_mode = "knee" if POSTURES.get(posture_name, {}).get("hands_on_knees", false) \
 			else ("beside" if POSTURES.get(posture_name, {}).get("hands_beside", false) else "")
 		_capture_hands()
@@ -295,6 +323,10 @@ func tint_clothes(colours: Dictionary) -> void:
 						mi.set_surface_override_material(s, m)
 
 
+## Wide open for looking in the mouth (tongue, lips): 0..1 on top of speech.
+var mouth_open := 0.0
+
+
 ## Mouth opening while speaking, 0..1 (rotates the jaw down from its pose).
 func set_jaw(open: float) -> void:
 	if skeleton == null:
@@ -303,8 +335,9 @@ func set_jaw(open: float) -> void:
 	if b < 0:
 		return
 	skeleton.set_bone_pose_rotation(b, _base_local[b])
-	if open > 0.01:
-		_rotate_global(b, Basis(Vector3(1, 0, 0), deg_to_rad(8.0) * clampf(open, 0.0, 1.0)))
+	var ang := deg_to_rad(8.0) * clampf(open, 0.0, 1.0) + deg_to_rad(22.0) * mouth_open
+	if ang > 0.001:
+		_rotate_global(b, Basis(Vector3(1, 0, 0), ang))
 
 
 func apply_breath(breath: float, depth: float, accessory: float) -> void:
@@ -463,23 +496,36 @@ func _wrist_target(side: int) -> Vector3:
 		var sgn := 1.0 if side == 0 else -1.0
 		return hip + Vector3(sgn * 0.21, -0.03, 0.06)
 	var along := (knee - hip).normalized()
-	return knee - along * 0.09 + Vector3(0, _hand_lift, 0)
+	var back := 0.09 + _hand_back
+	var lift := lerpf(_hand_lift, _hand_lift_far, clampf(_hand_back / 0.12, 0.0, 1.0))
+	# More upright: hands rest a little further out on the thighs, not in the lap.
+	var out := (1.0 if side == 0 else -1.0) * _hand_back * 0.3
+	return knee - along * back + Vector3(out, lift, 0)
 
 
 ## How high the wrist sits above the thigh bone: the front of the thigh (or
 ## trousers) measured on this model in its build pose, plus palm thickness.
 ## Fixed 0.115 m suited Joan but sank into fuller thighs (Maureen, 21 Nov).
 var _hand_lift := 0.123
+var _hand_lift_far := 0.135   # same, 21 cm up from the knee (upright tripod)
 
 
 func _measure_thigh() -> void:
+	var near := _thigh_front(0.09)
+	if near > 0.0:
+		_hand_lift = near + 0.022
+	var far := _thigh_front(0.21)
+	_hand_lift_far = far + 0.022 if far > 0.0 else _hand_lift + 0.012
+
+
+func _thigh_front(from_knee: float) -> float:
 	var ki := skeleton.find_bone("lowerleg01.L")
 	var hi := skeleton.find_bone("upperleg01.L")
 	if ki < 0 or hi < 0:
-		return
+		return -1.0
 	var knee := skeleton.get_bone_global_rest(ki).origin
 	var hip := skeleton.get_bone_global_rest(hi).origin
-	var p := knee - (knee - hip).normalized() * 0.09
+	var p := knee - (knee - hip).normalized() * from_knee
 	var front := -1.0
 	for mi in model.find_children("*", "MeshInstance3D", true, false):
 		var n := String(mi.name).to_lower()
@@ -488,8 +534,7 @@ func _measure_thigh() -> void:
 		for v in (mi.mesh.surface_get_arrays(0)[Mesh.ARRAY_VERTEX] as PackedVector3Array):
 			if absf(v.y - p.y) < 0.03 and absf(v.x - p.x) < 0.08:
 				front = maxf(front, v.z - p.z)
-	if front > 0.0:
-		_hand_lift = front + 0.022
+	return front
 
 
 ## Hand on knee, like a real arm:

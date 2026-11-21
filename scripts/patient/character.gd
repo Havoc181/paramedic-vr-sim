@@ -66,6 +66,8 @@ func setup(character_id: String, character_data: Dictionary) -> void:
 		_body = (load(model_path) as PackedScene).instantiate()
 		add_child(_body)
 		_rig = RIG.new(_body, String(p.get("posture", "standing" if not is_patient else "seated")))
+		if p.has("tripod_level"):
+			_rig.set_tripod_level(float(p["tripod_level"]), 0.0)
 		_rig.tint_clothes(data.get("clothes_colour", {}))
 		reset_skin_signs()
 		if _rig.signs:
@@ -132,6 +134,21 @@ func _process(delta: float) -> void:
 		if _subtitle_timer <= 0.0:
 			_subtitle.visible = false
 	_check_sat_back(delta)
+
+
+## "Open your mouth for me": jaw wide for a few seconds so the tongue and the
+## inside of the lips can be seen, then closes again.
+var mouth_looked := false
+
+
+func open_mouth(hold := 5.0) -> void:
+	if _rig == null:
+		return
+	mouth_looked = true
+	var tw := create_tween()
+	tw.tween_property(_rig, "mouth_open", 1.0, 0.6).set_trans(Tween.TRANS_SINE)
+	tw.tween_interval(hold)
+	tw.tween_property(_rig, "mouth_open", 0.0, 0.8).set_trans(Tween.TRANS_SINE)
 
 
 func _check_sat_back(delta: float) -> void:

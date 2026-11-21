@@ -50,6 +50,8 @@ func _ready() -> void:
 
 
 var _open := false
+## Only one card open at a time, so cards on a crowded table don't overlap.
+static var _current: Node = null
 var _was_read := false
 var _held := false
 var _home: Transform3D
@@ -59,8 +61,16 @@ func interact() -> void:
 	if _held:
 		put_back()
 		return
-	_open = not _open
-	_label.visible = _open
+	_set_open(not _open)
+
+
+func _set_open(value: bool) -> void:
+	_open = value
+	_label.visible = value
+	if value:
+		if is_instance_valid(_current) and _current != self:
+			_current._set_open(false)
+		_current = self
 
 
 ## Back where it came from (e.g. after Ken handed it over), closed.
@@ -99,8 +109,7 @@ func hand_to(cam: Node3D) -> void:
 	var right := fwd.cross(Vector3.UP).normalized()
 	global_position = cam.global_position + fwd * 0.4 - right * 0.12 + Vector3(0, -0.3, 0)
 	look_at(cam.global_position, Vector3.UP, true)
-	_open = true
-	_label.visible = true
+	_set_open(true)
 
 
 func hover_enter() -> void:

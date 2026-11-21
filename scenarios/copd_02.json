@@ -421,6 +421,13 @@
       "finding": "Pale, with dusky, bluish lips."
     },
     {
+      "id": "tongue",
+      "requires_exposure": "mouth",
+      "finding": "Tongue dusky blue-grey, the same as her lips: central cyanosis.",
+      "_note": "Draft for clinical review.",
+      "method": "look"
+    },
+    {
       "id": "sputum",
       "method": "look",
       "finding": "Tissues with green sputum, and fresh red blood in the pot."

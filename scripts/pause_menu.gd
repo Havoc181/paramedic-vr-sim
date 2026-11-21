@@ -11,7 +11,7 @@ var _open := false
 
 const MENU_BUTTON := preload("res://scripts/menu_button.gd")
 ## Shown in the menu so testers can say which build they ran.
-const APP_VERSION := "v0.05-dev12"
+const APP_VERSION := "v0.05-dev13"
 
 ## Test options: NOT saved, so if one misbehaves, quitting and reopening resets it.
 ## Foveation removed 2026-11-20: every level gave the grey screen on Quest 3.
@@ -20,10 +20,9 @@ var _link_label: Label3D
 var _refresh_rates: Array = []
 var _refresh_index := -1
 
-## Demo mode: show each clinical sign on its own on the patient, with a caption.
-const SIGN_LIB := preload("res://scripts/patient/sign_library.gd")
-var _demo_caption: Label3D
-var _signs_index := 0
+## Demo mode: a panel to pick any clinical sign and show it on the patient.
+const DEMO_MENU := preload("res://scripts/demo_menu.gd")
+var _demo
 
 
 func _ready() -> void:
@@ -132,8 +131,14 @@ func _on_pressed(id: String) -> void:
 			load("res://scripts/scenario_runner.gd").back_to_menu(get_tree())
 			return
 		"signs":
-			_signs_index = (_signs_index + 1) % (SIGN_LIB.ORDER.size() + 1)
-			_apply_signs()
+			close()
+			if _demo == null:
+				_demo = DEMO_MENU.new()
+				_demo.name = "DemoMenu"
+				_demo.player = player
+				get_parent().add_child(_demo)
+			_demo.open()
+			return
 		"quit":
 			get_tree().quit()
 			return
@@ -150,7 +155,7 @@ func _refresh_labels() -> void:
 	_buttons.seated.text = "Seated mode: " + ("On" if player.seated else "Off")
 	_buttons.fps.text = "Test: frame rate shown: " + ("On" if _fps_label and _fps_label.visible else "Off")
 	_buttons.refresh.text = "Test: refresh rate: " + _refresh_text()
-	_buttons.signs.text = "Demo sign: " + _demo_name()
+	_buttons.signs.text = "Demo mode: show clinical signs"
 	_buttons.scenario.text = "Main menu (choose a scenario)"
 	_buttons.quit.text = "Quit app"
 	var link = get_tree().get_first_node_in_group("session_link")
@@ -210,47 +215,3 @@ func _set_buttons_enabled(value: bool) -> void:
 	for b in _buttons.values():
 		(b as StaticBody3D).collision_layer = 1 if value else 0
 
-
-func _demo_name() -> String:
-	if _signs_index == 0:
-		return "off (as scenario)"
-	return SIGN_LIB.SIGNS[SIGN_LIB.ORDER[_signs_index - 1]]["label"]
-
-
-func _apply_signs() -> void:
-	for c in get_tree().root.find_children("*", "", true, false):
-		if not (c.has_method("reset_skin_signs") and c.data.get("role", "") == "patient"):
-			continue
-		if _demo_caption == null:
-			_demo_caption = Label3D.new()
-			_demo_caption.font_size = 30
-			_demo_caption.pixel_size = 0.0009
-			_demo_caption.width = 700
-			_demo_caption.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			_demo_caption.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-			_demo_caption.outline_size = 8
-			c.add_child(_demo_caption)
-			_demo_caption.position = Vector3(0, 1.45, 0)
-		if _signs_index == 0:
-			c.reset_skin_signs()
-			if c.can_expose():
-				c.set_exposure("on")
-			c.set_legs("on")
-			_demo_caption.visible = false
-			return
-		var id: String = SIGN_LIB.ORDER[_signs_index - 1]
-		var info: Dictionary = SIGN_LIB.SIGNS[id]
-		var all := {}
-		all[id] = 0.85
-		c._rig.signs.set_all(all)
-		var need: String = info.get("exposure", "")
-		if c.can_expose():
-			c.set_exposure({"abdomen": "lifted", "chest": "off"}.get(need, "on"))
-		c.set_legs("off" if need == "legs" else "on")
-		var note := ""
-		if need == "legs" and not c.can_expose_legs():
-			note = "\n(This patient's model can't show the legs yet.)"
-		elif info.get("seen", "") == "I":
-			note = "\n(Try it: hold a fingertip with grip, then let go.)"
-		_demo_caption.text = info["label"] + "\n" + String(info.get("demo", "")) + note
-		_demo_caption.visible = true
