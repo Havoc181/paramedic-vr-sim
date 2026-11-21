@@ -43,7 +43,7 @@ Hands-on assessment with consent; full equipment; more scenarios (distractions, 
 ## Business model (decision 21 Nov 2026)
 **The baseline app will be free.** Selling and supporting a paid app, or organising a team to do it, isn't realistic for Tom at the moment. The instructor side is to be discussed later.
 - Superseded: the 19 Nov plan (low-price personal app on the Meta store, paid instructor tier, professional/university licences). Details remain in `docs/backlog.md` if things change.
-- Free still needs: a Meta developer account and store review (or sideloading), a privacy policy, an age rating, and some support time (questions, bug reports).
+- Free still needs: see the release checklist `claude/free-release.md` (docs/free-release.md): distribution route, privacy policy, age rating, disclaimer, licence notices, support route.
 - Free doesn't change: IP stays Tom's (written terms before any trust or university involvement), licence notices (Godot MIT etc.), educational-only claims and a disclaimer, no patient data, JRCALC reproduction limits.
 
 ## Licence and compatibility check (19 Nov 2026; not legal advice)
