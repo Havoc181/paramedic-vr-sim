@@ -50,6 +50,14 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 - **Settings:** **mild = 0.45**, moderate = 0.6 (Joan, APO), marked = 0.8+; 1.0 looks plastic.
 - **Check:** `tests/skin_signs_shot.gd`; headset: pause menu "Test: patient skin".
 
+## Tripod hands planted while breathing (21 Nov)
+- `rig_driver._keep_hands()`: after the clavicles lift each breath, a two-joint IK (keeping the current bend plane) bends the elbows so the wrists stay where the posture put them. Wrist drift per breath 35 mm -> 0.7 mm. Also holds the hands on the seat in the sit-back posture.
+- `_gpose()` now includes bone scale (the chest scales with breathing, which moves the shoulders).
+
+## Legs exposure (21 Nov)
+- Blender `expose_legs()`: copy of the skin under trousers and shoes below just above the knee (`<name>_skin_legs`), trousers copy with the legs gathered into a cuff 8 cm above the knee (`_rolled`). The gathered cloth takes its bone weights from pure-thigh cloth higher up, otherwise it swings out like flaps when the knee bends. A small hoop at the outer knee remains (to tidy).
+- Godot: `set_legs_state("on"|"off")` swaps trousers/shoes for the rolled trousers and leg skin. Panel: "Roll up her trousers and take her shoes off" / "Cover her legs and put her shoes back on"; findings with `requires_exposure: "legs"`.
+
 ## Exposure: top on / lifted / off (bra on)
 - **Why:** some signs (paradoxical abdominal movement, later chest signs) are only obvious when exposed, as in real practice.
 - **Blender (`SourceAssets/make_humans.py`, `expose_layers`):** the body keeps its clothing mask (skin under the top stays hidden when dressed). The skin under the top is *copied* into two hidden patches, `<name>_skin_abdomen` (front two-thirds, below the underbust) and `<name>_skin_upper` (chest, back, arms), each grown by one face ring so they also cover the faces the body's mask removed along the edge, with the clothing masks removed from the copies. Also taken: the top 3.5 cm of skin the trousers' mask removes, because sitting pulls the waistband down and otherwise leaves a gap. Landmarks: bust apex = most forward point of the upper torso, underbust = 6 cm below. `<top>_lifted` = a copy of the top with the front below the underbust gathered up (to 14% of its depth) into soft folds; sides lift less, the back stays down. `<name>_bra` = a bandeau made from the body skin in the band underbust−1.5 cm to bust+5.5 cm, edges snapped straight, pushed out 4.5 mm, muted grey-mauve.
@@ -95,7 +103,9 @@ Scenario values live in the scenario JSON under `characters.<id>.presentation`.
 | Subcostal | 1 cm in, band just under the rib margin + shading | needs top off (lifted top covers it) |
 | Hoover's sign | lower lateral ribs 1.5 cm in on inspiration | torso only, arms excluded |
 | JVP | right neck line, shows up to `jvp` of its length; a and v waves per beat (no a wave in AF) | subtle by nature; check in headset |
-| Mottling, ankle oedema | knees / ankles; need legs exposure | waiting for the legs build |
+| Mottling, ankle oedema | knees / ankles; shown with legs exposed (trousers rolled above the knees, shoes off) | |
+
+**Darker skin (Maureen, sign sheet 21 Nov):** pallor and grey read as ashen; lip cyanosis reads grey-black at marked levels (tongue and inner lips are the reliable places clinically; tongue tint is in); fingertip cyanosis and capillary-refill blanching show well; clamminess shows clearly as sheen. **Mottling barely shows on dark skin** with the current darken-only pattern; needs a greyer, slightly lighter lace for darker skin (to do, with Tom's view of how it presents). Flushing is less visible on dark skin, as in life.
 
 
 # Signs shopping list and roadmap (20 Nov, for Tom's review)

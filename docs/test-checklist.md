@@ -1,29 +1,24 @@
-# Test checklist — v0.05-dev8 (clinical signs system)
+# Test checklist — v0.05-dev9 (Maureen, legs, planted hands) + dev8 signs
 
-No new character files in this build (Maureen and the legs exposure need a Blender
-run on the PC, next build). Nothing to commit in GitHub Desktop first.
+**Before exporting:** in GitHub Desktop commit `assets/characters/joan.glb` and the new
+`assets/characters/maureen.glb` (and any new `.uid` files Godot creates).
 
-## Demo mode (pause menu > "Demo sign")
-Each press shows one sign on Joan with a caption. For each, does it look right and
-is it about the right size? Note any that are too much / too little.
-- [ ] Pallor, grey, flushing, clammy
-- [ ] Drowsy (heavy lids, head drifting down and jerking up)
-- [ ] Lip cyanosis, tongue cyanosis (watch when she talks), fingertip cyanosis
-- [ ] Pursed lips (on the breath out), prolonged expiration
-- [ ] Suprasternal recession (dressed), intercostal / subcostal / Hoover's (top off)
-- [ ] Paradoxical abdominal movement (top lifted)
-- [ ] JVP (right side of the neck, pulsing)
-- [ ] Mottling / ankle oedema: says the model can't show legs yet (next build)
+## Maureen (pause menu > Scenario > 02)
+- [ ] She loads as her own person (81, darker skin, grey hair, plain top, dark bottoms); no voice yet (subtitles)
+- [ ] Her signs as set: dusky lips/tongue, pursed lips on the breath out, prolonged expiration, mild clamminess, suprasternal recession; lift her top: paradoxical belly; top off: Hoover's sign, intercostal
+- [ ] Lift top / top off / cover up work on her clothes too
+- [ ] Props readable: pot, tissues, inhalers, rescue pack
 
-## Hands-on
-- [ ] Grip near her wrist for 4 s: controller pulses with her heartbeat (Joan: fast, irregular), then the finding shows and counts as checked
-- [ ] Grip near a fingertip: it goes pale; let go: colour comes back in about 3-4 s; "Capillary refill" finding shows
+## Legs (both patients)
+- [ ] "Roll up her trousers and take her shoes off": trousers gathered above the knees, bare lower legs and feet; "Cover her legs" puts them back
+- [ ] Joan: ankle oedema visible; "Look at ankles" only appears once legs are exposed
+- [ ] Note: small hoop of cuff at the outer knee (known, to tidy)
 
-## Scenario switch (pause menu > "Scenario")
-- [ ] Switches to 02 (Maureen, draft; uses Joan's body until Maureen is built, no voices yet) and back
-- [ ] Scenario 02 props: pot, tissues, inhalers, rescue pack readable
+## Tripod hands
+- [ ] Hands stay planted on her knees while her shoulders rise with each breath (elbows bend slightly)
+- [ ] Sit-back posture: hands stay on the seat
 
-## Instructor app
-- [ ] "Clinical signs (live)" sliders change the patient in the headset
+## dev8 items (if not yet tested)
+- [ ] Demo mode signs, hands-on pulse and capillary refill, instructor sign sliders
 
 Notes:

@@ -124,6 +124,7 @@ func _init(model_root: Node3D, posture: String) -> void:
 	home_posture = posture if POSTURES.has(posture) else "standing"
 	_apply_pose(_pose(home_posture))
 	posture_name = home_posture
+	_capture_hands()
 	_fix_materials()
 	_tint_hair(Color(0.78, 0.76, 0.74))
 	_find_garments()
@@ -198,6 +199,10 @@ func update(delta: float) -> void:
 		skeleton.set_bone_pose_rotation(b, q)
 		_base_local[b] = q
 	model.position = (_blend_from["offset"] as Vector3).lerp(_blend_to["offset"], k)
+	if _blend_t >= 1.0:
+		_hand_mode = "knee" if POSTURES.get(posture_name, {}).get("hands_on_knees", false) \
+			else ("beside" if POSTURES.get(posture_name, {}).get("hands_beside", false) else "")
+		_capture_hands()
 
 
 # --- Exposure (top on / lifted / off with bra) ------------------------------------
@@ -304,6 +309,60 @@ func apply_breath(breath: float, depth: float, accessory: float) -> void:
 	var lift := deg_to_rad(7.0) * breath * accessory
 	_lift_clavicle(_clav[0], lift)
 	_lift_clavicle(_clav[1], -lift)
+	_keep_hands()
+
+
+# --- Hands stay planted while the shoulders breathe (Tom, 20 Nov) -------------
+
+var _hand_targets: Array = []   # wrist positions (skeleton space) for the current posture
+
+
+## Remember where the hands are in the posture (call when a posture settles).
+func _capture_hands() -> void:
+	_hand_targets.clear()
+	if _hand_mode == "":
+		return
+	if _chest >= 0:
+		skeleton.set_bone_pose_scale(_chest, Vector3.ONE)
+	for side in 2:
+		var hand := _first("hand", side)
+		_hand_targets.append(_gpose(hand).origin if hand >= 0 else Vector3.INF)
+
+
+## After the breathing lift, bend the elbows so the wrists stay where they were:
+## two-joint IK that keeps the current bend plane (no jumps).
+func _keep_hands() -> void:
+	if _hand_targets.size() != 2 or _blend_t < 1.0:
+		return
+	for side in 2:
+		var ups := _chain("upperarm", side)
+		var los := _chain("lowerarm", side)
+		var hand := _first("hand", side)
+		var t: Vector3 = _hand_targets[side]
+		if ups.is_empty() or los.is_empty() or hand < 0 or t == Vector3.INF:
+			continue
+		for b in ups + los:
+			skeleton.set_bone_pose_rotation(b, _base_local[b])
+		var sh := _gpose(ups[0]).origin
+		var el := _gpose(los[0]).origin
+		var wr := _gpose(hand).origin
+		var l1 := sh.distance_to(el)
+		var l2 := el.distance_to(wr)
+		var to_t := t - sh
+		var d := clampf(to_t.length(), 0.05, l1 + l2 - 0.001)
+		var axis := to_t.normalized()
+		var bend := el - sh
+		var perp := (bend - axis * bend.dot(axis))
+		if perp.length() < 1e-5:
+			continue
+		perp = perp.normalized()
+		var a := (l1 * l1 - l2 * l2 + d * d) / (2.0 * d)
+		var h := sqrt(maxf(l1 * l1 - a * a, 0.0))
+		var el_new := sh + axis * a + perp * h
+		_rotate_global(ups[0], Basis(Quaternion((el - sh).normalized(), (el_new - sh).normalized())))
+		var el2 := _gpose(los[0]).origin
+		var wr2 := _gpose(hand).origin
+		_rotate_global(los[0], Basis(Quaternion((wr2 - el2).normalized(), (sh + axis * d - el2).normalized())))
 
 
 # --- Bone lookup -------------------------------------------------------------
@@ -501,7 +560,8 @@ func _rotate_global(b: int, rot: Basis) -> void:
 ## Bone pose in skeleton space, computed from the local poses we've set.
 ## (Skeleton3D's own global-pose cache can lag behind set_bone_pose_rotation.)
 func _gpose(b: int) -> Transform3D:
-	var t := Transform3D(Basis(skeleton.get_bone_pose_rotation(b)), skeleton.get_bone_pose_position(b))
+	var t := Transform3D(Basis(skeleton.get_bone_pose_rotation(b)) * Basis.from_scale(skeleton.get_bone_pose_scale(b)),
+		skeleton.get_bone_pose_position(b))
 	var parent := skeleton.get_bone_parent(b)
 	return _gpose(parent) * t if parent >= 0 else t
 

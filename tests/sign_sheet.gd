@@ -19,6 +19,8 @@ const MOVING := ["recession_suprasternal", "recession_intercostal", "recession_s
 
 
 func _initialize() -> void:
+	if OS.get_environment("SCEN") != "":
+		load("res://scripts/scenario_runner.gd").next_path = OS.get_environment("SCEN")
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	root.add_child(main)
 	for i in 40:

@@ -1,6 +1,8 @@
 extends SceneTree
 # Renders the patient with top on / lifted / off, and the belly in and out.
 func _initialize() -> void:
+	if OS.get_environment("SCEN") != "":
+		load("res://scripts/scenario_runner.gd").next_path = OS.get_environment("SCEN")
 	var main: Node = load("res://scenes/main.tscn").instantiate()
 	root.add_child(main)
 	for i in 40:
@@ -23,8 +25,9 @@ func _initialize() -> void:
 	var fwd: Vector3 = sk.global_basis.z.normalized()
 	var right: Vector3 = fwd.cross(Vector3.UP).normalized()
 	var k := 0
-	for state in ["on", "lifted", "off"]:
-		ch.set_exposure(state)
+	for state in ["on", "lifted", "off", "legs"]:
+		ch.set_exposure("on" if state == "legs" else state)
+		ch.set_legs("off" if state == "legs" else "on")
 		for f in 100:
 			await process_frame
 		var chest: Vector3 = (sk.global_transform * sk.get_bone_global_pose(sk.find_bone("spine03"))).origin
@@ -33,8 +36,10 @@ func _initialize() -> void:
 			cam.look_at(chest + Vector3(0, -0.02, 0))
 			ch.set_process(false)
 			for b in [0.0, 1.0]:
-				ch._rig.abdominal_paradox = OS.get_environment("NORMAL_BELLY") != "1"
+				if OS.get_environment("NORMAL_BELLY") != "1":
+					ch._rig.signs.set_sign("abdominal_paradox", 1.0)
 				ch._rig.apply_breath(b, 0.6, 0.0)
+				ch._rig.signs.update(0.0, b, b > 0.5)
 				for f in 3:
 					await process_frame
 				await RenderingServer.frame_post_draw

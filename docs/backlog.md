@@ -372,7 +372,8 @@ Tom: a laptop view with some in-scenario customisability, plus casting at least.
 - Cause: `rig_driver.apply_breath()` lifts the clavicles every breath, and the whole arm chain hangs off them, so the wrists move.
 - Fix plan: after the clavicle lift each frame, re-run the two-joint arm IK to the stored wrist targets (cheap: two bones per arm), so the elbows absorb the movement and the hands stay fixed. Same for the sit-back hands on the seat.
 
-## Next PC session: follow-up actions (saved 20 Nov, 21:57)
+## Next PC session: follow-up actions (saved 20 Nov, 21:57; updated 21 Nov)
+Done 21 Nov: 1 (Maureen + legs built), 2 (checked; cuff hoop and mottling-on-dark-skin noted), 5 (hands planted).
 Do these next time Claude has the PC (Tom not gaming; approve Blender when asked):
 1. **Run `make_humans.py` in Blender** (SourceAssets). Builds Joan + Ken + **Maureen** (81, Black British, old_african_female skin, short grey hair, plain muted-purple long-sleeved top via `clothes_colour`, dark jogging bottoms, shoes04) and the **legs exposure** layers (skin_legs patch, trousers rolled above the knees, shoes off) for Joan and Maureen. Confirm the look of Maureen with Tom first if he has preferences.
 2. **Check the build:** stage the new glbs, run `tests/sign_sheet.gd` for Joan and `WHO=maureen`, `tests/exposure_shot.gd`; fix any clipping (top lifted/off, legs rolled). Check darker-skin readings of pallor / cyanosis / clamminess on Maureen and adjust (relative to skin; tongue and inner lips most reliable).
