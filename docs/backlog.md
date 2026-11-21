@@ -419,3 +419,7 @@ Do these next time Claude has the PC (Tom not gaming; approve Blender when asked
 - Real voices for main characters later: record people with a written release; TTS for drafts.
 - Lip sync: now jaw-only from loudness. Rhubarb Lip Sync (MIT) gives mouth shapes from audio
   + text for the lip bones; later.
+
+## Business decision (2026-11-21)
+The baseline app will be **free**. A paid app (store sales, support, licences) or organising a team
+isn't realistic for now. Supersedes the 19 Nov business model above. Instructor side: discuss later.
