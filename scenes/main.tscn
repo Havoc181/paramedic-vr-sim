@@ -51,15 +51,16 @@ environment = SubResource("Env")
 script = ExtResource("6_room")
 
 [node name="Instructions" type="Label3D" parent="."]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.28, 1.55, 1.15)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -2.28, 1.6, 0.1)
 modulate = Color(0.15, 0.15, 0.15, 1)
-text = "Paramedic VR Sim - V0.03 (in progress)
-Left stick: move    Right stick left/right: turn
+pixel_size = 0.0028
+text = "Paramedic VR Sim (in development)
+Left stick: move      Right stick left/right: turn
 Right stick forward: aim teleport, release to jump
 Right stick click: crouch / kneel
-Left menu button (or left-wrist button with hands): menu
-Point at Joan or Ken and pull the trigger (or pinch) to talk and assess"
-font_size = 22
+Left menu button (or left-wrist pinch): menu
+Point at a person and pull the trigger (or pinch) to talk and assess"
+font_size = 40
 outline_size = 0
 
 [node name="XROrigin3D" type="XROrigin3D" parent="."]

@@ -31,14 +31,19 @@ func _ready() -> void:
 	add_child(col)
 	_label = Label3D.new()
 	_label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	_label.font_size = 32
-	_label.pixel_size = 0.0011
+	# A compact card that grows upwards from just above the object and wraps,
+	# so long descriptions stay in view at reading distance.
+	_label.font_size = 30
+	_label.pixel_size = 0.00085
 	_label.render_priority = 20
 	_label.outline_render_priority = 19
-	_label.outline_size = 8
+	_label.outline_size = 10
 	_label.no_depth_test = true
+	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_label.width = 0.42 / _label.pixel_size
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-	_label.position = Vector3(0, size.y / 2.0 + 0.2, 0)
+	_label.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+	_label.position = Vector3(0, size.y / 2.0 + 0.05, 0)
 	_label.text = title + "\n" + details
 	_label.visible = false
 	add_child(_label)
