@@ -407,3 +407,15 @@ Do these next time Claude has the PC (Tom not gaming; approve Blender when asked
   headset), all on the underwear base so clothing layers and signs fit any of them. Cost to
   plan for: each voice needs its own lines per scenario, so the pool has a few voices per
   sex/age band. Depends on the character pipeline (docs/character-pipeline.md) being in place.
+
+## Voice: what games and sim labs do (researched 2026-11-21)
+- Treat voice as a system with layers: scripted answers / short reactions ("barks") / a
+  non-verbal library (coughs, gasps, groans, wheeze) triggered by the patient's state.
+- Reactions are the most-heard lines: 2–3 variants each, never the same one twice running.
+- Non-verbals are where TTS is weakest: use real recordings (CC0 or recorded with consent),
+  shared by every patient. Breathing/gasp code already exists.
+- Manikin labs voice the patient live through a voice changer, plus a soundboard of clips.
+  For us: instructor app mic → patient's mouth, pitch/age shifted; answers anything unscripted.
+- Real voices for main characters later: record people with a written release; TTS for drafts.
+- Lip sync: now jaw-only from loudness. Rhubarb Lip Sync (MIT) gives mouth shapes from audio
+  + text for the lip bones; later.
