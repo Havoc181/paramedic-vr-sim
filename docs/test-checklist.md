@@ -1,4 +1,10 @@
-# Test checklist — v0.05-dev13 (after your dev11 notes)
+# Test checklist — v0.05-dev14 (voices) + dev13
+
+## Voices (new in dev14)
+- [ ] Maureen speaks all her answers (voice bf_emma, more breathless than Joan); judge whether she sounds right for 81
+- [ ] Both patients speak their exposure replies; ask the same thing twice and you get a different version
+- [ ] Joan and Maureen ask to sit forward out loud when left sat back
+- [ ] Maureen's dog lines and "Leave it... it'll be... my neighbour" (instructor events) are voiced
 
 Your dev11 notes are saved in `docs/test-results/2026-11-21_v0.05-dev11.md`.
 

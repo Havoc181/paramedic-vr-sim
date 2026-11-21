@@ -92,27 +92,76 @@
     "breath_gain": 0.45
    },
    "reactions": {
-    "lifted": {
-     "text": "Go on... be quick... can't lean back... for long."
-    },
-    "off": {
-     "text": "Help me... get it off... I'm so... breathless."
-    },
-    "on": {
-     "text": "Thank you... love."
-    },
-    "legs_off": {
-     "text": "Go on... if you need to."
-    },
-    "legs_on": {
-     "text": "Thanks."
-    },
-    "sit_forward": [
+    "lifted": [
      {
-      "text": "Can I... sit forward?... I can't breathe... like this."
+      "text": "Go on... be quick... can't lean back... for long.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_lifted0_joan.ogg"
      },
      {
-      "text": "Please... let me lean... forward... I need to."
+      "text": "Alright... quickly... I can't... breathe back here.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_lifted1_joan.ogg"
+     }
+    ],
+    "off": [
+     {
+      "text": "Help me... get it off... I'm so... breathless.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_off0_joan.ogg"
+     },
+     {
+      "text": "Can you... help me... with it?... I can't... get my breath.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_off1_joan.ogg"
+     }
+    ],
+    "on": [
+     {
+      "text": "Thank you... love.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_on0_joan.ogg"
+     },
+     {
+      "text": "Ta... that's better.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_on1_joan.ogg"
+     }
+    ],
+    "legs_off": [
+     {
+      "text": "Go on... if you need to.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_legs_off0_joan.ogg"
+     },
+     {
+      "text": "Do what... you need to... love.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_legs_off1_joan.ogg"
+     }
+    ],
+    "legs_on": [
+     {
+      "text": "Thanks.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_legs_on0_joan.ogg"
+     },
+     {
+      "text": "Thank you.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_legs_on1_joan.ogg"
+     }
+    ],
+    "sit_forward": [
+     {
+      "text": "Can I... sit forward?... I can't breathe... like this.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_sit_forward0_joan.ogg"
+     },
+     {
+      "text": "Please... let me lean... forward... I need to.",
+      "by": "joan",
+      "audio": "res://assets/audio/generated/voice/apo_01/react_sit_forward1_joan.ogg"
      }
     ],
     "_note": "Draft lines for clinical review. sit_forward: said if she's left sat back (exposed) for 12 s, then every 25 s."

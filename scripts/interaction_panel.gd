@@ -301,6 +301,23 @@ func _available_items() -> Array:
 	return out
 
 
+## Replies can have several versions: never the same one twice running.
+var _last_reply := {}
+
+
+func _pick_reply(r) -> Dictionary:
+	if r is Dictionary:
+		return r
+	var lst: Array = r
+	if lst.is_empty():
+		return {}
+	var i := randi() % lst.size()
+	if lst.size() > 1 and lst[i] == _last_reply:
+		i = (i + 1) % lst.size()
+	_last_reply = lst[i]
+	return lst[i]
+
+
 ## Something examined hands-on (pulse, capillary refill) counts as checked.
 func mark_examined(id: String, text: String) -> void:
 	assessed[id] = true
@@ -354,7 +371,7 @@ func _on_item(slot: int) -> void:
 		_result.text = String(msg.get(it["action"], ""))
 		_refresh()
 		# Her reply (e.g. "Go on... quick...").
-		var r: Dictionary = pt.data.get("reactions", {}).get(act, {}) if pt else {}
+		var r: Dictionary = _pick_reply(pt.data.get("reactions", {}).get(act, {}) if pt else {})
 		if not r.is_empty() and not _speaking:
 			_speak([{"by": pt.id, "text": r.get("text", ""), "audio": r.get("audio", "")}])
 		return
